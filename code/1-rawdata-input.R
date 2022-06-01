@@ -17,3 +17,47 @@ install.packages("googlesheets4")
 
 library(googlesheets4)
 
+#load all packages
+
+source("code/0-packages.R")
+
+#grant access to google account and authenticate
+# Answer 1 for yes to question "Is it OK to cache OAuth access credential in the folder..."
+
+gs4_auth()
+
+#select desired user
+#Connect new users by entering 0 in command line
+
+#From r-bloggers:
+#Note: If you do not need to access any private Google spreadsheets use gs4_deauth().
+
+rhizon_raw = read_sheet("https://docs.google.com/spreadsheets/d/1n0ou-nkpoE2qw9Xbl9lsVGQ_g6LUT2xbLnxQdxjdGD0/edit#gid=0")
+metadata_rhizon = read_sheet("https://docs.google.com/spreadsheets/d/1IuW1DstoXZJPFrmtL8RpOGGeoLgQnxetv-v6RO8Pg-k/edit#gid=0")
+sipper_raw = read_sheet("https://docs.google.com/spreadsheets/d/1XXRUo2oagEGhlQ9JKWsxrZyseAyfA5sHAkZqjs3PsBA/edit#gid=0")
+
+west_hydric_dlraw = read_sheet("https://docs.google.com/spreadsheets/d/1D7Ds-zZzeYxzpp3sRLvAWk0NKP44e7lG/edit#gid=521791981")
+
+
+
+metadata_rhizon_withdate = 
+  metadata_rhizon %>%
+  mutate(Betterdate = as.Date(date, format = ("%m-%d-%Y"))) 
+
+#if Y is not capitalized, it will IGNORE the year, and just add in the current year. VERY ANNOYING.
+
+rhizon_meta_combine = 
+  rhizon_raw %>% 
+  left_join(metadata_rhizon_withdate) %>% 
+  pivot_longer(-c(ID, Sample, date, Area, Site, Plot, Betterdate), names_to = 'ICP', values_to = 'concentration') %>% 
+  na.omit() 
+
+###write file
+
+write.csv(rhizon_meta_combine, "processed/rhizon_2021.csv")
+write.csv(sipper_raw, "processed/sipper_2021.csv")
+
+#there is weird double data
+#all doubles look identical except for the blank
+#grouping, will check with Beth/Sumant later
+#delete and revise once checking is complete
