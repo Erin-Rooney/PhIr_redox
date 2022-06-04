@@ -1,0 +1,27 @@
+{
+    "id": "A45A17C6",
+    "path": "~/R/R/R Datasets/PhIr_redox_porechem/code/3-DATALOGGERS-datacleaning.R",
+    "project_path": "code/3-DATALOGGERS-datacleaning.R",
+    "type": "r_source",
+    "hash": "1906417663",
+    "contents": "",
+    "dirty": false,
+    "created": 1654117343495.0,
+    "source_on_save": false,
+    "relative_order": 12,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "19,0",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1654281874,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1654281874,
+    "read_only": false,
+    "read_only_alternatives": []
+}

@@ -1,0 +1,80 @@
+#June 1 2021
+#ECRooney
+#Data logger data
+
+#load all packages
+
+source("code/0-packages.R")
+
+#load data
+
+hydric_dat = read.csv("processed/hydric_combine.csv")
+
+hydric_metadata =
+  hydric_dat %>% 
+  dplyr::select('X', 'TIMESTAMP', 'RECORD', 'site', )
+
+hydric_betterdate = 
+  hydric_metadata %>% 
+  mutate(Betterdate = strptime(TIMESTAMP, format = ("%m/%d/%Y %H:%M"))) %>% 
+  mutate(redox_NUM_Avg = X) %>% 
+  mutate(redox_NUM_Std = X) %>% 
+  dplyr::select(-X)
+  
+
+hydric_redox = 
+  hydric_dat %>% 
+  mutate(redox_NUM_Avg = X) %>% 
+  mutate(redox_NUM_Std = X) %>% 
+  dplyr::select(-X) %>% 
+  # dplyr::select(c('X') & 
+  dplyr::select(starts_with('redox')) 
+  #rename(X = redox_NUM_Avg) %>% 
+  
+hydric_redox_avg = 
+  hydric_redox %>% 
+  dplyr::select(ends_with('Avg')) 
+
+hydric_redox_std = 
+  hydric_redox %>% 
+  dplyr::select(ends_with('Std')) 
+
+hydric_redox_longer_avg =
+  hydric_redox_avg %>%
+  left_join(hydric_betterdate, by = 'redox_NUM_Avg') %>% 
+  pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "Betterdate"),
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  mutate(redox_avg = recode(redox_avg, 'redox_5.2.3_fromtip_Avg' = "redox_5_2_3_fromtip_Avg")) %>% 
+  mutate(redox_avg = str_remove(redox_avg, "Redox_")) %>% 
+  mutate(redox_avg = str_remove(redox_avg, "redox_")) %>% 
+  mutate(redox_avg = str_remove(redox_avg, "_fromtip_Avg")) %>% 
+  separate(redox_avg, sep = "_", into = c("datalogger", "probe_sensor")) %>%
+  mutate(probe_sensor = recode(probe_sensor, "1.8" = "1_8", "1.7" = "1_7", "1.6" = "1_6", "1.5" = "1_5", "1.4" = "1_4", "1.3" = "1_3", "1.2" = "1_2", "1.1" = "1_1",
+                               "2.8" = "2_8", "2.7" = "2_7", "2.6" = "2_6", "2.5" = "2_5", "2.4" = "2_4", "2.3" = "2_3", "2.2" = "2_2", "2.1" = "2_1",
+                               "3.8" = "3_8", "3.7" = "3_7", "3.6" = "3_6", "3.5" = "3_5", "3.4" = "3_4", "3.3" = "3_3", "3.2" = "3_2", "3.1" = "3_1")) %>% 
+  separate(probe_sensor, sep = "_", into = c("probe", "sensor")) 
+  
+  
+hydric_redox_longer_std =
+  hydric_redox_std %>%
+  left_join(hydric_betterdate, by = 'redox_NUM_Std') %>% 
+  pivot_longer(-c("TIMESTAMP", "RECORD", "site", "Betterdate"),
+               names_to = "redox_std", values_to = "std_values") %>% 
+  mutate(redox_std = recode(redox_std, 'redox_5.2.3_fromtip_Std' = "redox_5_2_3_fromtip_Std")) %>% 
+  mutate(redox_std = str_remove(redox_std, "Redox_")) %>% 
+  mutate(redox_std = str_remove(redox_std, "redox_")) %>% 
+  mutate(redox_std = str_remove(redox_std, "_fromtip_Std")) %>% 
+  separate(redox_std, sep = "_", into = c("datalogger", "probe_sensor")) %>%
+  mutate(probe_sensor = recode(probe_sensor, "1.8" = "1_8", "1.7" = "1_7", "1.6" = "1_6", "1.5" = "1_5", "1.4" = "1_4", "1.3" = "1_3", "1.2" = "1_2", "1.1" = "1_1",
+                               "2.8" = "2_8", "2.7" = "2_7", "2.6" = "2_6", "2.5" = "2_5", "2.4" = "2_4", "2.3" = "2_3", "2.2" = "2_2", "2.1" = "2_1",
+                               "3.8" = "3_8", "3.7" = "3_7", "3.6" = "3_6", "3.5" = "3_5", "3.4" = "3_4", "3.3" = "3_3", "3.2" = "3_2", "3.1" = "3_1")) %>% 
+  separate(probe_sensor, sep = "_", into = c("probe", "sensor")) 
+
+
+hydric_redox_avgstd =
+  hydric_redox_longer_avg %>% 
+  left_join(hydric_redox_longer_std)
+
+write.csv(hydric_redox_avgstd, "processed/hydric_redox_avgstd.csv")
+
+

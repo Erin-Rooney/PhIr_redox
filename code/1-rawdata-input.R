@@ -36,15 +36,12 @@ rhizon_raw = read_sheet("https://docs.google.com/spreadsheets/d/1n0ou-nkpoE2qw9X
 metadata_rhizon = read_sheet("https://docs.google.com/spreadsheets/d/1IuW1DstoXZJPFrmtL8RpOGGeoLgQnxetv-v6RO8Pg-k/edit#gid=0")
 sipper_raw = read_sheet("https://docs.google.com/spreadsheets/d/1XXRUo2oagEGhlQ9JKWsxrZyseAyfA5sHAkZqjs3PsBA/edit#gid=0")
 
-west_hydric_dlraw = read_sheet("https://docs.google.com/spreadsheets/d/1D7Ds-zZzeYxzpp3sRLvAWk0NKP44e7lG/edit#gid=521791981")
-
-
 
 metadata_rhizon_withdate = 
   metadata_rhizon %>%
   mutate(Betterdate = as.Date(date, format = ("%m-%d-%Y"))) 
 
-#if Y is not capitalized, it will IGNORE the year, and just add in the current year. VERY ANNOYING.
+#capitalize Y for four number year, lowercase y for two number year.
 
 rhizon_meta_combine = 
   rhizon_raw %>% 
@@ -61,3 +58,24 @@ write.csv(sipper_raw, "processed/sipper_2021.csv")
 #all doubles look identical except for the blank
 #grouping, will check with Beth/Sumant later
 #delete and revise once checking is complete
+
+
+############
+#Data logger data input
+
+westhydric_dlraw = read.csv("raw/CR1000_15min_DL6_WestHydric_cumulative_01122022.csv")
+easthydric_dlraw = read.csv("raw/CR300_15min_cumulative_DL5 East Hydric_03212022.csv")
+
+westhydric_dlname = 
+  westhydric_dlraw %>% 
+  mutate(site = 'west')
+
+easthydric_dlname = 
+  easthydric_dlraw %>% 
+  mutate(site = 'east')
+
+hydric_combine = 
+  westhydric_dlname %>% 
+  vctrs::vec_c(easthydric_dlname)
+
+write.csv(hydric_combine, "processed/hydric_combine.csv")
