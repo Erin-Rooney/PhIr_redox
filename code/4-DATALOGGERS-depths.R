@@ -9,7 +9,9 @@ source("code/0-packages.R")
 
 #load data
 
-hydric_redox_avgstd = read.csv("processed/hydric_redox_avgstd.csv")
+# hydric_redox_avgstd = read.csv("processed/hydric_redox_avgstd.csv")
+
+combo_redox_avgstd = read.csv("processed/combo_redox_avgstd.csv")
 
 sensor_depths = read.csv("raw/datalogger_depths.csv")
 

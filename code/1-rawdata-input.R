@@ -74,47 +74,52 @@ eastdry_dlraw = read.csv("raw/CR300_15min_DL3_EastDry_02012022.csv")
 
 westhydric_dlname = 
   westhydric_dlraw %>% 
-  mutate(site = 'west')
+  mutate(site = 'west', position = "hydric")
 
 easthydric_dlname = 
   easthydric_dlraw %>% 
-  mutate(site = 'east')
+  mutate(site = 'east', position = "hydric")%>% 
+  dplyr::select(!ptemp)
 
 westmesic_dlname = 
   westmesic_dlraw %>% 
-  mutate(site = 'west')
+  mutate(site = 'west', position = "mesic")%>% 
+  dplyr::select(!ptemp)
 
 eastmesic_dlname = 
   eastmesic_dlraw %>% 
-  mutate(site = 'east')
+  mutate(site = 'east', position = "mesic")%>% 
+  dplyr::select(!ptemp)
 
 westdry_dlname = 
   westdry_dlraw %>% 
-  mutate(site = 'west') %>% 
+  mutate(site = 'west', position = "dry") %>% 
   dplyr::select(!ptemp)
 
 eastdry_dlname = 
   eastdry_dlraw %>% 
-  mutate(site = 'east') %>% 
+  mutate(site = 'east', position = "dry") %>% 
   dplyr::select(!ptemp)
 
-hydric_combine = 
-  westhydric_dlname %>% 
-  vctrs::vec_c(easthydric_dlname) %>% 
-  dplyr::select(!ptemp)
-
-mesic_combine = 
-  westmesic_dlname %>% 
-  vctrs::vec_c(eastmesic_dlname) %>% 
-  dplyr::select(!ptemp)
-
-dry_combine = 
-  westdry_dlname %>% 
-  vctrs::vec_c(eastdry_dlname)
+# hydric_combine = 
+#   westhydric_dlname %>% 
+#   vctrs::vec_c(easthydric_dlname) 
 
 all_combine = 
-  hydric_combine %>% 
-  vctrs::vec_c(mesic_combine, dry_combine)
+  westhydric_dlname %>% 
+  vctrs::vec_c(eastdry_dlname, westmesic_dlname, eastmesic_dlname, westdry_dlname, eastdry_dlname)
+
+# mesic_combine = 
+#   westmesic_dlname %>% 
+#   vctrs::vec_c(eastmesic_dlname) 
+# 
+# dry_combine = 
+#   westdry_dlname %>% 
+#   vctrs::vec_c(eastdry_dlname)
+# 
+# all_combine = 
+#   hydric_combine %>% 
+#   vctrs::vec_c(mesic_combine, dry_combine)
 
 write.csv(hydric_combine, "processed/hydric_combine.csv")
 
