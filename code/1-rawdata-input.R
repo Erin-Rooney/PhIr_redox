@@ -258,13 +258,11 @@ depths_function <- function(dat){
                                  "3.8" = "3_8", "3.7" = "3_7", "3.6" = "3_6", "3.5" = "3_5", "3.4" = "3_4", "3.3" = "3_3", "3.2" = "3_2", "3.1" = "3_1")) %>% 
     separate(probe_sensor, sep = "_", into = c("probe", "sensor")) %>% 
     mutate(sensor = as.numeric(sensor)) %>%
-    left_join(sensor_depths_processed) %>% 
-    group_by(X, site, position, sensor, depth_cm) %>%
-    dplyr::summarize(avg_values_summarised = mean(avg_values)) %>% 
+    left_join(sensor_depths) %>% 
+    group_by(site, position, Betterdate, depth_cm) %>%
+    dplyr::summarize(avg_values_summarised = mean(avg_values)) %>%
     mutate(depth_cm = as.numeric(depth_cm)) %>% 
-  
-    
-    FORCE()
+    force()
   
   
 }
@@ -291,7 +289,6 @@ westdry_depths =
 
 eastdry_depths = 
   depths_function(eastdry_avg)
-
 
 
 
