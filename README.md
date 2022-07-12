@@ -1,4 +1,7 @@
-### PhIr redox (data logger) and porechemistry data
+### PhIr Project
+#### Redox (data logger) and porechemistry data collected Summer 2021
+
+###### July 2022, EC Rooney
 
 ##### *Repository organization*
 
