@@ -15,9 +15,9 @@ combo_dat = read.csv("processed/all_combine.csv")
 
 combo_dat %>% 
   na.omit() %>% 
-  ggplot(aes(x = Betterdate, y = depth_cm, fill = avg_values_summarised))+
+  ggplot(aes(x = as.date(Betterdate), y = depth_cm, fill = avg_values_summarised))+
   geom_bar(position = "stack", stat= "identity")+
-  scale_x_date(date_breaks = "1 week" , date_labels = "%m-%d-%Y")+
+ scale_x_date(date_breaks = "1 week" , date_labels = "%m-%d-%Y")+
   scale_y_reverse()+
   scale_fill_gradientn(colors = (PNWColors::pnw_palette("Bay")))+  
   theme_er1()+
