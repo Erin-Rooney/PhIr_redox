@@ -241,7 +241,12 @@ sensor_depths =
   mutate(Sensor = str_remove(Sensor, "_fromtip_Avg")) %>% 
   separate(Sensor, sep = "_", into = c("datalogger", "probe_sensor")) %>% 
   separate(probe_sensor, sep = "-", into = c("probe", "sensor")) %>% 
-  mutate(sensor = as.numeric(sensor)) 
+  mutate(sensor = as.numeric(sensor)) %>% 
+  mutate(depth_cm = str_replace(depth_cm, "n.a.", "NA")) %>%
+  mutate(depth_cm = as.numeric(depth_cm)) %>% 
+  na.omit() 
+  
+  
 
 
 depths_function <- function(dat){
@@ -259,8 +264,9 @@ depths_function <- function(dat){
     separate(probe_sensor, sep = "_", into = c("probe", "sensor")) %>% 
     mutate(sensor = as.numeric(sensor)) %>%
     left_join(sensor_depths) %>% 
-    group_by(site, position, Betterdate, depth_cm) %>%
-    dplyr::summarize(avg_values_summarised = mean(avg_values)) %>%
+    group_by(site, position, depth_cm, Betterdate) %>%
+    dplyr::summarize(avg_values_summarised = mean(avg_values),
+                     std_values_summarised = sd(avg_values)/sqrt(n())) %>%
     mutate(depth_cm = as.numeric(depth_cm)) %>% 
     force()
   
@@ -288,15 +294,31 @@ westdry_depths =
   depths_function(westdry_avg)
 
 eastdry_depths = 
-  depths_function(eastdry_avg)
+  depths_function(eastdry_avg) %>% 
+  na.omit()
 
 
 
 #####
 
+all_combine_depthbins = 
+  westhydric_depths %>% 
+  bind_rows(easthydric_depths, westmesic_depths, eastmesic_depths, westdry_depths, eastdry_depths) %>% 
+  mutate(depth_bins = case_when(depth_cm <= 100 ~ cut_width(depth_cm, width = 1, center = 1))) %>% 
+  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "]","")) %>% 
+  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "[","")) %>% 
+  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "(","")) %>% 
+  # now separate this into two different columns
+  separate(depth_bins, sep = ",", into = c("depth_start_cm", "depth_stop_cm")) %>% 
+  mutate(depth_start_cm = as.integer(depth_start_cm),
+         depth_stop_cm = as.integer(depth_stop_cm)) %>% 
+  mutate(depth2 = depth_stop_cm - depth_start_cm)
+
+
 all_combine = 
   westhydric_depths %>% 
-  bind_rows(easthydric_depths, westmesic_depths, eastmesic_depths, westdry_depths, eastdry_depths)
+  bind_rows(easthydric_depths, westmesic_depths, eastmesic_depths, westdry_depths, eastdry_depths)  
+  
 
 # mesic_combine = 
 #   westmesic_dlname %>% 
@@ -314,3 +336,4 @@ all_combine =
 
 write.csv(all_combine, "processed/all_combine.csv")
 
+write.csv(all_combine_depthbins, "processed/all_combine_depthbins.csv")
