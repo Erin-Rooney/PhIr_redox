@@ -11,6 +11,11 @@
 &bull;Rhizon (redox chemistry, some issues)<br>
 </p>
 
+
+*All code runs without changing working directories. Do not change or set working directory, run all code by downloading the repository and opening the R Project file. Do not open individual code files outside of the R Project file. Please contact me if you find any issues or errors.*
+
+#### Funding by NSF
+
 ##### **CSV files too large for github are backed up on Google Drive**
 
 <a href = https://docs.google.com/document/d/1TGydf4wkVw9ehM6r4gIoMrOeq3qIItO-u2s1bpt4-cE>Work Log</a> 
