@@ -19,31 +19,6 @@ eastdry_dlraw = read.csv("raw/CR300_15min_DL3_EastDry_02012022.csv")
 
 #remove ptemp column, add site, position, and row numbers "X"
 
-#get rid of duplicates
-
-# calculate n to see which timestamps were duplicates 
-
-
-easthydric_dlname = 
-  easthydric_dlraw %>%
-  group_by(TIMESTAMP) %>% 
-  dplyr::mutate(n = n()) %>% 
-  filter(n == 2) %>% 
-  dplyr::summarise(sd = sd(soilmoisture5cm_Avg)/sqrt(n))
-
-westmesic_dlname = 
-  westmesic_dlraw %>% 
-  group_by(TIMESTAMP) %>% 
-  dplyr::mutate(n = n()) %>% 
-  filter(n == 2) %>% 
-  dplyr::summarise(sd = sd(soilmoisture5cm_Avg)/sqrt(n)) 
-
-westdry_dlname = 
-  westdry_dlraw %>% 
-  group_by(TIMESTAMP) %>% 
-  dplyr::mutate(n = n()) %>% 
-  filter(n == 2) %>% 
-  dplyr::summarise(sd = sd(soilmoisture5cm_Avg)/sqrt(n))
 
 #################
 

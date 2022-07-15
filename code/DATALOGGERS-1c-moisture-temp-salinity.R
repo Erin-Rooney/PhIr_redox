@@ -129,7 +129,26 @@ eastdry_moisture =
 moisture_combine = 
   westhydric_moisture %>% 
   bind_rows(easthydric_moisture, westmesic_moisture, eastmesic_moisture, westdry_moisture, eastdry_moisture) %>% 
-  na.omit()
+  na.omit() %>% 
+  group_by(site, position, TIMESTAMP, depth) %>% 
+  dplyr::mutate(n = n()) %>% 
+  ungroup()
+
+#####what is happening??? N = 2 and 6? For data where there aren't even duplicates?! REPS??
+
+#get rid of duplicates
+
+#moisture_combine_dups = 
+  
+
+
+#calculate n to see which timestamps were duplicates 
+
+
+
+
+
+
 
 #write csv
 
