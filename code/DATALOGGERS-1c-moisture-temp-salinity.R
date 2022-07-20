@@ -203,6 +203,8 @@ moisture_combine_dupes_nothydric_test =
                    sdtemp = sd(temp)/sqrt(n()),
                    sdmoist = sd(moisture)/sqrt(n())) 
 
+write.csv(moisture_combine_dupes_nothydric_pretest, "processed/westmesic_westdry_dupes.csv")
+
 #okay. Here we go. I am going through and picking out the specific timestamps (before and after dupe)
 #then I am picking the dupe that is most similar and removing the other
 
@@ -210,7 +212,87 @@ moisture_combine_dupes_nothydric_test =
 dupes_westdry_5cm_628 = 
   moisture_combine %>%
   mutate(dupe = case_when(grepl("6/28/2021", TIMESTAMP)~ "keep")) %>% 
-  filter(site == 'west' & position == "dry" & depth == 5)
+  filter(site == 'west' & position == "dry" & depth == 5) %>% 
+  filter(dupe == "keep") %>% 
+  dplyr::select(-dupe)
+
+
+write.csv(dupes_westdry_5cm_628, "processed/dupes_westdry_5cm_628.csv")
+
+
+dupes_westdry_15cm_628 = 
+  moisture_combine %>%
+  mutate(dupe = case_when(grepl("6/28/2021", TIMESTAMP)~ "keep")) %>% 
+  filter(site == 'west' & position == "dry" & depth == 15) %>% 
+  filter(dupe == "keep") %>% 
+  dplyr::select(-dupe)
+
+
+write.csv(dupes_westdry_15cm_628, "processed/dupes_westdry_15cm_628.csv")
+
+
+dupes_westdry_25cm_628 = 
+  moisture_combine %>%
+  mutate(dupe = case_when(grepl("6/28/2021", TIMESTAMP)~ "keep")) %>% 
+  filter(site == 'west' & position == "dry" & depth == 25) %>% 
+  filter(dupe == "keep") %>% 
+  dplyr::select(-dupe)
+
+
+write.csv(dupes_westdry_25cm_628, "processed/dupes_westdry_25cm_628.csv")
+
+
+###
+  
+dupes_westmesic_5cm_628 = 
+  moisture_combine %>%
+  mutate(dupe = case_when(grepl("6/28/2021", TIMESTAMP)~ "keep")) %>% 
+  filter(site == 'west' & position == "mesic" & depth == 5) %>% 
+  filter(dupe == "keep") %>% 
+  dplyr::select(-dupe)
+
+
+write.csv(dupes_westmesic_5cm_628, "processed/dupes_westmesic_5cm_628.csv")
+
+
+dupes_westmesic_15cm_628 = 
+  moisture_combine %>%
+  mutate(dupe = case_when(grepl("6/28/2021", TIMESTAMP)~ "keep")) %>% 
+  filter(site == 'west' & position == "mesic" & depth == 15) %>% 
+  filter(dupe == "keep") %>% 
+  dplyr::select(-dupe)
+
+
+write.csv(dupes_westmesic_15cm_628, "processed/dupes_westmesic_15cm_628.csv")
+
+
+dupes_westmesic_25cm_628 = 
+  moisture_combine %>%
+  mutate(dupe = case_when(grepl("6/28/2021", TIMESTAMP)~ "keep")) %>% 
+  filter(site == 'west' & position == "mesic" & depth == 25) %>% 
+  filter(dupe == "keep") %>% 
+  dplyr::select(-dupe)
+
+
+write.csv(dupes_westmesic_25cm_628, "processed/dupes_westmesic_25cm_628.csv")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 dupes_westdry_westmesic_628 = 
   moisture_combine %>%
