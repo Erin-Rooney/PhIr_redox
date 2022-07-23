@@ -8,7 +8,7 @@
 <p>
 &bull;DATALOGGER (redox, temperature, moisture)<br>
 &bull;Sippers (pore chemistry)<br>
-&bull;Rhizon (redox chemistry, some issues)<br>
+&bull;Rhizon (redox chemistry)<br>
 </p>
 
 
