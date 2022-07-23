@@ -208,6 +208,8 @@ write.csv(moisture_combine_dupes_nothydric_pretest, "processed/westmesic_westdry
 #okay. Here we go. I am going through and picking out the specific timestamps (before and after dupe)
 #then I am picking the dupe that is most similar and removing the other
 
+##didn't work out. Instead I isolated the dupes and the pre and post non-dupes so that we could get a better look
+#below is that process
 
 dupes_westdry_5cm_628 = 
   moisture_combine %>%

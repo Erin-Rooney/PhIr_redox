@@ -1,6 +1,9 @@
 # Packages
 # E C Rooney
 
+# library(devtools)
+# devtools::install_github("kevinsblake/NatParksPalettes")
+
 # packages
 library(agricolae)
 library(tidyverse)
@@ -14,8 +17,7 @@ library(soilpalettes)
 library(PNWColors)
 library(patchwork)
 library(cowplot)
-
-
+library(NatParksPalettes)
 
 # functions 
 theme_er1 <- function() {  # this for all the elements common across plots

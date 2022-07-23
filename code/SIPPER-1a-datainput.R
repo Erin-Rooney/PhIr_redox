@@ -47,15 +47,35 @@ rhizon_meta_combine =
   rhizon_raw %>% 
   left_join(metadata_rhizon_withdate) %>% 
   pivot_longer(-c(ID, Sample, date, Area, Site, Plot, Betterdate), names_to = 'ICP', values_to = 'concentration') %>% 
-  na.omit() 
+  na.omit() %>% 
+  dplyr::mutate(month = case_when(grepl("Jun", Sample)~"june",
+                                  grepl("Jul", Sample)~"july",
+                                  grepl("Aug", Sample)~"august"))
+
+############
+
+#not working
+#issue with word month for betterdate
+
+# sipper_raw_withdate = 
+#   sipper_raw %>%
+#   mutate(Betterdate = as.Date(Collection_Date), format = ("%d-%m-%Y"))
+
+#capitalize Y for four number year, lowercase y for two number year.
+
+sipper_data = 
+  sipper_raw %>% 
+  pivot_longer(-c(Sample_ID, Plot_ID, Collection_Date, Depth_cm, Filter_Type), names_to = 'elements', values_to = 'concentration') %>% 
+  na.omit() %>% 
+  dplyr::mutate(month = case_when(grepl("Jun", Collection_Date)~"june",
+                                  grepl("Jul", Collection_Date)~"july",
+                                  grepl("Aug", Collection_Date)~"august"))
+
+                                  
 
 ###write file
 
 write.csv(rhizon_meta_combine, "processed/rhizon_2021.csv")
-write.csv(sipper_raw, "processed/sipper_2021.csv")
+write.csv(sipper_data, "processed/sipper_2021.csv")
 
-#there is weird double data
-#all doubles look identical except for the blank
-#grouping, will check with Beth/Sumant later
-#delete and revise once checking is complete
 
