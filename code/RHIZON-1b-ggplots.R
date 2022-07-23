@@ -18,8 +18,8 @@ sipper_data = read.csv("processed/sipper_2021.csv")
 rhizon_meta_combine_notransect =
   rhizon_meta_combine %>% 
   filter(Site != 'Transect') %>% 
-  mutate(month = factor(month, levels = c("june", "july", "august"))) %>% 
-  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(month = factor(month, levels = c("june", "july", "august")),
+         Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   mutate(ICP = recode(ICP, "Al_ug/mL" = "aluminum",
                       "Ca_ug/mL" = "calcium",
                       "Fe _ug/mL" = "iron",
@@ -28,6 +28,8 @@ rhizon_meta_combine_notransect =
                       "Mn_ug/mL" = "manganese",
                       "Na_ug/mL" = "sodium",
                       "P_ug/mL" = "phosphorus"))
+
+write.csv(rhizon_meta_combine_notransect, "processed/rhizon_long_notransect.csv")
 
 
 ##metadata needed for sipper data
@@ -44,7 +46,6 @@ sipper_data_forplots =
                       "Mn_mg/L" = "manganese",
                       "Na_mg/L" = "sodium",
                       "P_mg/L" = "phosphorus")))
-
 
 
 East_rhizon_notransect_2021 = 
