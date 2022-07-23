@@ -18,8 +18,8 @@ sipper_data = read.csv("processed/sipper_2021.csv")
 rhizon_meta_combine_notransect =
   rhizon_meta_combine %>% 
   filter(Site != 'Transect') %>% 
-  mutate(month = factor(month, levels = c("june", "july", "august")),
-         Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(month = factor(month, levels = c("june", "july", "august"))) %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   mutate(ICP = recode(ICP, "Al_ug/mL" = "aluminum",
                       "Ca_ug/mL" = "calcium",
                       "Fe _ug/mL" = "iron",
