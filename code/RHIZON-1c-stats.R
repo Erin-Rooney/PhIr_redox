@@ -10,7 +10,7 @@ library("Hmisc")
 #load data
 
 rhizon_means = read.csv("processed/rhizon_forelements.csv")
-rhizon_meta_combine = read.csv("processed/rhizon_2021.csv")
+rhizon_all = read.csv("processed/rhizon_long_notransect.csv")
 
 
 #prepare for stats
