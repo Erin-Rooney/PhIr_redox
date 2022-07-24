@@ -18,12 +18,14 @@ sipper_data = read.csv("processed/sipper_2021.csv")
 rhizon_meta_combine_notransect =
   rhizon_meta_combine %>% 
   filter(Site != 'Transect') %>% 
+  mutate(ICP = recode(ICP, "Fe _ug/mL" = "Fe_ug/mL",
+                      "K _ug/mL" = "K_ug/mL")) %>% 
   mutate(month = factor(month, levels = c("june", "july", "august")),
          Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   mutate(ICP = recode(ICP, "Al_ug/mL" = "aluminum",
                       "Ca_ug/mL" = "calcium",
-                      "Fe _ug/mL" = "iron",
-                      "K _ug/mL" = "potassium",
+                      "Fe_ug/mL" = "iron",
+                      "K_ug/mL" = "potassium",
                       "Mg_ug/mL" = "magnesium",
                       "Mn_ug/mL" = "manganese",
                       "Na_ug/mL" = "sodium",
@@ -84,7 +86,7 @@ west_rhizon_month =
   #geom_point(size = 2.5, alpha = 0.8)+
   geom_boxplot(alpha = 0.3)+
   #geom_line(orientation = "x", group = 'Plot')+
-  labs(x = "Site",
+  labs(x = "",
        y = 'concentration ug/mL')+
   scale_fill_manual(values = natparks.pals(name = "SmokyMtns", 3))+
   #scale_color_manual(values = natparks.pals(name = "SmokyMtns", 3))+
@@ -118,13 +120,16 @@ ggsave("output/west_2021_rhizonsmonth.tiff", plot = west_rhizon_month, height = 
 rhizon_meta_combine_notransect_forelements =
   rhizon_meta_combine_notransect %>% 
   mutate(concentration = as.numeric(concentration)) %>% 
-  group_by(Area, Site, date, ICP) %>% 
+  group_by(Area, Site, month, date, ICP) %>% 
   dplyr::summarise(mean = mean(concentration),
                    n = n(), 
                    sd = sd(concentration)/sqrt(n)) %>% 
   na.omit() %>% 
   mutate(combo = paste(Area, "-", Site)) %>% 
-  mutate(Area = as.factor(Area))
+  mutate(Area = as.factor(Area)) %>% 
+  mutate(month = factor(month, levels = c("june", "july", "august")),
+         Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  na.omit()
          
 
 phosphorus_fig = 
@@ -135,8 +140,8 @@ phosphorus_fig =
   geom_col(position = 'dodge', width = 0.7)+
   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
                 position=position_dodge(.9), color = "black")+
-  scale_color_manual(values = natparks.pals(name = "SmokyMtns", 3.5))+
-  scale_fill_manual(values = natparks.pals(name = "SmokyMtns", 3.5))+
+  scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
   facet_grid(Area ~ .)
@@ -149,8 +154,8 @@ iron_fig =
   geom_col(position = 'dodge', width = 0.7)+
   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
                 position=position_dodge(.9), color = "black")+
-  scale_color_manual(values = natparks.pals(name = "SmokyMtns", 3.5))+
-  scale_fill_manual(values = natparks.pals(name = "SmokyMtns", 3.5))+
+  scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
   facet_grid(Area ~ .)
@@ -163,14 +168,47 @@ calcium_fig =
   geom_col(position = 'dodge', width = 0.7)+
   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
                 position=position_dodge(.9), color = "black")+
-  scale_color_manual(values = natparks.pals(name = "SmokyMtns", 3.5))+
-  scale_fill_manual(values = natparks.pals(name = "SmokyMtns", 3.5))+
+  scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
   facet_grid(Area ~ .)
 
+magnesium_fig = 
+  rhizon_meta_combine_notransect_forelements %>%
+  filter(ICP == "magnesium") %>% 
+  ggplot(aes(x = date, y = mean, color = Site, fill = Site)) +
+  #geom_point(size = 3, alpha = 0.7)+
+  geom_col(position = 'dodge', width = 0.7)+
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                position=position_dodge(.9), color = "black")+
+  scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
+  facet_grid(Area ~ .)
+
+potassium_fig = 
+  rhizon_meta_combine_notransect_forelements %>%
+  filter(ICP == "potassium") %>% 
+  ggplot(aes(x = date, y = mean, color = Site, fill = Site)) +
+  #geom_point(size = 3, alpha = 0.7)+
+  geom_col(position = 'dodge', width = 0.7)+
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                position=position_dodge(.9), color = "black")+
+  scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
+  facet_grid(Area ~ .)
+
+
 ggsave("output/2021_rhizon_calcium.tiff", plot = calcium_fig, height = 6, width = 5)
+ggsave("output/2021_rhizon_potassium.tiff", plot = potassium_fig, height = 6, width = 5)
 ggsave("output/2021_rhizon_iron.tiff", plot = iron_fig, height = 6, width = 5)
+ggsave("output/2021_rhizon_phosphorus.tiff", plot = phosphorus_fig, height = 6, width = 5)
+ggsave("output/2021_rhizon_magnesium.tiff", plot = magnesium_fig, height = 6, width = 5)
+
 
 
 write.csv(rhizon_meta_combine_notransect_forelements, "processed/rhizon_forelements.csv")
