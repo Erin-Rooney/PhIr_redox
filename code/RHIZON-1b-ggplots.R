@@ -3,6 +3,7 @@
 
 #load all packages
 
+
 source("code/0-packages.R")
 
 ###write file
@@ -34,17 +35,17 @@ rhizon_meta_combine_notransect_prefix =
                                 "<0.1" = "0.05")) %>% 
   mutate(concentration = as.numeric(concentration)) 
 
-# aluminumfix_rhizon =
-#   rhizon_meta_combine_notransect_prefix %>% 
-#   filter(ICP == "aluminum") %>% 
-#   filter(concentration < 15)
+aluminumfix_rhizon =
+  rhizon_meta_combine_notransect_prefix %>%
+  filter(ICP == "aluminum") %>%
+  filter(concentration < 5)
 
 ###aluminum outliers are removed. MAY WANT TO ADD BACK AND DEAL WITH IN A BETTER WAY
 
 rhizon_meta_combine_notransect =
-  rhizon_meta_combine_notransect_prefix 
-  # %>% 
-  # bind_rows(aluminumfix_rhizon)
+  rhizon_meta_combine_notransect_prefix %>% 
+  filter(ICP != "aluminum") %>%
+  bind_rows(aluminumfix_rhizon)
   
 
 write.csv(rhizon_meta_combine_notransect, "processed/rhizon_long_notransect.csv")
