@@ -54,7 +54,7 @@ westmesic_avg =
   avg_separate(westmesic_dlname) %>% 
   left_join(westmesic_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
-               names_to = "redox_avg", values_to = "avg_values") 
+               names_to = "redox_avg", values_to = "avg_values")
 
 westdry_avg = 
   avg_separate(westdry_dlname) %>% 
@@ -142,8 +142,10 @@ depths_function <- function(dat){
     mutate(sensor = as.numeric(sensor)) %>%
     left_join(sensor_depths) %>% 
     group_by(site, position, depth_cm, Betterdate) %>%
-    dplyr::summarize(avg_values_summarised = mean(avg_values),
-                     std_values_summarised = sd(avg_values)/sqrt(n())) %>%
+    #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
+    dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+    dplyr::summarize(avg_values_summarised = mean(avg_values_fixed),
+                     std_values_summarised = sd(avg_values_fixed)/sqrt(n())) %>%
     mutate(depth_cm = as.numeric(depth_cm)) %>% 
     force()
   
@@ -184,7 +186,8 @@ eastdry_depths =
 all_combine_depthbins = 
   westhydric_depths %>% 
   bind_rows(easthydric_depths, westmesic_depths, eastmesic_depths, westdry_depths, eastdry_depths) %>% 
-  mutate(depth_bins = case_when(depth_cm <= 100 ~ cut_width(depth_cm, width = 1, center = 1))) %>% 
+  #mutate(depth_bins = case_when(depth_cm <= 100 ~ cut_width(depth_cm, width = 1, center = 1))) %>% 
+  mutate(depth_bins = cut_width(depth_cm, width = 5, center=2.5)) %>% 
   mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "]","")) %>% 
   mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "[","")) %>% 
   mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "(","")) %>% 
@@ -204,3 +207,4 @@ all_combine =
 write.csv(all_combine, "processed/all_combine.csv")
 
 write.csv(all_combine_depthbins, "processed/all_combine_depthbins.csv")
+
