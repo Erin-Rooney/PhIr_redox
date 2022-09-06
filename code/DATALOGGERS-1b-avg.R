@@ -152,8 +152,64 @@ depths_function <- function(dat){
   
 }
 
+#without summarising
 
+depths_function_nosummary <- function(dat){
+  dat %>% 
+    mutate(redox_avg = recode(redox_avg, 'redox_5.2.3_fromtip_Avg' = "redox_5_2_3_fromtip_Avg")) %>% 
+    mutate(redox_avg = str_remove(redox_avg, "Redox_")) %>% 
+    mutate(redox_avg = str_remove(redox_avg, "redox_")) %>% 
+    mutate(redox_avg = str_remove(redox_avg, "_fromtip_Avg")) %>% 
+    separate(redox_avg, sep = "_", into = c("datalogger", "probe_sensor")) %>%
+    filter(datalogger != "NUM") %>% 
+    dplyr::select(-redox_NUM_Avg) %>% 
+    mutate(probe_sensor = recode(probe_sensor, "1.8" = "1_8", "1.7" = "1_7", "1.6" = "1_6", "1.5" = "1_5", "1.4" = "1_4", "1.3" = "1_3", "1.2" = "1_2", "1.1" = "1_1",
+                                 "2.8" = "2_8", "2.7" = "2_7", "2.6" = "2_6", "2.5" = "2_5", "2.4" = "2_4", "2.3" = "2_3", "2.2" = "2_2", "2.1" = "2_1",
+                                 "3.8" = "3_8", "3.7" = "3_7", "3.6" = "3_6", "3.5" = "3_5", "3.4" = "3_4", "3.3" = "3_3", "3.2" = "3_2", "3.1" = "3_1")) %>% 
+    separate(probe_sensor, sep = "_", into = c("probe", "sensor")) %>% 
+    mutate(sensor = as.numeric(sensor)) %>%
+    left_join(sensor_depths) %>% 
+    group_by(site, position, depth_cm, Betterdate) %>%
+    #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
+    dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+    # dplyr::summarize(avg_values_summarised = mean(avg_values_fixed),
+    #                  std_values_summarised = sd(avg_values_fixed)/sqrt(n())) %>%
+    mutate(depth_cm = as.numeric(depth_cm)) %>% 
+    force()
+  
+  
+}
 #run on all six dataframes to get site, position, depth, date, avg, std
+
+
+##no summarise
+
+westhydric_depths_nosummary = 
+  depths_function_nosummary(westhydric_avg)%>% 
+  na.omit()
+
+easthydric_depths_nosummary = 
+  depths_function_nosummary(easthydric_avg) %>% 
+  na.omit()
+
+westmesic_depths_nosummary = 
+  depths_function_nosummary(westmesic_avg)%>% 
+  na.omit()
+
+eastmesic_depths_nosummary = 
+  depths_function_nosummary(eastmesic_avg)%>% 
+  na.omit()
+
+westdry_depths_nosummary = 
+  depths_function_nosummary(westdry_avg)%>% 
+  na.omit()
+
+eastdry_depths_nosummary = 
+  depths_function_nosummary(eastdry_avg) %>% 
+  na.omit()
+
+
+##summarise
 
 westhydric_depths = 
   depths_function(westhydric_avg)%>% 
@@ -178,7 +234,6 @@ westdry_depths =
 eastdry_depths = 
   depths_function(eastdry_avg) %>% 
   na.omit()
-
 
 
 #####
@@ -207,4 +262,34 @@ all_combine =
 write.csv(all_combine, "processed/all_combine.csv")
 
 write.csv(all_combine_depthbins, "processed/all_combine_depthbins.csv")
+
+
+#######no summarise
+
+all_combine_depthbins_nosummmary = 
+  westhydric_depths_nosummary %>% 
+  bind_rows(easthydric_depths_nosummary, westmesic_depths_nosummary, eastmesic_depths_nosummary, 
+            westdry_depths_nosummary, eastdry_depths_nosummary) %>% 
+  #mutate(depth_bins = case_when(depth_cm <= 100 ~ cut_width(depth_cm, width = 1, center = 1))) %>% 
+  mutate(depth_bins = cut_width(depth_cm, width = 5, center=2.5)) %>% 
+  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "]","")) %>% 
+  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "[","")) %>% 
+  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "(","")) %>% 
+  # now separate this into two different columns
+  separate(depth_bins, sep = ",", into = c("depth_start_cm", "depth_stop_cm")) %>% 
+  mutate(depth_start_cm = as.integer(depth_start_cm),
+         depth_stop_cm = as.integer(depth_stop_cm)) %>% 
+  mutate(depth2 = depth_stop_cm - depth_start_cm)
+
+
+all_combine_nosummary = 
+  westhydric_depths_nosummary %>% 
+  bind_rows(easthydric_depths_nosummary, westmesic_depths_nosummary, 
+            eastmesic_depths_nosummary, westdry_depths_nosummary, eastdry_depths_nosummary)  
+
+#write csv
+
+write.csv(all_combine_nosummary, "processed/all_combine_nosummary.csv")
+
+write.csv(all_combine_depthbins_nosummmary, "processed/all_combine_depthbins_nosummary.csv")
 
