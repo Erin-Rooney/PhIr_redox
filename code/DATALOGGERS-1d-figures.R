@@ -39,6 +39,113 @@ combo_redox_withdepths_bins =
          depth_stop_cm = as.integer(depth_stop_cm)) %>% 
   mutate(depth2 = depth_stop_cm - depth_start_cm)
 
+final_temp_sal_moist_dailynumbers =
+  final_temp_sal_moist %>% 
+  separate(Betterdate, sep = " ", into = c("date", "time")) %>% 
+  separate(date, sep = "-", into = c("year", "month", "day")) %>%
+  dplyr::mutate(month_name = case_when(grepl("06", month)~"june",
+                                  grepl("07", month)~"july",
+                                  grepl("08", month)~"august",
+                                  grepl("09", month)~"september")) %>% 
+  mutate(month_name = factor(month_name, levels = c("june", "july", "august", "september"))) %>% 
+  dplyr::mutate(site_pos = (paste0(site,"-", position))) %>% 
+  mutate(site_pos = factor(site_pos, levels = c("east-dry", "west-dry", "east-mesic", "west-mesic",
+                                                "east-hydric", "west-hydric"))) %>% 
+  group_by(site_pos, month_name, day, depth) %>% 
+  dplyr::summarise(temp_avg = round(mean(temp),2),
+                   temp_se = round(sd(temp)/sqrt(n()),2),
+                   moisture_avg = round(mean(moisture),2),
+                   moisture_se = round(sd(moisture)/sqrt(n()),2),
+                   salinity_avg = round(mean(salinity),2),
+                   salinity_se = round(sd(salinity)/sqrt(n()),2))
+
+##############
+
+twentyfivecm_peaktemps =
+  final_temp_sal_moist_dailynumbers %>% 
+  filter(depth == 25)
+
+twentyfivecm_peaktemps_westmesic =
+  final_temp_sal_moist_dailynumbers %>% 
+  filter(depth == 25 & site_pos == "west-mesic")
+
+fifteencm_peaktemps_easthydric =
+  final_temp_sal_moist_dailynumbers %>% 
+  filter(depth == 15 & site_pos == "east-hydric")
+
+fifteencm_peaktemps_westhydric =
+  final_temp_sal_moist_dailynumbers %>% 
+  filter(depth == 15 & site_pos == "west-hydric")
+
+fifteencm_peaktemps_eastmesic =
+  final_temp_sal_moist_dailynumbers %>% 
+  filter(depth == 15 & site_pos == "east-mesic")
+
+fifteencm_peaktemps_westmesic =
+  final_temp_sal_moist_dailynumbers %>% 
+  filter(depth == 15 & site_pos == "west-mesic")
+
+fifteencm_peaktemps_eastdry =
+  final_temp_sal_moist_dailynumbers %>% 
+  filter(depth == 15 & site_pos == "east-dry")
+
+fifteencm_peaktemps_westdry =
+  final_temp_sal_moist_dailynumbers %>% 
+  filter(depth == 15 & site_pos == "west-dry")
+  
+###############
+
+#patterns associated with temp peaks
+
+twentyfivecm_dailypeaktemps =
+  final_temp_sal_moist_dailynumbers %>% 
+  dplyr::select(-temp_se, -moisture_se, -salinity_se) %>% 
+  pivot_longer(-c('site_pos', 'month_name', 'day', 'depth'), names_to = "type", values_to = "value")  
+  
+
+temp_point =
+  twentyfivecm_dailypeaktemps %>% 
+  filter(type == "temp_avg" & depth > 20) %>% 
+  ggplot(aes(x = day, y = value))+
+  geom_point(aes(color = site_pos), alpha = 0.5)+
+  geom_line(aes(group = site_pos, color = site_pos, orientation = "x"))+
+  scale_color_manual(values = natparks.pals(name = "KingsCanyon", 6))+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "temperature, C")+
+  facet_wrap(month_name~.)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+  
+moisture_point =
+  twentyfivecm_dailypeaktemps %>% 
+  filter(type == "moisture_avg" & depth > 20) %>% 
+  ggplot(aes(x = day, y = value))+
+  geom_point(aes(color = site_pos), alpha = 0.5)+
+  geom_line(aes(group = site_pos, color = site_pos, orientation = "x"))+
+  scale_color_manual(values = natparks.pals(name = "KingsCanyon", 6))+
+  labs(y = "moisture %")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  facet_wrap(month_name~.)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+
+salinity_point =
+  twentyfivecm_dailypeaktemps %>% 
+  filter(type == "salinity_avg" & depth > 20) %>% 
+  ggplot(aes(x = day, y = value))+
+  geom_point(aes(color = site_pos), alpha = 0.5)+
+  geom_line(aes(group = site_pos, color = site_pos, orientation = "x"))+
+  scale_color_manual(values = natparks.pals(name = "KingsCanyon", 6))+
+  labs(y = "salinity, uS/cm")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  facet_wrap(month_name~.)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+
+ggsave(plot = temp_point, "output/temp_25.tiff", width = 8.5, height = 5.5)
+ggsave(plot = moisture_point, "output/moisture_25.tiff", width = 8.5, height = 5.5)
+ggsave(plot = salinity_point, "output/salinity_25.tiff", width = 8.5, height = 5.5)
+
 ###############
 
 library(scales)

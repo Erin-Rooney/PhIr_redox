@@ -34,7 +34,7 @@ avg_separate <- function(dat){
     dplyr::select(-X) %>% 
     # dplyr::select(c('X') & 
     dplyr::select(starts_with('redox')) %>% 
-    dplyr::select(ends_with('Avg')) %>% 
+    dplyr::select(ends_with('Avg')) %>%
     #if needed, get rid of NA rows then columns. Not needed.
     # filter(redox_NUM_Avg < 5989) %>%
     # select_if(~ !any(is.na(.))) %>% 
@@ -48,37 +48,49 @@ westhydric_avg =
   avg_separate(westhydric_dlname) %>% 
   left_join(westhydric_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
-               names_to = "redox_avg", values_to = "avg_values") 
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  filter(avg_values < 1000) %>% 
+  filter(avg_values > -600)
 
 westmesic_avg = 
   avg_separate(westmesic_dlname) %>% 
   left_join(westmesic_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
-               names_to = "redox_avg", values_to = "avg_values")
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  filter(avg_values < 1000) %>% 
+  filter(avg_values > -600)
 
 westdry_avg = 
   avg_separate(westdry_dlname) %>% 
   left_join(westdry_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
-               names_to = "redox_avg", values_to = "avg_values") 
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  filter(avg_values < 1000) %>% 
+  filter(avg_values > -600)
 
 easthydric_avg = 
   avg_separate(easthydric_dlname) %>% 
   left_join(easthydric_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
-               names_to = "redox_avg", values_to = "avg_values") 
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  filter(avg_values < 1000) %>% 
+  filter(avg_values > -600)
 
 eastmesic_avg = 
   avg_separate(eastmesic_dlname) %>% 
   left_join(eastmesic_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
-               names_to = "redox_avg", values_to = "avg_values") 
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  filter(avg_values < 1000) %>% 
+  filter(avg_values > -600)
 
 eastdry_avg = 
   avg_separate(eastdry_dlname) %>% 
   left_join(eastdry_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
-               names_to = "redox_avg", values_to = "avg_values") 
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  filter(avg_values < 1000) %>% 
+  filter(avg_values > -600)
 
 
 #Std 
@@ -141,9 +153,10 @@ depths_function <- function(dat){
     separate(probe_sensor, sep = "_", into = c("probe", "sensor")) %>% 
     mutate(sensor = as.numeric(sensor)) %>%
     left_join(sensor_depths) %>% 
-    group_by(site, position, depth_cm, Betterdate) %>%
     #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
     dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+    #summarise so that all plots are combined
+    group_by(site, position, depth_cm, Betterdate) %>%
     dplyr::summarize(avg_values_summarised = mean(avg_values_fixed),
                      std_values_summarised = sd(avg_values_fixed)/sqrt(n())) %>%
     mutate(depth_cm = as.numeric(depth_cm)) %>% 
@@ -169,11 +182,8 @@ depths_function_nosummary <- function(dat){
     separate(probe_sensor, sep = "_", into = c("probe", "sensor")) %>% 
     mutate(sensor = as.numeric(sensor)) %>%
     left_join(sensor_depths) %>% 
-    group_by(site, position, depth_cm, Betterdate) %>%
     #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
     dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
-    # dplyr::summarize(avg_values_summarised = mean(avg_values_fixed),
-    #                  std_values_summarised = sd(avg_values_fixed)/sqrt(n())) %>%
     mutate(depth_cm = as.numeric(depth_cm)) %>% 
     force()
   

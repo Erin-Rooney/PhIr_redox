@@ -79,24 +79,24 @@ write.csv(eastdry_dlname, "processed/eastdry_dlname.csv")
 
 #fix timezone issue
 
-library(lubridate)
-
-westmesic_UT =
-  westmesic_dlname %>% 
-  filter(RECORD < 205) 
-
-westmesic_AK =
-  westmesic_dlname %>% 
-  filter(RECORD > 204) 
-
-
-westdry_UT =
-  westdry_dlname %>% 
-  filter(RECORD < 186) 
-
-westdry_AK =
-  westdry_dlname %>% 
-  filter(RECORD > 185) 
+# library(lubridate)
+# 
+# westmesic_UT =
+#   westmesic_dlname %>% 
+#   filter(RECORD < 205) 
+# 
+# westmesic_AK =
+#   westmesic_dlname %>% 
+#   filter(RECORD > 204) 
+# 
+# 
+# westdry_UT =
+#   westdry_dlname %>% 
+#   filter(RECORD < 186) 
+# 
+# westdry_AK =
+#   westdry_dlname %>% 
+#   filter(RECORD > 185) 
 
 
 
@@ -135,45 +135,45 @@ eastdry_metadata =
 
 #run for UT timezones
 
-metadata_function <- function(dat){
-  dat %>% 
-    dplyr::select('X', 'TIMESTAMP', 'RECORD', 'site', 'position')%>% 
-    mutate(Betterdate = strptime(TIMESTAMP, format("%m/%d/%Y %H:%M", tz = "US/Denver", usetz = TRUE))) %>% 
-    mutate(redox_NUM_Avg = X) %>% 
-    mutate(redox_NUM_Std = X) %>%  
-    dplyr::select(-X)
-    
-}
-
-metadata_function <- function(dat){
-  dat %>% 
-    dplyr::select('X', 'TIMESTAMP', 'RECORD', 'site', 'position')%>% 
-    mutate(Betterdate = strptime(TIMESTAMP, format("%m/%d/%Y %H:%M"))) %>% 
-    mutate(redox_NUM_Avg = X) %>% 
-    mutate(redox_NUM_Std = X) %>%  
-    dplyr::select(-X)
-  
-}
-
-
-
-#not working
-westmesic_metadata_tocombine$Betterdate <- force_tz(westmesic_metadata_tocombine$Betterdate, "MST")
+# metadata_function <- function(dat){
+#   dat %>% 
+#     dplyr::select('X', 'TIMESTAMP', 'RECORD', 'site', 'position')%>% 
+#     mutate(Betterdate = strptime(TIMESTAMP, format("%m/%d/%Y %H:%M", tz = "US/Denver", usetz = TRUE))) %>% 
+#     mutate(redox_NUM_Avg = X) %>% 
+#     mutate(redox_NUM_Std = X) %>%  
+#     dplyr::select(-X)
+#     
+# }
+# 
+# metadata_function <- function(dat){
+#   dat %>% 
+#     dplyr::select('X', 'TIMESTAMP', 'RECORD', 'site', 'position')%>% 
+#     mutate(Betterdate = strptime(TIMESTAMP, format("%m/%d/%Y %H:%M"))) %>% 
+#     mutate(redox_NUM_Avg = X) %>% 
+#     mutate(redox_NUM_Std = X) %>%  
+#     dplyr::select(-X)
+#   
+# }
 
 
-#not working
-westmesic_metadata_tocombine$Betterdate <- force_tz(westmesic_metadata_tocombine$Betterdate, "AKST")
 
-#not working
-westmesic_metadata_tocombine = 
-  metadata_function(westmesic_UT) %>% 
-  lubridate::force_tz(Betterdate, tzone = "America/Anchorage")
-
-
-#not working
-westdry_metadata_tocombine = 
-  metadata_function(westdry_UT) %>% 
-  lubridate::force_tz(Betterdate, tzone = "America/Anchorage")
+# #not working
+# westmesic_metadata_tocombine$Betterdate <- force_tz(westmesic_metadata_tocombine$Betterdate, "MST")
+# 
+# 
+# #not working
+# westmesic_metadata_tocombine$Betterdate <- force_tz(westmesic_metadata_tocombine$Betterdate, "AKST")
+# 
+# #not working
+# westmesic_metadata_tocombine = 
+#   metadata_function(westmesic_UT) %>% 
+#   lubridate::force_tz(Betterdate, tzone = "America/Anchorage")
+# 
+# 
+# #not working
+# westdry_metadata_tocombine = 
+#   metadata_function(westdry_UT) %>% 
+#   lubridate::force_tz(Betterdate, tzone = "America/Anchorage")
 
 
 

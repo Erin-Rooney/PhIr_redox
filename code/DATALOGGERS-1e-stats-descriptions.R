@@ -9,11 +9,13 @@ source("code/0-packages.R")
 
 #load data
 
-#combo_redox_withdepths = read.csv("processed/all_combine.csv")
+combo_redox_withdepths = read.csv("processed/all_combine.csv")
 
 redox_nosummary = read.csv('processed/all_combine_depthbins_nosummary.csv')
 
 final_temp_sal_moist = read.csv("processed/final_temp_salinity_avgs.csv")
+
+#add depth bins for figures
 
 final_temp_sal_moist_bins =
   final_temp_sal_moist %>% 
@@ -41,6 +43,7 @@ combo_redox_withdepths_bins =
   mutate(depth_start_cm = as.integer(depth_start_cm),
          depth_stop_cm = as.integer(depth_stop_cm)) %>% 
   mutate(depth2 = depth_stop_cm - depth_start_cm)
+
 
 
 ###### earliest thaw 
@@ -95,14 +98,13 @@ fall_combo =
 
 ######
 
-redox_for_leftjoin =
+redox_for_plots =
   redox_nosummary %>% 
   rename(depth = depth_cm) %>% 
-  dplyr::select(TIMESTAMP, site, position, Betterdate, avg_values_fixed)
+  dplyr::select(TIMESTAMP, site, depth, position, Betterdate, avg_values_fixed)
 
-for_boxplot = 
-  final_temp_sal_moist %>% 
-  left_join(redox_for_leftjoin) %>% 
+for_barplot = 
+  redox_for_plots %>% 
   dplyr::mutate(month = case_when(grepl("2021-06", Betterdate)~"june",
                                   grepl("2021-07", Betterdate)~"july",
                                   grepl("2021-08", Betterdate)~"august",
@@ -110,32 +112,39 @@ for_boxplot =
   mutate(month = factor(month, levels = c("june", "july", "august", "september"))) %>% 
   dplyr::mutate(site_pos = (paste0(site,"-", position))) %>% 
   mutate(site_pos = factor(site_pos, levels = c("east-dry", "west-dry", "east-mesic", "west-mesic",
+   "east-hydric", "west-hydric"))) %>% 
+  group_by(site_pos, depth, month) %>% 
+  dplyr::summarise(redox_avg = round(mean(avg_values_fixed),2),
+                   redox_se = round(sd(avg_values_fixed)/sqrt(n()),2))
   
-                                                                                              "east-hydric", "west-hydric"))) 
   
-  
-temp_dat =
+temp_moisture_sal_dat =
   final_temp_sal_moist %>% 
   dplyr::mutate(month = case_when(grepl("2021-06", Betterdate)~"june",
                                   grepl("2021-07", Betterdate)~"july",
                                   grepl("2021-08", Betterdate)~"august",
                                   grepl("2021-09", Betterdate)~"september")) %>%
   mutate(month = factor(month, levels = c("june", "july", "august", "september"))) %>% 
-  group_by(site, position, depth, month) %>% 
-  dplyr::summarise(temp_max = round(max(temp),2),
-                   temp_min = round(min(temp),2),
-                   temp_avg = round(mean(temp),2),
-                   temp_se = round(sd(temp),2)) %>% 
+  # group_by(site, position, depth, month) %>% 
+  # dplyr::summarise(temp_max = round(max(temp),2),
+  #                  temp_min = round(min(temp),2),
+  #                  temp_avg = round(mean(temp),2),
+  #                  temp_se = round(sd(temp)/sqrt(n()),2),
+  #                  moisture_avg = round(mean(moisture),2),
+  #                  moisture_se = round(sd(moisture)/sqrt(n()),2),
+  #                  salinity_avg = round(mean(salinity),2),
+  #                  salinity_se = round(sd(salinity)/sqrt(n()),2)) %>% 
   dplyr::mutate(site_pos = (paste0(site,"-", position))) %>% 
   mutate(site_pos = factor(site_pos, levels = c("east-dry", "west-dry", "east-mesic", "west-mesic",
                                                 "east-hydric", "west-hydric"))) 
   
+
 ###
 
 #temp bloxplot
 
 temp_boxplot = 
-  for_boxplot %>% 
+  temp_moisture_sal_dat %>% 
   ggplot(aes(x = site_pos, y = temp, fill = site_pos))+
   geom_boxplot(alpha = 0.7)+
   labs(x = "",
@@ -147,6 +156,41 @@ temp_boxplot =
 
 
 ggsave(plot = temp_boxplot, "output/temp_boxplot.tiff", width = 8, height = 7)
+
+
+#moisture bloxplot
+
+moisture_boxplot = 
+  temp_moisture_sal_dat %>% 
+  ggplot(aes(x = site_pos, y = moisture, fill = site_pos))+
+  geom_boxplot(alpha = 0.7)+
+  labs(x = "",
+       y = 'Moisture, %')+
+  scale_fill_manual(values = natparks.pals(name = "KingsCanyon", 6))+
+  facet_grid(depth~month, scales = "free")+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90), legend.position = 'NONE')
+
+
+ggsave(plot = moisture_boxplot, "output/moisture_boxplot.tiff", width = 8, height = 7)
+
+
+#salinity bloxplot
+
+salinity_boxplot = 
+  temp_moisture_sal_dat %>% 
+  ggplot(aes(x = site_pos, y = salinity, fill = site_pos))+
+  geom_boxplot(alpha = 0.7)+
+  labs(x = "",
+       y = 'salinity, uS/cm')+
+  scale_fill_manual(values = natparks.pals(name = "KingsCanyon", 6))+
+  facet_grid(depth~month, scales = "free")+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90), legend.position = 'NONE')
+
+
+ggsave(plot = salinity_boxplot, "output/salinity_boxplot.tiff", width = 8, height = 7)
+
   
 ###
   
@@ -162,18 +206,23 @@ ggsave(plot = temp_boxplot, "output/temp_boxplot.tiff", width = 8, height = 7)
 
 ##redox
 
-#redox bloxplot
+#redox barplot
 
-redox_boxplot = 
-  for_boxplot %>% 
-  ggplot(aes(x = site_pos, y = avg_values_fixed, fill = site_pos))+
-  geom_boxplot(alpha = 0.7)+
+redox_point = 
+  for_barplot %>% 
+  ggplot()+
+  geom_point(aes(y = depth, x = month, fill = redox_avg, color = redox_avg), alpha = 0.6, size = 3)+
+  # geom_errorbar(aes(x = depth, ymin = (avg_values_fixed - ), ymax = (avg_values_fixed + redox_sd)),
+  #                 position = position_dodge(), stat = "identity", color = "gray50")+
   labs(x = "",
-       y = 'redox potential')+
-  scale_fill_manual(values = natparks.pals(name = "KingsCanyon", 6))+
-  facet_grid(depth~month, scales = "free")+
-  theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90), legend.position = 'NONE')
+       y = 'depth, cm')+
+  scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  scale_color_gradientn(colors = natparks.pals(name = "Banff"))+
+  #coord_flip()+
+  scale_y_reverse()+
+  facet_wrap(site_pos~.)+
+  theme_er2()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90), legend.position = 'bottom')
 
 
 ggsave(plot = redox_boxplot, "output/redox_boxplot.tiff", width = 8, height = 7)
@@ -185,6 +234,7 @@ for_lineplot =
   for_boxplot %>% 
   ungroup() %>% 
   group_by(depth, site_pos, Betterdate, month) %>%
+  mutate(depth = as.factor(depth)) %>% 
   dplyr::summarise(temp_avg = round(mean(temp),2),
                    temp_sd = round(sd(temp)/sqrt(n()),2),
                    moist_avg = round(mean(moisture),2),
@@ -201,17 +251,82 @@ redox_lineplot =
   ggplot(aes(x = as.Date(Betterdate), y = redox_avg, fill = depth, group = depth, color = depth))+
   geom_point(size = 3, shape = 21, alpha = 0.6)+
   #geom_line(size = 0.5, linetype = "solid", orientation = "x", group = 'site_pos')+
-  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
   
   labs(x = "",
        y = 'redox potential')+
-  # scale_fill_gradientn(colors = natparks.pals(name = "Arches", 3))+
-  # scale_color_manual(values = natparks.pals(name = "Arches", 3))+
-  facet_grid(site_pos~.)+
+  scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3)))+
+  scale_color_manual(values = rev(natparks.pals(name = "Banff", 3)))+
+  facet_grid(site_pos~month)+
   theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90), legend.position = 'Bottom')
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90), legend.position = 'bottom')
 
 
+ggsave(plot = redox_lineplot, "output/redox_lineplotjuly.tiff", width = 6, height = 12)
+ggsave(plot = redox_lineplot, "output/redox_lineplotjuly.png", width = 6, height = 12)
+
   
-  
+
+######
+
+#redox summaries
+
+redox_summary =
+  combo_redox_withdepths  %>% 
+  dplyr::mutate(month = case_when(grepl("2021-06", Betterdate)~"june",
+                                  grepl("2021-07", Betterdate)~"july",
+                                  grepl("2021-08", Betterdate)~"august",
+                                  grepl("2021-09", Betterdate)~"september")) %>% 
+  mutate(month = factor(month, levels = c("june", "july", "august", "september"))) %>% 
+  dplyr::mutate(site_pos = (paste0(site,"-", position))) %>% 
+  mutate(site_pos = factor(site_pos, levels = c("east-dry", "west-dry", "east-mesic", "west-mesic",
+                                                "east-hydric", "west-hydric"))) %>% 
+  group_by(site_pos, month, depth_cm) %>%
+  dplyr::summarise(redox_avg = round(mean(avg_values_summarised),2),
+                   redox_sd = round(sd(avg_values_summarised)/sqrt(n()),2))
+
+
+redox_summary %>%
+  filter(month == "july") %>% 
+  ggplot()+
+  geom_bar(aes(y = redox_avg, x = depth_cm, fill = site_pos, color = site_pos),position=position_dodge(.9),
+           stat = "identity", width = 2, alpha = 0.6)+
+  geom_errorbar(aes(x = depth_cm, ymin = redox_avg - redox_sd, ymax = redox_avg + redox_sd),
+  position = position_dodge(), stat = "identity", color = "gray50")+
+  coord_flip()+
+  scale_fill_manual(values = natparks.pals(name = "KingsCanyon", 6))+
+  scale_color_manual(values = natparks.pals(name = "KingsCanyon", 6))+
+  facet_grid(site_pos~.)+
+  scale_x_reverse()+
+  theme_er1()
+
+
+#not working, something weird about summary
+
+# for_barplot =
+#   for_boxplot %>%
+#   ungroup() %>%
+#   group_by(site_pos, month, depth) %>%
+#   dplyr::summarise(temp_avg = round(mean(temp),2),
+#                    temp_sd = round(sd(temp)/sqrt(n()),2),
+#                    moist_avg = round(mean(moisture),2),
+#                    moist_sd = round(sd(moisture)/sqrt(n()),2),
+#                    sal_avg = round(max(salinity),2),
+#                    sal_sd = round(sd(salinity)/sqrt(n()),2),
+#                    redox_avg = round(mean(avg_values_fixed),2),
+#                    redox_sd = round(sd(avg_values_fixed)/sqrt(n()),2))
+# 
+# for_barplot %>%
+#   mutate(depth = as.numeric(depth)) %>% 
+#   filter(month == "july") %>% 
+#   ggplot()+
+#   geom_bar(aes(y = redox_avg, x = depth, fill = site_pos, color = site_pos), position = "dodge",
+#            stat = "identity", width = 2, alpha = 0.6)+
+#   geom_errorbar(aes(x = depth, ymin = (redox_avg - redox_sd), ymax = (redox_avg + redox_sd)),
+#                 position = position_dodge(), stat = "identity", color = "gray50")+
+#   coord_flip()+
+#   facet_wrap(site_pos~month)+
+#   scale_x_reverse()+
+#   theme_er1()
+
   
