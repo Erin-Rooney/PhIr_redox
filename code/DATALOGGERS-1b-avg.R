@@ -50,7 +50,8 @@ westhydric_avg =
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
                names_to = "redox_avg", values_to = "avg_values") %>% 
   filter(avg_values < 1000) %>% 
-  filter(avg_values > -600)
+  filter(avg_values > -600) 
+
 
 westmesic_avg = 
   avg_separate(westmesic_dlname) %>% 
@@ -136,10 +137,10 @@ sensor_depths =
   na.omit() 
 
 
+#separate poorly labeled columns into meaningful metadata
 
-
-depths_function <- function(dat){
-  dat %>% 
+ depths_function <- function(dat){
+  dat  %>% 
     mutate(redox_avg = recode(redox_avg, 'redox_5.2.3_fromtip_Avg' = "redox_5_2_3_fromtip_Avg")) %>% 
     mutate(redox_avg = str_remove(redox_avg, "Redox_")) %>% 
     mutate(redox_avg = str_remove(redox_avg, "redox_")) %>% 
@@ -155,16 +156,67 @@ depths_function <- function(dat){
     left_join(sensor_depths) %>% 
     #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
     dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
-    #summarise so that all plots are combined
-    group_by(site, position, depth_cm, Betterdate) %>%
-    dplyr::summarize(avg_values_summarised = mean(avg_values_fixed),
-                     std_values_summarised = sd(avg_values_fixed)/sqrt(n())) %>%
-    mutate(depth_cm = as.numeric(depth_cm)) %>% 
+     
+
     force()
   
   
 }
 
+##depths
+ 
+ westhydric_depths = 
+   depths_function(westhydric_avg)%>% 
+   na.omit()
+ 
+ easthydric_depths = 
+   depths_function(easthydric_avg) %>% 
+   na.omit()
+ 
+ westmesic_depths = 
+   depths_function(westmesic_avg)%>% 
+   na.omit()
+ 
+ eastmesic_depths = 
+   depths_function(eastmesic_avg)%>% 
+   na.omit()
+ 
+ westdry_depths = 
+   depths_function(westdry_avg)%>% 
+   na.omit()
+ 
+ eastdry_depths = 
+   depths_function(eastdry_avg) %>% 
+   na.omit()
+ 
+ #data cleaning bonanza
+ 
+#I need to find a way to group_by so that this cleaning is happening within plots/sensors/depths/dataloggers
+ cleaning_functiond <- function(dat){
+   eastdry_depths2 =
+   eastdry_depths %>% 
+  
+   mutate(lag = lag(avg_values_fixed)-avg_values_fixed,
+          lead = lead(avg_values_fixed)-avg_values_fixed) %>% 
+     mutate(laglead = case_when(lag > 200 & lead < -200 ~ 'artifact',
+                                lag < -200 & lead > 200 ~ 'artifact'))
+   
+   
+   force()
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ #summarise so that all plots are combined
+ group_by(site, position, depth_cm, Betterdate) %>%
+   dplyr::summarize(avg_values_summarised = mean(avg_values_fixed),
+                    std_values_summarised = sd(avg_values_fixed)/sqrt(n())) %>%
+   mutate(depth_cm = as.numeric(depth_cm)) %>% 
+   
+   
 #without summarising
 
 depths_function_nosummary <- function(dat){
@@ -220,6 +272,8 @@ eastdry_depths_nosummary =
 
 
 ##summarise
+
+#change names since I copy and pasted these to go above for the data cleaning.
 
 westhydric_depths = 
   depths_function(westhydric_avg)%>% 
@@ -297,6 +351,7 @@ all_combine_nosummary =
   bind_rows(easthydric_depths_nosummary, westmesic_depths_nosummary, 
             eastmesic_depths_nosummary, westdry_depths_nosummary, eastdry_depths_nosummary)  
 
+  
 #write csv
 
 write.csv(all_combine_nosummary, "processed/all_combine_nosummary.csv")
