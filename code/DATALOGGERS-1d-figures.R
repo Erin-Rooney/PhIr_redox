@@ -165,7 +165,7 @@ pal <- pnw_palette("Bay",100)
 
 combo_redox_withdepths %>% 
   na.omit() %>% 
-  ggplot(aes(x = as.Date(Betterdate), y = depth_cm, fill = avg_values_summarised))+
+  ggplot(aes(x = as.Date(Betterdate), y = depth_cm, fill = avg_values_fixed))+
   geom_bar(position = "stack", stat= "identity")+
   scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
   scale_y_reverse()+
@@ -192,13 +192,13 @@ redox_fig =
   combo_redox_withdepths_bins %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
   na.omit() %>% 
-  ggplot(aes(xmin = (as.Date(Betterdate))-0.4, xmax = (as.Date(Betterdate))+0.4, ymin = depth_start_cm, ymax = depth_stop_cm, fill = avg_values_summarised))+
+  ggplot(aes(xmin = (as.Date(Betterdate))-0.4, xmax = (as.Date(Betterdate))+0.4, ymin = depth_start_cm, ymax = depth_stop_cm, fill = avg_values_fixed))+
   geom_rect()+
   labs(y = "depth, cm",
-       fill = "redox potential, volts")+
+       fill = "redox potential, mV")+
   scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
   scale_y_reverse()+
-  scale_fill_gradientn(colors = rev(PNWColors::pnw_palette("Sunset2")))+
+  scale_fill_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90), legend.position = "bottom")+
   facet_grid(position~site)
@@ -254,3 +254,26 @@ ggsave("output/moisture.tiff", plot = moisture_fig, height = 6, width = 8)
 ggsave("output/temperature.tiff", plot = temp_fig, height = 6, width = 8)
 ggsave("output/salinity.tiff", plot = sal_fig, height = 6, width = 8)
 ggsave("output/redox.tiff", plot = redox_fig, height = 6, width = 8)
+
+
+###individual sites
+
+redox_hydric_fig =
+  combo_redox_withdepths_bins %>% 
+  filter(position == "hydric") %>% 
+  na.omit() %>% 
+  ggplot(aes(xmin = (as.Date(Betterdate))-0.4, xmax = (as.Date(Betterdate))+0.4, ymin = depth_start_cm, ymax = depth_stop_cm, fill = avg_values_fixed))+
+  geom_rect()+
+  labs(y = "depth, cm",
+       fill = "redox potential, mV")+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_y_reverse()+
+  scale_fill_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  facet_grid(site~position)+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90), legend.position = "top")
+
+ggsave("output/redoxhydric.tiff", plot = redox_hydric_fig, height = 5.5, width = 6)
+
+######
+

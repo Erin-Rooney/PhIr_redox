@@ -5,7 +5,8 @@
 
 source("code/0-packages.R")
 
-#load data
+
+#####
 
 westhydric_dlname = read.csv("processed/westhydric_dlname.csv")
 easthydric_dlname = read.csv("processed/easthydric_dlname.csv")
@@ -21,7 +22,11 @@ eastmesic_metadata = read.csv("processed/eastmesic_metadata.csv")
 westdry_metadata = read.csv("processed/westdry_metadata.csv")
 eastdry_metadata = read.csv("processed/eastdry_metadata.csv")
 
+
 #separate data columns only
+#average #load data
+#####
+
 
 #average
 #X is being changed to an ID number that can used to join the pivoted data with the metadata later on
@@ -43,12 +48,6 @@ avg_separate <- function(dat){
 }
 
 # run all 6 data frames
-
-#install data cleaning package
-
-# install.packages("fable")
-# install.packages("forecast")
-
 
 westhydric_avg = 
   avg_separate(westhydric_dlname) %>% 
@@ -106,6 +105,9 @@ eastdry_avg =
   filter(avg_values_fixed > -600)
 
 
+#separate data columns only
+#average #load data
+#####
 #Std 
 
 # std_separate <- function(dat){
@@ -125,6 +127,8 @@ eastdry_avg =
 
 # apply to six dataframes
 
+#
+#####
 
 sensor_depths_prename = read.csv("raw/datalogger_depths.csv") 
 
@@ -200,19 +204,28 @@ sensor_depths =
    depths_function(eastdry_avg) %>% 
    na.omit()
  
+##### 
  #data cleaning bonanza
  
  datacleaning_function <- function(dat){
    dat %>% 
      mutate(lag = lag(avg_values_fixed)-avg_values_fixed,
             lead = lead(avg_values_fixed)-avg_values_fixed) %>% 
-     mutate(laglead = case_when(lag > 100 & lead < -100 ~ 'artifact',
-                                lag < -100 & lead > 100 ~ 'artifact'),
+     mutate(laglead = case_when(lag > 25 & lead < -25 ~ 'artifact',
+                                lag < -25 & lead > 25 ~ 'artifact',
+                                lag > 25 & lead > 25 ~ 'artifact',
+                                lag < -25 & lead < -25 ~ 'artifact'),
             laglead = if_else(is.na(laglead), "keep", laglead)) %>% 
-     filter(laglead == "keep")
+     filter(laglead == "keep") %>% 
+     filter(avg_values_fixed < 745) %>% 
+     filter(avg_values_fixed > -250) %>% 
+     
+     force()
    
  }
  
+
+#################
  
 #WEST HYDRIC PROBE 1 SENSORS 1-8 
  
@@ -286,251 +299,1424 @@ westhydric_probe1_cleaned =
   
 #test for Beth, delete later
 
-westhydric_probe1_notcleaned =
+# westhydric_probe1_notcleaned =
+#   westhydric_depths %>% 
+#   filter(probe == "1")
+# 
+# temporary_fig =
+#   westhydric_probe1_cleaned %>% 
+#   #filter(type == "temp_avg" & depth > 20) %>% 
+#   ggplot(aes(x = Betterdate, y = avg_values_fixed))+
+#   geom_point(aes(color = depth_cm), alpha = 0.5)+
+#   geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+#   scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+#   #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+#   #scale_x_discrete(breaks = seq(-1,31,2))+
+#   labs(y = "redox potential, mV")+
+#   #facet_wrap(month_name~.)+
+#   theme_er1()+
+#   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+# 
+# ggsave("output/temporary_fig_cleaned7.png", plot = temporary_fig, width = 20, height = 8)
+# 
+# temporary_fig_notcleaned =
+#   westhydric_probe1_notcleaned %>% 
+#   #filter(type == "temp_avg" & depth > 20) %>% 
+#   ggplot(aes(x = Betterdate, y = avg_values_fixed))+
+#   geom_point(aes(color = depth_cm), alpha = 0.5)+
+#   geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+#   scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+#   #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+#   #scale_x_discrete(breaks = seq(-1,31,2))+
+#   labs(y = "redox potential, mV")+
+#   #facet_wrap(month_name~.)+
+#   theme_er1()+
+#   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+# 
+# ggsave("output/temporary_fig_notcleaned.png", plot = temporary_fig_notcleaned, width = 20, height = 8)
+
+
+################
+#WEST HYDRIC PROBE 2 SENSORS 1-8 
+
+westhydric_depths_outliers_2_1 = 
   westhydric_depths %>% 
-  filter(probe == "1")
+  filter(probe == "2" & sensor == "1") 
 
-temporary_fig =
-  westhydric_probe1_cleaned %>% 
-  #filter(type == "temp_avg" & depth > 20) %>% 
-  ggplot(aes(x = Betterdate, y = avg_values_fixed))+
-  geom_point(aes(color = depth_cm), alpha = 0.5)+
-  geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
-  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
-  #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
-  #scale_x_discrete(breaks = seq(-1,31,2))+
-  labs(y = "redox potential, mV")+
-  #facet_wrap(month_name~.)+
-  theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+westhydric_depths_outliers_2_2 = 
+  westhydric_depths %>% 
+  filter(probe == "2" & sensor == "2") 
 
-ggsave("output/temporary_fig_cleaned.png", plot = temporary_fig, width = 20, height = 8)
 
-temporary_fig_notcleaned =
-  westhydric_probe1_notcleaned %>% 
-  #filter(type == "temp_avg" & depth > 20) %>% 
-  ggplot(aes(x = Betterdate, y = avg_values_fixed))+
-  geom_point(aes(color = depth_cm), alpha = 0.5)+
-  geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
-  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
-  #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
-  #scale_x_discrete(breaks = seq(-1,31,2))+
-  labs(y = "redox potential, mV")+
-  #facet_wrap(month_name~.)+
-  theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+westhydric_depths_outliers_2_3 = 
+  westhydric_depths %>% 
+  filter(probe == "2" & sensor == "3") 
 
-ggsave("output/temporary_fig_notcleaned.png", plot = temporary_fig_notcleaned, width = 20, height = 8)
+
+westhydric_depths_outliers_2_4 = 
+  westhydric_depths %>% 
+  filter(probe == "2" & sensor == "4") 
+
+westhydric_depths_outliers_2_5 = 
+  westhydric_depths %>% 
+  filter(probe == "2" & sensor == "5") 
+
+westhydric_depths_outliers_2_6 = 
+  westhydric_depths %>% 
+  filter(probe == "2" & sensor == "6") 
+
+
+westhydric_depths_outliers_2_7 = 
+  westhydric_depths %>% 
+  filter(probe == "2" & sensor == "7") 
+
+
+westhydric_depths_outliers_2_8 = 
+  westhydric_depths %>% 
+  filter(probe == "2" & sensor == "8") 
+
+
+westhydric_2_1_forcombine =
+  datacleaning_function(westhydric_depths_outliers_2_1)   
+
+westhydric_2_2_forcombine =
+  datacleaning_function(westhydric_depths_outliers_2_2)   
+
+westhydric_2_3_forcombine =
+  datacleaning_function(westhydric_depths_outliers_2_3)   
+
+westhydric_2_4_forcombine =
+  datacleaning_function(westhydric_depths_outliers_2_4)   
+
+westhydric_2_5_forcombine =
+  datacleaning_function(westhydric_depths_outliers_2_5)   
+
+westhydric_2_6_forcombine =
+  datacleaning_function(westhydric_depths_outliers_2_6)  
+
+westhydric_2_7_forcombine =
+  datacleaning_function(westhydric_depths_outliers_2_7)   
+
+westhydric_2_8_forcombine =
+  datacleaning_function(westhydric_depths_outliers_2_8) 
+
+westhydric_probe2_cleaned =
+  westhydric_2_1_forcombine %>% 
+  vctrs::vec_c(westhydric_2_2_forcombine, westhydric_2_3_forcombine,
+               westhydric_2_4_forcombine, westhydric_2_5_forcombine,
+               westhydric_2_6_forcombine, westhydric_2_7_forcombine,
+               westhydric_2_8_forcombine)
+
+#test for Beth, delete later
+
+# westhydric_probe2_notcleaned =
+#   westhydric_depths %>% 
+#   filter(probe == "2")
+
+# temporary_fig =
+#   westhydric_probe2_cleaned %>% 
+#   #filter(type == "temp_avg" & depth > 20) %>% 
+#   ggplot(aes(x = Betterdate, y = avg_values_fixed))+
+#   geom_point(aes(color = depth_cm), alpha = 0.5)+
+#   geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+#   scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+#   #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+#   #scale_x_discrete(breaks = seq(-1,31,2))+
+#   labs(y = "redox potential, mV")+
+#   #facet_wrap(month_name~.)+
+#   theme_er1()+
+#   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+# 
+# ggsave("output/temporary_fig_cleaned8.png", plot = temporary_fig, width = 20, height = 8)
+# 
+# temporary_fig_notcleaned =
+#   westhydric_probe2_notcleaned %>% 
+#   #filter(type == "temp_avg" & depth > 20) %>% 
+#   ggplot(aes(x = Betterdate, y = avg_values_fixed))+
+#   geom_point(aes(color = depth_cm), alpha = 0.5)+
+#   geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+#   scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+#   #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+#   #scale_x_discrete(breaks = seq(-1,31,2))+
+#   labs(y = "redox potential, mV")+
+#   #facet_wrap(month_name~.)+
+#   theme_er1()+
+#   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+# 
+# ggsave("output/temporary_fig_notcleaned2.png", plot = temporary_fig_notcleaned, width = 20, height = 8)
 
 #I need to find a way to group_by so that this cleaning is happening within plots/sensors/depths/dataloggers
 
-  
-#  eastdry_depths_probe1 =
-#   eastdry_depths %>%
-#   mutate(sensor = recode(sensor, "1" = "S1", "2" = "S2", "3" = "S3", "4" = "S4")) %>% 
-#   filter(probe == 1) %>%
-#   dplyr::select(-c("depth_cm", 'RECORD', 'avg_values')) %>% 
-#   pivot_wider(names_from = 'sensor', values_from = 'avg_values_fixed') %>%
-#   mutate(lagS1 = lag(S1)-S1,
-#           leadS1 = lead(S1)-S1,
-#          lagS2 = lag(S2)-S2,
-#          leadS2 = lead(S2)-S2,
-#          lagS3 = lag(S3)-S3,
-#          leadS3 = lead(S3)-S3,
-#          lagS4 = lag(S4)-S4,
-#          leadS4 = lead(S4)-S4,
-#          ) %>% 
-#    mutate(laglead = case_when(lagS1 > 200 & leadS1 < -200 ~ 'artifact',
-#                               lagS1 < -200 & leadS1 > 200 ~ 'artifact',
-#                               lagS2 > 200 & leadS2 < -200 ~ 'artifact',
-#                               lagS2 < -200 & leadS2 > 200 ~ 'artifact',
-#                               lagS3 > 200 & leadS3 < -200 ~ 'artifact',
-#                               lagS3 < -200 & leadS3 > 200 ~ 'artifact',
-#                               lagS4 > 200 & leadS4 < -200 ~ 'artifact',
-#                               lagS4 < -200 & leadS4 > 200 ~ 'artifact'))
-#  
-#   mutate(checknum = row_number())
-# 
-# eastdry_depths_probe1_dataonly =
-#   eastdry_depths_probe1 %>% 
-#   dplyr::select(-c("lagS1", 'leadS1', 'lagS2', "leadS2",
-#                    "lagS3", "leadS3", 'lagS4', "leadS4")) %>% 
-#   pivot_longer(-c("TIMESTAMP", "site", "position", "Betterdate",
-#                   "datalogger", "probe", "Plot"),
-#                names_to = "sensor", values_to = "avg_values_fixed") %>% 
-#   mutate(sensor = recode(sensor, "S1" = 1, "S2" = 2, "S3" = 3, "S4" = 4)) %>% 
-#   na.omit() %>% 
-#   left_join(eastdry_depths)
-  
+#####
 
-###currently lag/lead are being impossible. 
+#WEST HYDRIC PROBE 3 SENSORS 1-8 
 
-eastdry_depths_probe1_artifacts =
-  eastdry_depths_probe1 %>% 
-  dplyr::select(-c("S1", 'S2', 'S3', "S4")) %>% 
-  # pivot_longer(-c("TIMESTAMP", "site", "position", "Betterdate",
-  #                 "datalogger", "probe", "Plot"),
-  #              names_to = "Lags", values_to = "") %>% 
-     mutate(laglead = case_when(lagS1 > 200 & leadS1 < -200 ~ 'artifact',
-                                lagS1 < -200 & leadS1 > 200 ~ 'artifact',
-                                lagS2 > 200 & leadS2 < -200 ~ 'artifact',
-                                lagS2 < -200 & leadS2 > 200 ~ 'artifact',
-                                lagS3 > 200 & leadS3 < -200 ~ 'artifact',
-                                lagS3 < -200 & leadS3 > 200 ~ 'artifact',
-                                lagS4 > 200 & leadS4 < -200 ~ 'artifact',
-                                lagS4 < -200 & leadS4 > 200 ~ 'artifact'))
-   
+westhydric_depths_outliers_3_1 = 
+  westhydric_depths %>% 
+  filter(probe == "3" & sensor == "1") 
 
- 
- 
- 
- 
- 
- #summarise so that all plots are combined
- group_by(site, position, depth_cm, Betterdate) %>%
-   dplyr::summarize(avg_values_summarised = mean(avg_values_fixed),
-                    std_values_summarised = sd(avg_values_fixed)/sqrt(n())) %>%
-   mutate(depth_cm = as.numeric(depth_cm)) %>% 
-   
-   
-#without summarising
-
-depths_function_nosummary <- function(dat){
-  dat %>% 
-    mutate(redox_avg = recode(redox_avg, 'redox_5.2.3_fromtip_Avg' = "redox_5_2_3_fromtip_Avg")) %>% 
-    mutate(redox_avg = str_remove(redox_avg, "Redox_")) %>% 
-    mutate(redox_avg = str_remove(redox_avg, "redox_")) %>% 
-    mutate(redox_avg = str_remove(redox_avg, "_fromtip_Avg")) %>% 
-    separate(redox_avg, sep = "_", into = c("datalogger", "probe_sensor")) %>%
-    filter(datalogger != "NUM") %>% 
-    dplyr::select(-redox_NUM_Avg) %>% 
-    mutate(probe_sensor = recode(probe_sensor, "1.8" = "1_8", "1.7" = "1_7", "1.6" = "1_6", "1.5" = "1_5", "1.4" = "1_4", "1.3" = "1_3", "1.2" = "1_2", "1.1" = "1_1",
-                                 "2.8" = "2_8", "2.7" = "2_7", "2.6" = "2_6", "2.5" = "2_5", "2.4" = "2_4", "2.3" = "2_3", "2.2" = "2_2", "2.1" = "2_1",
-                                 "3.8" = "3_8", "3.7" = "3_7", "3.6" = "3_6", "3.5" = "3_5", "3.4" = "3_4", "3.3" = "3_3", "3.2" = "3_2", "3.1" = "3_1")) %>% 
-    separate(probe_sensor, sep = "_", into = c("probe", "sensor")) %>% 
-    mutate(sensor = as.numeric(sensor)) %>%
-    left_join(sensor_depths) %>% 
-    #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
-    dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
-    mutate(depth_cm = as.numeric(depth_cm)) %>% 
-    force()
-  
-  
-}
-#run on all six dataframes to get site, position, depth, date, avg, std
+westhydric_depths_outliers_3_2 = 
+  westhydric_depths %>% 
+  filter(probe == "3" & sensor == "2") 
 
 
-##no summarise
-
-westhydric_depths_nosummary = 
-  depths_function_nosummary(westhydric_avg)%>% 
-  na.omit()
-
-easthydric_depths_nosummary = 
-  depths_function_nosummary(easthydric_avg) %>% 
-  na.omit()
-
-westmesic_depths_nosummary = 
-  depths_function_nosummary(westmesic_avg)%>% 
-  na.omit()
-
-eastmesic_depths_nosummary = 
-  depths_function_nosummary(eastmesic_avg)%>% 
-  na.omit()
-
-westdry_depths_nosummary = 
-  depths_function_nosummary(westdry_avg)%>% 
-  na.omit()
-
-eastdry_depths_nosummary = 
-  depths_function_nosummary(eastdry_avg) %>% 
-  na.omit()
+westhydric_depths_outliers_3_3 = 
+  westhydric_depths %>% 
+  filter(probe == "3" & sensor == "3") 
 
 
-##summarise
+westhydric_depths_outliers_3_4 = 
+  westhydric_depths %>% 
+  filter(probe == "3" & sensor == "4") 
 
-#change names since I copy and pasted these to go above for the data cleaning.
+westhydric_depths_outliers_3_5 = 
+  westhydric_depths %>% 
+  filter(probe == "3" & sensor == "5") 
 
-westhydric_depths = 
-  depths_function(westhydric_avg)%>% 
-  na.omit()
+westhydric_depths_outliers_3_6 = 
+  westhydric_depths %>% 
+  filter(probe == "3" & sensor == "6") 
 
-easthydric_depths = 
-  depths_function(easthydric_avg) %>% 
-  na.omit()
 
-westmesic_depths = 
-  depths_function(westmesic_avg)%>% 
-  na.omit()
+westhydric_depths_outliers_3_7 = 
+  westhydric_depths %>% 
+  filter(probe == "3" & sensor == "7") 
 
-eastmesic_depths = 
-  depths_function(eastmesic_avg)%>% 
-  na.omit()
 
-westdry_depths = 
-  depths_function(westdry_avg)%>% 
-  na.omit()
+westhydric_depths_outliers_3_8 = 
+  westhydric_depths %>% 
+  filter(probe == "3" & sensor == "8") 
 
-eastdry_depths = 
-  depths_function(eastdry_avg) %>% 
-  na.omit()
+
+westhydric_3_1_forcombine =
+  datacleaning_function(westhydric_depths_outliers_3_1)   
+
+westhydric_3_2_forcombine =
+  datacleaning_function(westhydric_depths_outliers_3_2)   
+
+westhydric_3_3_forcombine =
+  datacleaning_function(westhydric_depths_outliers_3_3)   
+
+westhydric_3_4_forcombine =
+  datacleaning_function(westhydric_depths_outliers_3_4)   
+
+westhydric_3_5_forcombine =
+  datacleaning_function(westhydric_depths_outliers_3_5)   
+
+westhydric_3_6_forcombine =
+  datacleaning_function(westhydric_depths_outliers_3_6)  
+
+westhydric_3_7_forcombine =
+  datacleaning_function(westhydric_depths_outliers_3_7)   
+
+westhydric_3_8_forcombine =
+  datacleaning_function(westhydric_depths_outliers_3_8) 
+
+westhydric_probe3_cleaned =
+  westhydric_3_1_forcombine %>% 
+  vctrs::vec_c(westhydric_3_2_forcombine, westhydric_3_3_forcombine,
+               westhydric_3_4_forcombine, westhydric_3_5_forcombine,
+               westhydric_3_6_forcombine, westhydric_3_7_forcombine,
+               westhydric_3_8_forcombine)
+
+#####
+
+#EAST HYDRIC PROBE 1 SENSORS 1-8 
+
+easthydric_depths_outliers_1_1 = 
+  easthydric_depths %>% 
+  filter(probe == "1" & sensor == "1") 
+
+easthydric_depths_outliers_1_2 = 
+  easthydric_depths %>% 
+  filter(probe == "1" & sensor == "2") 
+
+
+easthydric_depths_outliers_1_3 = 
+  easthydric_depths %>% 
+  filter(probe == "1" & sensor == "3") 
+
+
+easthydric_depths_outliers_1_4 = 
+  easthydric_depths %>% 
+  filter(probe == "1" & sensor == "4") 
+
+easthydric_depths_outliers_1_5 = 
+  easthydric_depths %>% 
+  filter(probe == "1" & sensor == "5") 
+
+easthydric_depths_outliers_1_6 = 
+  easthydric_depths %>% 
+  filter(probe == "1" & sensor == "6") 
+
+
+easthydric_depths_outliers_1_7 = 
+  easthydric_depths %>% 
+  filter(probe == "1" & sensor == "7") 
+
+
+easthydric_depths_outliers_1_8 = 
+  easthydric_depths %>% 
+  filter(probe == "1" & sensor == "8") 
+
+
+easthydric_1_1_forcombine =
+  datacleaning_function(easthydric_depths_outliers_1_1)   
+
+easthydric_1_2_forcombine =
+  datacleaning_function(easthydric_depths_outliers_1_2)   
+
+easthydric_1_3_forcombine =
+  datacleaning_function(easthydric_depths_outliers_1_3)   
+
+easthydric_1_4_forcombine =
+  datacleaning_function(easthydric_depths_outliers_1_4)   
+
+easthydric_1_5_forcombine =
+  datacleaning_function(easthydric_depths_outliers_1_5)   
+
+easthydric_1_6_forcombine =
+  datacleaning_function(easthydric_depths_outliers_1_6)  
+
+easthydric_1_7_forcombine =
+  datacleaning_function(easthydric_depths_outliers_1_7)   
+
+easthydric_1_8_forcombine =
+  datacleaning_function(easthydric_depths_outliers_1_8) 
+
+easthydric_probe1_cleaned =
+  easthydric_1_1_forcombine %>% 
+  vctrs::vec_c(easthydric_1_2_forcombine, easthydric_1_3_forcombine,
+               easthydric_1_4_forcombine, easthydric_1_5_forcombine,
+               easthydric_1_6_forcombine, easthydric_1_7_forcombine,
+               easthydric_1_8_forcombine)
+
+#####
+
+#EAST HYDRIC PROBE 2 SENSORS 1-8 
+
+easthydric_depths_outliers_2_1 = 
+  easthydric_depths %>% 
+  filter(probe == "2" & sensor == "1") 
+
+easthydric_depths_outliers_2_2 = 
+  easthydric_depths %>% 
+  filter(probe == "2" & sensor == "2") 
+
+
+easthydric_depths_outliers_2_3 = 
+  easthydric_depths %>% 
+  filter(probe == "2" & sensor == "3") 
+
+
+easthydric_depths_outliers_2_4 = 
+  easthydric_depths %>% 
+  filter(probe == "2" & sensor == "4") 
+
+easthydric_depths_outliers_2_5 = 
+  easthydric_depths %>% 
+  filter(probe == "2" & sensor == "5") 
+
+easthydric_depths_outliers_2_6 = 
+  easthydric_depths %>% 
+  filter(probe == "2" & sensor == "6") 
+
+
+easthydric_depths_outliers_2_7 = 
+  easthydric_depths %>% 
+  filter(probe == "2" & sensor == "7") 
+
+
+easthydric_depths_outliers_2_8 = 
+  easthydric_depths %>% 
+  filter(probe == "2" & sensor == "8") 
+
+
+easthydric_2_1_forcombine =
+  datacleaning_function(easthydric_depths_outliers_2_1)   
+
+easthydric_2_2_forcombine =
+  datacleaning_function(easthydric_depths_outliers_2_2)   
+
+easthydric_2_3_forcombine =
+  datacleaning_function(easthydric_depths_outliers_2_3)   
+
+easthydric_2_4_forcombine =
+  datacleaning_function(easthydric_depths_outliers_2_4)   
+
+easthydric_2_5_forcombine =
+  datacleaning_function(easthydric_depths_outliers_2_5)   
+
+easthydric_2_6_forcombine =
+  datacleaning_function(easthydric_depths_outliers_2_6)  
+
+easthydric_2_7_forcombine =
+  datacleaning_function(easthydric_depths_outliers_2_7)   
+
+easthydric_2_8_forcombine =
+  datacleaning_function(easthydric_depths_outliers_2_8) 
+
+easthydric_probe2_cleaned =
+  easthydric_2_1_forcombine %>% 
+  vctrs::vec_c(easthydric_2_2_forcombine, easthydric_2_3_forcombine,
+               easthydric_2_4_forcombine, easthydric_2_5_forcombine,
+               easthydric_2_6_forcombine, easthydric_2_7_forcombine,
+               easthydric_2_8_forcombine)
 
 
 #####
 
-all_combine_depthbins = 
-  westhydric_depths %>% 
-  bind_rows(easthydric_depths, westmesic_depths, eastmesic_depths, westdry_depths, eastdry_depths) %>% 
-  #mutate(depth_bins = case_when(depth_cm <= 100 ~ cut_width(depth_cm, width = 1, center = 1))) %>% 
-  mutate(depth_bins = cut_width(depth_cm, width = 5, center=2.5)) %>% 
-  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "]","")) %>% 
-  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "[","")) %>% 
-  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "(","")) %>% 
-  # now separate this into two different columns
-  separate(depth_bins, sep = ",", into = c("depth_start_cm", "depth_stop_cm")) %>% 
-  mutate(depth_start_cm = as.integer(depth_start_cm),
-         depth_stop_cm = as.integer(depth_stop_cm)) %>% 
-  mutate(depth2 = depth_stop_cm - depth_start_cm)
+#EAST HYDRIC PROBE 3 SENSORS 1-8 
+
+easthydric_depths_outliers_3_1 = 
+  easthydric_depths %>% 
+  filter(probe == "3" & sensor == "1") 
+
+easthydric_depths_outliers_3_2 = 
+  easthydric_depths %>% 
+  filter(probe == "3" & sensor == "2") 
 
 
-all_combine = 
-  westhydric_depths %>% 
-  bind_rows(easthydric_depths, westmesic_depths, eastmesic_depths, westdry_depths, eastdry_depths)  
-
-#write csv
-
-write.csv(all_combine, "processed/all_combine.csv")
-
-write.csv(all_combine_depthbins, "processed/all_combine_depthbins.csv")
+easthydric_depths_outliers_3_3 = 
+  easthydric_depths %>% 
+  filter(probe == "3" & sensor == "3") 
 
 
-#######no summarise
+easthydric_depths_outliers_3_4 = 
+  easthydric_depths %>% 
+  filter(probe == "3" & sensor == "4") 
 
-all_combine_depthbins_nosummmary = 
-  westhydric_depths_nosummary %>% 
-  bind_rows(easthydric_depths_nosummary, westmesic_depths_nosummary, eastmesic_depths_nosummary, 
-            westdry_depths_nosummary, eastdry_depths_nosummary) %>% 
-  #mutate(depth_bins = case_when(depth_cm <= 100 ~ cut_width(depth_cm, width = 1, center = 1))) %>% 
-  mutate(depth_bins = cut_width(depth_cm, width = 5, center=2.5)) %>% 
-  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "]","")) %>% 
-  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "[","")) %>% 
-  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "(","")) %>% 
-  # now separate this into two different columns
-  separate(depth_bins, sep = ",", into = c("depth_start_cm", "depth_stop_cm")) %>% 
-  mutate(depth_start_cm = as.integer(depth_start_cm),
-         depth_stop_cm = as.integer(depth_stop_cm)) %>% 
-  mutate(depth2 = depth_stop_cm - depth_start_cm)
+easthydric_depths_outliers_3_5 = 
+  easthydric_depths %>% 
+  filter(probe == "3" & sensor == "5") 
+
+easthydric_depths_outliers_3_6 = 
+  easthydric_depths %>% 
+  filter(probe == "3" & sensor == "6") 
 
 
-all_combine_nosummary = 
-  westhydric_depths_nosummary %>% 
-  bind_rows(easthydric_depths_nosummary, westmesic_depths_nosummary, 
-            eastmesic_depths_nosummary, westdry_depths_nosummary, eastdry_depths_nosummary)  
+easthydric_depths_outliers_3_7 = 
+  easthydric_depths %>% 
+  filter(probe == "3" & sensor == "7") 
 
+
+easthydric_depths_outliers_3_8 = 
+  easthydric_depths %>% 
+  filter(probe == "3" & sensor == "8") 
+
+
+easthydric_3_1_forcombine =
+  datacleaning_function(easthydric_depths_outliers_3_1)   
+
+easthydric_3_2_forcombine =
+  datacleaning_function(easthydric_depths_outliers_3_2)   
+
+easthydric_3_3_forcombine =
+  datacleaning_function(easthydric_depths_outliers_3_3)   
+
+easthydric_3_4_forcombine =
+  datacleaning_function(easthydric_depths_outliers_3_4)   
+
+easthydric_3_5_forcombine =
+  datacleaning_function(easthydric_depths_outliers_3_5)   
+
+easthydric_3_6_forcombine =
+  datacleaning_function(easthydric_depths_outliers_3_6)  
+
+easthydric_3_7_forcombine =
+  datacleaning_function(easthydric_depths_outliers_3_7)   
+
+easthydric_3_8_forcombine =
+  datacleaning_function(easthydric_depths_outliers_3_8) 
+
+easthydric_probe3_cleaned =
+  easthydric_3_1_forcombine %>% 
+  vctrs::vec_c(easthydric_3_2_forcombine, easthydric_3_3_forcombine,
+               easthydric_3_4_forcombine, easthydric_3_5_forcombine,
+               easthydric_3_6_forcombine, easthydric_3_7_forcombine,
+               easthydric_3_8_forcombine)
+
+
+
+#EAST MESIC PROBE 3 SENSORS 1-8 
+
+eastmesic_depths_outliers_3_1 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "1") 
+
+eastmesic_depths_outliers_3_2 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "2") 
+
+
+eastmesic_depths_outliers_3_3 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "3") 
+
+
+eastmesic_depths_outliers_3_4 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "4") 
+
+eastmesic_depths_outliers_3_5 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "5") 
+
+eastmesic_depths_outliers_3_6 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "6") 
+
+
+eastmesic_depths_outliers_3_7 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "7") 
+
+
+eastmesic_depths_outliers_3_8 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "8") 
+
+
+eastmesic_3_1_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_1)   
+
+eastmesic_3_2_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_2)   
+
+eastmesic_3_3_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_3)   
+
+eastmesic_3_4_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_4)   
+
+eastmesic_3_5_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_5)   
+
+eastmesic_3_6_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_6)  
+
+eastmesic_3_7_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_7)   
+
+eastmesic_3_8_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_8) 
+
+eastmesic_probe3_cleaned =
+  eastmesic_3_1_forcombine %>% 
+  vctrs::vec_c(eastmesic_3_2_forcombine, eastmesic_3_3_forcombine,
+               eastmesic_3_4_forcombine, eastmesic_3_5_forcombine,
+               eastmesic_3_6_forcombine, eastmesic_3_7_forcombine,
+               eastmesic_3_8_forcombine)
+#####
+
+#####
+#EAST MESIC PROBE 1 SENSORS 1-8 
+
+eastmesic_depths_outliers_1_1 = 
+  eastmesic_depths %>% 
+  filter(probe == "1" & sensor == "1") 
+
+eastmesic_depths_outliers_1_2 = 
+  eastmesic_depths %>% 
+  filter(probe == "1" & sensor == "2") 
+
+
+eastmesic_depths_outliers_1_3 = 
+  eastmesic_depths %>% 
+  filter(probe == "1" & sensor == "3") 
+
+
+eastmesic_depths_outliers_1_4 = 
+  eastmesic_depths %>% 
+  filter(probe == "1" & sensor == "4") 
+
+eastmesic_depths_outliers_1_5 = 
+  eastmesic_depths %>% 
+  filter(probe == "1" & sensor == "5") 
+
+eastmesic_depths_outliers_1_6 = 
+  eastmesic_depths %>% 
+  filter(probe == "1" & sensor == "6") 
+
+
+eastmesic_depths_outliers_1_7 = 
+  eastmesic_depths %>% 
+  filter(probe == "1" & sensor == "7") 
+
+
+eastmesic_depths_outliers_1_8 = 
+  eastmesic_depths %>% 
+  filter(probe == "1" & sensor == "8") 
+
+
+eastmesic_1_1_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_1_1)   
+
+eastmesic_1_2_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_1_2)   
+
+eastmesic_1_3_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_1_3)   
+
+eastmesic_1_4_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_1_4)   
+
+eastmesic_1_5_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_1_5)   
+
+eastmesic_1_6_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_1_6)  
+
+eastmesic_1_7_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_1_7)   
+
+eastmesic_1_8_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_1_8) 
+
+eastmesic_probe1_cleaned =
+  eastmesic_1_1_forcombine %>% 
+  vctrs::vec_c(eastmesic_1_2_forcombine, eastmesic_1_3_forcombine,
+               eastmesic_1_4_forcombine, eastmesic_1_5_forcombine,
+               eastmesic_1_6_forcombine, eastmesic_1_7_forcombine,
+               eastmesic_1_8_forcombine)
+
+#####
+#EAST MESIC PROBE 2 SENSORS 1-8 
+
+eastmesic_depths_outliers_2_1 = 
+  eastmesic_depths %>% 
+  filter(probe == "2" & sensor == "1") 
+
+eastmesic_depths_outliers_2_2 = 
+  eastmesic_depths %>% 
+  filter(probe == "2" & sensor == "2") 
+
+
+eastmesic_depths_outliers_2_3 = 
+  eastmesic_depths %>% 
+  filter(probe == "2" & sensor == "3") 
+
+
+eastmesic_depths_outliers_2_4 = 
+  eastmesic_depths %>% 
+  filter(probe == "2" & sensor == "4") 
+
+eastmesic_depths_outliers_2_5 = 
+  eastmesic_depths %>% 
+  filter(probe == "2" & sensor == "5") 
+
+eastmesic_depths_outliers_2_6 = 
+  eastmesic_depths %>% 
+  filter(probe == "2" & sensor == "6") 
+
+
+eastmesic_depths_outliers_2_7 = 
+  eastmesic_depths %>% 
+  filter(probe == "2" & sensor == "7") 
+
+
+eastmesic_depths_outliers_2_8 = 
+  eastmesic_depths %>% 
+  filter(probe == "2" & sensor == "8") 
+
+
+eastmesic_2_1_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_2_1)   
+
+eastmesic_2_2_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_2_2)   
+
+eastmesic_2_3_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_2_3)   
+
+eastmesic_2_4_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_2_4)   
+
+eastmesic_2_5_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_2_5)   
+
+eastmesic_2_6_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_2_6)  
+
+eastmesic_2_7_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_2_7)   
+
+eastmesic_2_8_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_2_8) 
+
+eastmesic_probe2_cleaned =
+  eastmesic_2_1_forcombine %>% 
+  vctrs::vec_c(eastmesic_2_2_forcombine, eastmesic_2_3_forcombine,
+               eastmesic_2_4_forcombine, eastmesic_2_5_forcombine,
+               eastmesic_2_6_forcombine, eastmesic_2_7_forcombine,
+               eastmesic_2_8_forcombine)
+#####
+#EAST MESIC PROBE 3 SENSORS 1-8 
+
+eastmesic_depths_outliers_3_1 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "1") 
+
+eastmesic_depths_outliers_3_2 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "2") 
+
+
+eastmesic_depths_outliers_3_3 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "3") 
+
+
+eastmesic_depths_outliers_3_4 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "4") 
+
+eastmesic_depths_outliers_3_5 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "5") 
+
+eastmesic_depths_outliers_3_6 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "6") 
+
+
+eastmesic_depths_outliers_3_7 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "7") 
+
+
+eastmesic_depths_outliers_3_8 = 
+  eastmesic_depths %>% 
+  filter(probe == "3" & sensor == "8") 
+
+
+eastmesic_3_1_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_1)   
+
+eastmesic_3_2_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_2)   
+
+eastmesic_3_3_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_3)   
+
+eastmesic_3_4_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_4)   
+
+eastmesic_3_5_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_5)   
+
+eastmesic_3_6_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_6)  
+
+eastmesic_3_7_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_7)   
+
+eastmesic_3_8_forcombine =
+  datacleaning_function(eastmesic_depths_outliers_3_8) 
+
+eastmesic_probe3_cleaned =
+  eastmesic_3_1_forcombine %>% 
+  vctrs::vec_c(eastmesic_3_2_forcombine, eastmesic_3_3_forcombine,
+               eastmesic_3_4_forcombine, eastmesic_3_5_forcombine,
+               eastmesic_3_6_forcombine, eastmesic_3_7_forcombine,
+               eastmesic_3_8_forcombine)
+#####
+
+#WEST MESIC PROBE 1 SENSORS 1-8 
+
+westmesic_depths_outliers_1_1 = 
+  westmesic_depths %>% 
+  filter(probe == "1" & sensor == "1") 
+
+westmesic_depths_outliers_1_2 = 
+  westmesic_depths %>% 
+  filter(probe == "1" & sensor == "2") 
+
+
+westmesic_depths_outliers_1_3 = 
+  westmesic_depths %>% 
+  filter(probe == "1" & sensor == "3") 
+
+
+westmesic_depths_outliers_1_4 = 
+  westmesic_depths %>% 
+  filter(probe == "1" & sensor == "4") 
+
+westmesic_depths_outliers_1_5 = 
+  westmesic_depths %>% 
+  filter(probe == "1" & sensor == "5") 
+
+westmesic_depths_outliers_1_6 = 
+  westmesic_depths %>% 
+  filter(probe == "1" & sensor == "6") 
+
+
+westmesic_depths_outliers_1_7 = 
+  westmesic_depths %>% 
+  filter(probe == "1" & sensor == "7") 
+
+
+westmesic_depths_outliers_1_8 = 
+  westmesic_depths %>% 
+  filter(probe == "1" & sensor == "8") 
+
+
+westmesic_1_1_forcombine =
+  datacleaning_function(westmesic_depths_outliers_1_1)   
+
+westmesic_1_2_forcombine =
+  datacleaning_function(westmesic_depths_outliers_1_2)   
+
+westmesic_1_3_forcombine =
+  datacleaning_function(westmesic_depths_outliers_1_3)   
+
+westmesic_1_4_forcombine =
+  datacleaning_function(westmesic_depths_outliers_1_4)   
+
+westmesic_1_5_forcombine =
+  datacleaning_function(westmesic_depths_outliers_1_5)   
+
+westmesic_1_6_forcombine =
+  datacleaning_function(westmesic_depths_outliers_1_6)  
+
+westmesic_1_7_forcombine =
+  datacleaning_function(westmesic_depths_outliers_1_7)   
+
+westmesic_1_8_forcombine =
+  datacleaning_function(westmesic_depths_outliers_1_8) 
+
+westmesic_probe1_cleaned =
+  westmesic_1_1_forcombine %>% 
+  vctrs::vec_c(westmesic_1_2_forcombine, westmesic_1_3_forcombine,
+               westmesic_1_4_forcombine, westmesic_1_5_forcombine,
+               westmesic_1_6_forcombine, westmesic_1_7_forcombine,
+               westmesic_1_8_forcombine)
+#####
+
+#WEST MESIC PROBE 2 SENSORS 1-8 
+
+westmesic_depths_outliers_2_1 = 
+  westmesic_depths %>% 
+  filter(probe == "2" & sensor == "1") 
+
+westmesic_depths_outliers_2_2 = 
+  westmesic_depths %>% 
+  filter(probe == "2" & sensor == "2") 
+
+
+westmesic_depths_outliers_2_3 = 
+  westmesic_depths %>% 
+  filter(probe == "2" & sensor == "3") 
+
+
+westmesic_depths_outliers_2_4 = 
+  westmesic_depths %>% 
+  filter(probe == "2" & sensor == "4") 
+
+westmesic_depths_outliers_2_5 = 
+  westmesic_depths %>% 
+  filter(probe == "2" & sensor == "5") 
+
+westmesic_depths_outliers_2_6 = 
+  westmesic_depths %>% 
+  filter(probe == "2" & sensor == "6") 
+
+
+westmesic_depths_outliers_2_7 = 
+  westmesic_depths %>% 
+  filter(probe == "2" & sensor == "7") 
+
+
+westmesic_depths_outliers_2_8 = 
+  westmesic_depths %>% 
+  filter(probe == "2" & sensor == "8") 
+
+
+westmesic_2_1_forcombine =
+  datacleaning_function(westmesic_depths_outliers_2_1)   
+
+westmesic_2_2_forcombine =
+  datacleaning_function(westmesic_depths_outliers_2_2)   
+
+westmesic_2_3_forcombine =
+  datacleaning_function(westmesic_depths_outliers_2_3)   
+
+westmesic_2_4_forcombine =
+  datacleaning_function(westmesic_depths_outliers_2_4)   
+
+westmesic_2_5_forcombine =
+  datacleaning_function(westmesic_depths_outliers_2_5)   
+
+westmesic_2_6_forcombine =
+  datacleaning_function(westmesic_depths_outliers_2_6)  
+
+westmesic_2_7_forcombine =
+  datacleaning_function(westmesic_depths_outliers_2_7)   
+
+westmesic_2_8_forcombine =
+  datacleaning_function(westmesic_depths_outliers_2_8) 
+
+westmesic_probe2_cleaned =
+  westmesic_2_1_forcombine %>% 
+  vctrs::vec_c(westmesic_2_2_forcombine, westmesic_2_3_forcombine,
+               westmesic_2_4_forcombine, westmesic_2_5_forcombine,
+               westmesic_2_6_forcombine, westmesic_2_7_forcombine,
+               westmesic_2_8_forcombine)
+
+#####
+
+#WEST MESIC PROBE 3 SENSORS 1-8 
+
+westmesic_depths_outliers_3_1 = 
+  westmesic_depths %>% 
+  filter(probe == "3" & sensor == "1") 
+
+westmesic_depths_outliers_3_2 = 
+  westmesic_depths %>% 
+  filter(probe == "3" & sensor == "2") 
+
+
+westmesic_depths_outliers_3_3 = 
+  westmesic_depths %>% 
+  filter(probe == "3" & sensor == "3") 
+
+
+westmesic_depths_outliers_3_4 = 
+  westmesic_depths %>% 
+  filter(probe == "3" & sensor == "4") 
+
+westmesic_depths_outliers_3_5 = 
+  westmesic_depths %>% 
+  filter(probe == "3" & sensor == "5") 
+
+westmesic_depths_outliers_3_6 = 
+  westmesic_depths %>% 
+  filter(probe == "3" & sensor == "6") 
+
+
+westmesic_depths_outliers_3_7 = 
+  westmesic_depths %>% 
+  filter(probe == "3" & sensor == "7") 
+
+
+westmesic_depths_outliers_3_8 = 
+  westmesic_depths %>% 
+  filter(probe == "3" & sensor == "8") 
+
+
+westmesic_3_1_forcombine =
+  datacleaning_function(westmesic_depths_outliers_3_1)   
+
+westmesic_3_2_forcombine =
+  datacleaning_function(westmesic_depths_outliers_3_2)   
+
+westmesic_3_3_forcombine =
+  datacleaning_function(westmesic_depths_outliers_3_3)   
+
+westmesic_3_4_forcombine =
+  datacleaning_function(westmesic_depths_outliers_3_4)   
+
+westmesic_3_5_forcombine =
+  datacleaning_function(westmesic_depths_outliers_3_5)   
+
+westmesic_3_6_forcombine =
+  datacleaning_function(westmesic_depths_outliers_3_6)  
+
+westmesic_3_7_forcombine =
+  datacleaning_function(westmesic_depths_outliers_3_7)   
+
+westmesic_3_8_forcombine =
+  datacleaning_function(westmesic_depths_outliers_3_8) 
+
+westmesic_probe3_cleaned =
+  westmesic_3_1_forcombine %>% 
+  vctrs::vec_c(westmesic_3_2_forcombine, westmesic_3_3_forcombine,
+               westmesic_3_4_forcombine, westmesic_3_5_forcombine,
+               westmesic_3_6_forcombine, westmesic_3_7_forcombine,
+               westmesic_3_8_forcombine)
+
+
+
+#####
+#WEST DRY PROBE 1 SENSORS 1-8 
+
+westdry_depths_outliers_1_1 = 
+  westdry_depths %>% 
+  filter(probe == "1" & sensor == "1") 
+
+westdry_depths_outliers_1_2 = 
+  westdry_depths %>% 
+  filter(probe == "1" & sensor == "2") 
+
+
+westdry_depths_outliers_1_3 = 
+  westdry_depths %>% 
+  filter(probe == "1" & sensor == "3") 
+
+
+westdry_depths_outliers_1_4 = 
+  westdry_depths %>% 
+  filter(probe == "1" & sensor == "4") 
+
+westdry_depths_outliers_1_5 = 
+  westdry_depths %>% 
+  filter(probe == "1" & sensor == "5") 
+
+westdry_depths_outliers_1_6 = 
+  westdry_depths %>% 
+  filter(probe == "1" & sensor == "6") 
+
+
+westdry_depths_outliers_1_7 = 
+  westdry_depths %>% 
+  filter(probe == "1" & sensor == "7") 
+
+
+westdry_depths_outliers_1_8 = 
+  westdry_depths %>% 
+  filter(probe == "1" & sensor == "8") 
+
+
+westdry_1_1_forcombine =
+  datacleaning_function(westdry_depths_outliers_1_1)   
+
+westdry_1_2_forcombine =
+  datacleaning_function(westdry_depths_outliers_1_2)   
+
+westdry_1_3_forcombine =
+  datacleaning_function(westdry_depths_outliers_1_3)   
+
+westdry_1_4_forcombine =
+  datacleaning_function(westdry_depths_outliers_1_4)   
+
+westdry_1_5_forcombine =
+  datacleaning_function(westdry_depths_outliers_1_5)   
+
+westdry_1_6_forcombine =
+  datacleaning_function(westdry_depths_outliers_1_6)  
+
+westdry_1_7_forcombine =
+  datacleaning_function(westdry_depths_outliers_1_7)   
+
+westdry_1_8_forcombine =
+  datacleaning_function(westdry_depths_outliers_1_8) 
+
+westdry_probe1_cleaned =
+  westdry_1_1_forcombine %>% 
+  vctrs::vec_c(westdry_1_2_forcombine, westdry_1_3_forcombine,
+               westdry_1_4_forcombine, westdry_1_5_forcombine,
+               westdry_1_6_forcombine, westdry_1_7_forcombine,
+               westdry_1_8_forcombine)
+
+#####
+
+#WEST DRY PROBE 2 SENSORS 1-8 
+
+westdry_depths_outliers_2_1 = 
+  westdry_depths %>% 
+  filter(probe == "2" & sensor == "1") 
+
+westdry_depths_outliers_2_2 = 
+  westdry_depths %>% 
+  filter(probe == "2" & sensor == "2") 
+
+
+westdry_depths_outliers_2_3 = 
+  westdry_depths %>% 
+  filter(probe == "2" & sensor == "3") 
+
+
+westdry_depths_outliers_2_4 = 
+  westdry_depths %>% 
+  filter(probe == "2" & sensor == "4") 
+
+westdry_depths_outliers_2_5 = 
+  westdry_depths %>% 
+  filter(probe == "2" & sensor == "5") 
+
+westdry_depths_outliers_2_6 = 
+  westdry_depths %>% 
+  filter(probe == "2" & sensor == "6") 
+
+
+westdry_depths_outliers_2_7 = 
+  westdry_depths %>% 
+  filter(probe == "2" & sensor == "7") 
+
+
+westdry_depths_outliers_2_8 = 
+  westdry_depths %>% 
+  filter(probe == "2" & sensor == "8") 
+
+
+westdry_2_1_forcombine =
+  datacleaning_function(westdry_depths_outliers_2_1)   
+
+westdry_2_2_forcombine =
+  datacleaning_function(westdry_depths_outliers_2_2)   
+
+westdry_2_3_forcombine =
+  datacleaning_function(westdry_depths_outliers_2_3)   
+
+westdry_2_4_forcombine =
+  datacleaning_function(westdry_depths_outliers_2_4)   
+
+westdry_2_5_forcombine =
+  datacleaning_function(westdry_depths_outliers_2_5)   
+
+westdry_2_6_forcombine =
+  datacleaning_function(westdry_depths_outliers_2_6)  
+
+westdry_2_7_forcombine =
+  datacleaning_function(westdry_depths_outliers_2_7)   
+
+westdry_2_8_forcombine =
+  datacleaning_function(westdry_depths_outliers_2_8) 
+
+westdry_probe2_cleaned =
+  westdry_2_1_forcombine %>% 
+  vctrs::vec_c(westdry_2_2_forcombine, westdry_2_3_forcombine,
+               westdry_2_4_forcombine, westdry_2_5_forcombine,
+               westdry_2_6_forcombine, westdry_2_7_forcombine,
+               westdry_2_8_forcombine)
+#####
+
+#WEST DRY PROBE 3 SENSORS 1-8 
+
+westdry_depths_outliers_3_1 = 
+  westdry_depths %>% 
+  filter(probe == "3" & sensor == "1") 
+
+westdry_depths_outliers_3_2 = 
+  westdry_depths %>% 
+  filter(probe == "3" & sensor == "2") 
+
+
+westdry_depths_outliers_3_3 = 
+  westdry_depths %>% 
+  filter(probe == "3" & sensor == "3") 
+
+
+westdry_depths_outliers_3_4 = 
+  westdry_depths %>% 
+  filter(probe == "3" & sensor == "4") 
+
+westdry_depths_outliers_3_5 = 
+  westdry_depths %>% 
+  filter(probe == "3" & sensor == "5") 
+
+westdry_depths_outliers_3_6 = 
+  westdry_depths %>% 
+  filter(probe == "3" & sensor == "6") 
+
+
+westdry_depths_outliers_3_7 = 
+  westdry_depths %>% 
+  filter(probe == "3" & sensor == "7") 
+
+
+westdry_depths_outliers_3_8 = 
+  westdry_depths %>% 
+  filter(probe == "3" & sensor == "8") 
+
+
+westdry_3_1_forcombine =
+  datacleaning_function(westdry_depths_outliers_3_1)   
+
+westdry_3_2_forcombine =
+  datacleaning_function(westdry_depths_outliers_3_2)   
+
+westdry_3_3_forcombine =
+  datacleaning_function(westdry_depths_outliers_3_3)   
+
+westdry_3_4_forcombine =
+  datacleaning_function(westdry_depths_outliers_3_4)   
+
+westdry_3_5_forcombine =
+  datacleaning_function(westdry_depths_outliers_3_5)   
+
+westdry_3_6_forcombine =
+  datacleaning_function(westdry_depths_outliers_3_6)  
+
+westdry_3_7_forcombine =
+  datacleaning_function(westdry_depths_outliers_3_7)   
+
+westdry_3_8_forcombine =
+  datacleaning_function(westdry_depths_outliers_3_8) 
+
+westdry_probe3_cleaned =
+  westdry_3_1_forcombine %>% 
+  vctrs::vec_c(westdry_3_2_forcombine, westdry_3_3_forcombine,
+               westdry_3_4_forcombine, westdry_3_5_forcombine,
+               westdry_3_6_forcombine, westdry_3_7_forcombine,
+               westdry_3_8_forcombine)
+
+
+
+#####
+
+#EAST DRY PROBE 1 SENSORS 1-8 
+
+eastdry_depths_outliers_1_1 = 
+  eastdry_depths %>% 
+  filter(probe == "1" & sensor == "1") 
+
+eastdry_depths_outliers_1_2 = 
+  eastdry_depths %>% 
+  filter(probe == "1" & sensor == "2") 
+
+
+eastdry_depths_outliers_1_3 = 
+  eastdry_depths %>% 
+  filter(probe == "1" & sensor == "3") 
+
+
+eastdry_depths_outliers_1_4 = 
+  eastdry_depths %>% 
+  filter(probe == "1" & sensor == "4") 
+
+eastdry_depths_outliers_1_5 = 
+  eastdry_depths %>% 
+  filter(probe == "1" & sensor == "5") 
+
+eastdry_depths_outliers_1_6 = 
+  eastdry_depths %>% 
+  filter(probe == "1" & sensor == "6") 
+
+
+eastdry_depths_outliers_1_7 = 
+  eastdry_depths %>% 
+  filter(probe == "1" & sensor == "7") 
+
+
+eastdry_depths_outliers_1_8 = 
+  eastdry_depths %>% 
+  filter(probe == "1" & sensor == "8") 
+
+
+eastdry_1_1_forcombine =
+  datacleaning_function(eastdry_depths_outliers_1_1)   
+
+eastdry_1_2_forcombine =
+  datacleaning_function(eastdry_depths_outliers_1_2)   
+
+eastdry_1_3_forcombine =
+  datacleaning_function(eastdry_depths_outliers_1_3)   
+
+eastdry_1_4_forcombine =
+  datacleaning_function(eastdry_depths_outliers_1_4)   
+
+eastdry_1_5_forcombine =
+  datacleaning_function(eastdry_depths_outliers_1_5)   
+
+eastdry_1_6_forcombine =
+  datacleaning_function(eastdry_depths_outliers_1_6)  
+
+eastdry_1_7_forcombine =
+  datacleaning_function(eastdry_depths_outliers_1_7)   
+
+eastdry_1_8_forcombine =
+  datacleaning_function(eastdry_depths_outliers_1_8) 
+
+eastdry_probe1_cleaned =
+  eastdry_1_1_forcombine %>% 
+  vctrs::vec_c(eastdry_1_2_forcombine, eastdry_1_3_forcombine,
+               eastdry_1_4_forcombine, eastdry_1_5_forcombine,
+               eastdry_1_6_forcombine, eastdry_1_7_forcombine,
+               eastdry_1_8_forcombine)
+
+#####
+#EAST DRY PROBE 2 SENSORS 1-8 
+
+eastdry_depths_outliers_2_1 = 
+  eastdry_depths %>% 
+  filter(probe == "2" & sensor == "1") 
+
+eastdry_depths_outliers_2_2 = 
+  eastdry_depths %>% 
+  filter(probe == "2" & sensor == "2") 
+
+
+eastdry_depths_outliers_2_3 = 
+  eastdry_depths %>% 
+  filter(probe == "2" & sensor == "3") 
+
+
+eastdry_depths_outliers_2_4 = 
+  eastdry_depths %>% 
+  filter(probe == "2" & sensor == "4") 
+
+eastdry_depths_outliers_2_5 = 
+  eastdry_depths %>% 
+  filter(probe == "2" & sensor == "5") 
+
+eastdry_depths_outliers_2_6 = 
+  eastdry_depths %>% 
+  filter(probe == "2" & sensor == "6") 
+
+
+eastdry_depths_outliers_2_7 = 
+  eastdry_depths %>% 
+  filter(probe == "2" & sensor == "7") 
+
+
+eastdry_depths_outliers_2_8 = 
+  eastdry_depths %>% 
+  filter(probe == "2" & sensor == "8") 
+
+
+eastdry_2_1_forcombine =
+  datacleaning_function(eastdry_depths_outliers_2_1)   
+
+eastdry_2_2_forcombine =
+  datacleaning_function(eastdry_depths_outliers_2_2)   
+
+eastdry_2_3_forcombine =
+  datacleaning_function(eastdry_depths_outliers_2_3)   
+
+eastdry_2_4_forcombine =
+  datacleaning_function(eastdry_depths_outliers_2_4)   
+
+eastdry_2_5_forcombine =
+  datacleaning_function(eastdry_depths_outliers_2_5)   
+
+eastdry_2_6_forcombine =
+  datacleaning_function(eastdry_depths_outliers_2_6)  
+
+eastdry_2_7_forcombine =
+  datacleaning_function(eastdry_depths_outliers_2_7)   
+
+eastdry_2_8_forcombine =
+  datacleaning_function(eastdry_depths_outliers_2_8) 
+
+eastdry_probe2_cleaned =
+  eastdry_2_1_forcombine %>% 
+  vctrs::vec_c(eastdry_2_2_forcombine, eastdry_2_3_forcombine,
+               eastdry_2_4_forcombine, eastdry_2_5_forcombine,
+               eastdry_2_6_forcombine, eastdry_2_7_forcombine,
+               eastdry_2_8_forcombine)
+
+#####
+
+#EAST DRY PROBE 3 SENSORS 1-8 
+
+eastdry_depths_outliers_3_1 = 
+  eastdry_depths %>% 
+  filter(probe == "3" & sensor == "1") 
+
+eastdry_depths_outliers_3_2 = 
+  eastdry_depths %>% 
+  filter(probe == "3" & sensor == "2") 
+
+
+eastdry_depths_outliers_3_3 = 
+  eastdry_depths %>% 
+  filter(probe == "3" & sensor == "3") 
+
+
+eastdry_depths_outliers_3_4 = 
+  eastdry_depths %>% 
+  filter(probe == "3" & sensor == "4") 
+
+eastdry_depths_outliers_3_5 = 
+  eastdry_depths %>% 
+  filter(probe == "3" & sensor == "5") 
+
+eastdry_depths_outliers_3_6 = 
+  eastdry_depths %>% 
+  filter(probe == "3" & sensor == "6") 
+
+
+eastdry_depths_outliers_3_7 = 
+  eastdry_depths %>% 
+  filter(probe == "3" & sensor == "7") 
+
+
+eastdry_depths_outliers_3_8 = 
+  eastdry_depths %>% 
+  filter(probe == "3" & sensor == "8") 
+
+
+eastdry_3_1_forcombine =
+  datacleaning_function(eastdry_depths_outliers_3_1)   
+
+eastdry_3_2_forcombine =
+  datacleaning_function(eastdry_depths_outliers_3_2)   
+
+eastdry_3_3_forcombine =
+  datacleaning_function(eastdry_depths_outliers_3_3)   
+
+eastdry_3_4_forcombine =
+  datacleaning_function(eastdry_depths_outliers_3_4)   
+
+eastdry_3_5_forcombine =
+  datacleaning_function(eastdry_depths_outliers_3_5)   
+
+eastdry_3_6_forcombine =
+  datacleaning_function(eastdry_depths_outliers_3_6)  
+
+eastdry_3_7_forcombine =
+  datacleaning_function(eastdry_depths_outliers_3_7)   
+
+eastdry_3_8_forcombine =
+  datacleaning_function(eastdry_depths_outliers_3_8) 
+
+eastdry_probe3_cleaned =
+  eastdry_3_1_forcombine %>% 
+  vctrs::vec_c(eastdry_3_2_forcombine, eastdry_3_3_forcombine,
+               eastdry_3_4_forcombine, eastdry_3_5_forcombine,
+               eastdry_3_6_forcombine, eastdry_3_7_forcombine,
+               eastdry_3_8_forcombine)
+
+
+
+
+#####
+#####
+
+#final data cleaning combine
+
+alldata_cleaned =
+  westhydric_probe1_cleaned %>% 
+  vctrs::vec_c(westhydric_probe2_cleaned, westhydric_probe3_cleaned,
+          easthydric_probe1_cleaned, easthydric_probe2_cleaned,
+          easthydric_probe3_cleaned, eastmesic_probe1_cleaned,
+          eastmesic_probe2_cleaned, eastmesic_probe3_cleaned,
+          westmesic_probe1_cleaned, westmesic_probe2_cleaned,
+          westmesic_probe3_cleaned, eastdry_probe1_cleaned,
+          eastdry_probe2_cleaned, eastdry_probe3_cleaned,
+          westdry_probe1_cleaned, westdry_probe2_cleaned, westdry_probe3_cleaned,
+          )
+
+
+
+ 
+#####
+
+###go through and make sure artifacts parameters are okay.
+
+
+temporary_fig_eastmesic =
+  alldata_cleaned %>%
+  filter(position == "mesic" & site == "east") %>%
+  ggplot(aes(x = Betterdate, y = avg_values_fixed))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV")+
+  facet_wrap(site~position)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+
+ggsave("output/temporary_fig_cleaned_eastmesic.png", plot = temporary_fig_all, width = 20, height = 10)
+
+
+ 
   
 #write csv
 
-write.csv(all_combine_nosummary, "processed/all_combine_nosummary.csv")
 
-write.csv(all_combine_depthbins_nosummmary, "processed/all_combine_depthbins_nosummary.csv")
+write.csv(alldata_cleaned, "processed/all_combine.csv")
 
