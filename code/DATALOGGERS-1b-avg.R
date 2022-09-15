@@ -44,54 +44,66 @@ avg_separate <- function(dat){
 
 # run all 6 data frames
 
+#install data cleaning package
+
+# install.packages("fable")
+# install.packages("forecast")
+
+
 westhydric_avg = 
   avg_separate(westhydric_dlname) %>% 
   left_join(westhydric_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
                names_to = "redox_avg", values_to = "avg_values") %>% 
-  filter(avg_values < 1000) %>% 
-  filter(avg_values > -600) 
-
+  #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  filter(avg_values_fixed < 1000) %>% 
+  filter(avg_values_fixed > -600) 
 
 westmesic_avg = 
   avg_separate(westmesic_dlname) %>% 
   left_join(westmesic_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
                names_to = "redox_avg", values_to = "avg_values") %>% 
-  filter(avg_values < 1000) %>% 
-  filter(avg_values > -600)
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  filter(avg_values_fixed < 1000) %>% 
+  filter(avg_values_fixed > -600)
 
 westdry_avg = 
   avg_separate(westdry_dlname) %>% 
   left_join(westdry_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
                names_to = "redox_avg", values_to = "avg_values") %>% 
-  filter(avg_values < 1000) %>% 
-  filter(avg_values > -600)
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  filter(avg_values_fixed < 1000) %>% 
+  filter(avg_values_fixed > -600) 
 
 easthydric_avg = 
   avg_separate(easthydric_dlname) %>% 
   left_join(easthydric_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
                names_to = "redox_avg", values_to = "avg_values") %>% 
-  filter(avg_values < 1000) %>% 
-  filter(avg_values > -600)
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  filter(avg_values_fixed < 1000) %>% 
+  filter(avg_values_fixed > -600)
 
 eastmesic_avg = 
   avg_separate(eastmesic_dlname) %>% 
   left_join(eastmesic_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
                names_to = "redox_avg", values_to = "avg_values") %>% 
-  filter(avg_values < 1000) %>% 
-  filter(avg_values > -600)
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  filter(avg_values_fixed < 1000) %>% 
+  filter(avg_values_fixed > -600)
 
 eastdry_avg = 
   avg_separate(eastdry_dlname) %>% 
   left_join(eastdry_metadata, by = 'redox_NUM_Avg') %>% 
   pivot_longer(-c("redox_NUM_Avg", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
-               names_to = "redox_avg", values_to = "avg_values") %>% 
-  filter(avg_values < 1000) %>% 
-  filter(avg_values > -600)
+               names_to = "redox_avg", values_to = "avg_values") %>%
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  filter(avg_values_fixed < 1000) %>% 
+  filter(avg_values_fixed > -600)
 
 
 #Std 
@@ -154,15 +166,14 @@ sensor_depths =
     separate(probe_sensor, sep = "_", into = c("probe", "sensor")) %>% 
     mutate(sensor = as.numeric(sensor)) %>%
     left_join(sensor_depths) %>% 
-    #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
-    dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
-     
+    
 
     force()
   
   
 }
 
+ 
 ##depths
  
  westhydric_depths = 
@@ -191,20 +202,185 @@ sensor_depths =
  
  #data cleaning bonanza
  
-#I need to find a way to group_by so that this cleaning is happening within plots/sensors/depths/dataloggers
- cleaning_functiond <- function(dat){
-   eastdry_depths2 =
-   eastdry_depths %>% 
-  
-   mutate(lag = lag(avg_values_fixed)-avg_values_fixed,
-          lead = lead(avg_values_fixed)-avg_values_fixed) %>% 
-     mutate(laglead = case_when(lag > 200 & lead < -200 ~ 'artifact',
-                                lag < -200 & lead > 200 ~ 'artifact'))
+ datacleaning_function <- function(dat){
+   dat %>% 
+     mutate(lag = lag(avg_values_fixed)-avg_values_fixed,
+            lead = lead(avg_values_fixed)-avg_values_fixed) %>% 
+     mutate(laglead = case_when(lag > 100 & lead < -100 ~ 'artifact',
+                                lag < -100 & lead > 100 ~ 'artifact'),
+            laglead = if_else(is.na(laglead), "keep", laglead)) %>% 
+     filter(laglead == "keep")
    
-   
-   force()
  }
  
+ 
+#WEST HYDRIC PROBE 1 SENSORS 1-8 
+ 
+westhydric_depths_outliers_1_1 = 
+   westhydric_depths %>% 
+   filter(probe == "1" & sensor == "1") 
+ 
+westhydric_depths_outliers_1_2 = 
+  westhydric_depths %>% 
+  filter(probe == "1" & sensor == "2") 
+
+
+westhydric_depths_outliers_1_3 = 
+  westhydric_depths %>% 
+  filter(probe == "1" & sensor == "3") 
+
+
+westhydric_depths_outliers_1_4 = 
+  westhydric_depths %>% 
+  filter(probe == "1" & sensor == "4") 
+
+westhydric_depths_outliers_1_5 = 
+  westhydric_depths %>% 
+  filter(probe == "1" & sensor == "5") 
+
+westhydric_depths_outliers_1_6 = 
+  westhydric_depths %>% 
+  filter(probe == "1" & sensor == "6") 
+
+
+westhydric_depths_outliers_1_7 = 
+  westhydric_depths %>% 
+  filter(probe == "1" & sensor == "7") 
+
+
+westhydric_depths_outliers_1_8 = 
+  westhydric_depths %>% 
+  filter(probe == "1" & sensor == "8") 
+ 
+ 
+westhydric_1_1_forcombine =
+  datacleaning_function(westhydric_depths_outliers_1_1)   
+ 
+westhydric_1_2_forcombine =
+  datacleaning_function(westhydric_depths_outliers_1_2)   
+
+westhydric_1_3_forcombine =
+  datacleaning_function(westhydric_depths_outliers_1_3)   
+
+westhydric_1_4_forcombine =
+  datacleaning_function(westhydric_depths_outliers_1_4)   
+
+westhydric_1_5_forcombine =
+  datacleaning_function(westhydric_depths_outliers_1_5)   
+
+westhydric_1_6_forcombine =
+  datacleaning_function(westhydric_depths_outliers_1_6)  
+
+westhydric_1_7_forcombine =
+  datacleaning_function(westhydric_depths_outliers_1_7)   
+
+westhydric_1_8_forcombine =
+  datacleaning_function(westhydric_depths_outliers_1_8) 
+
+westhydric_probe1_cleaned =
+  westhydric_1_1_forcombine %>% 
+  vctrs::vec_c(westhydric_1_2_forcombine, westhydric_1_3_forcombine,
+             westhydric_1_4_forcombine, westhydric_1_5_forcombine,
+             westhydric_1_6_forcombine, westhydric_1_7_forcombine,
+             westhydric_1_8_forcombine)
+  
+#test for Beth, delete later
+
+westhydric_probe1_notcleaned =
+  westhydric_depths %>% 
+  filter(probe == "1")
+
+temporary_fig =
+  westhydric_probe1_cleaned %>% 
+  #filter(type == "temp_avg" & depth > 20) %>% 
+  ggplot(aes(x = Betterdate, y = avg_values_fixed))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV")+
+  #facet_wrap(month_name~.)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+
+ggsave("output/temporary_fig_cleaned.png", plot = temporary_fig, width = 20, height = 8)
+
+temporary_fig_notcleaned =
+  westhydric_probe1_notcleaned %>% 
+  #filter(type == "temp_avg" & depth > 20) %>% 
+  ggplot(aes(x = Betterdate, y = avg_values_fixed))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV")+
+  #facet_wrap(month_name~.)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+
+ggsave("output/temporary_fig_notcleaned.png", plot = temporary_fig_notcleaned, width = 20, height = 8)
+
+#I need to find a way to group_by so that this cleaning is happening within plots/sensors/depths/dataloggers
+
+  
+#  eastdry_depths_probe1 =
+#   eastdry_depths %>%
+#   mutate(sensor = recode(sensor, "1" = "S1", "2" = "S2", "3" = "S3", "4" = "S4")) %>% 
+#   filter(probe == 1) %>%
+#   dplyr::select(-c("depth_cm", 'RECORD', 'avg_values')) %>% 
+#   pivot_wider(names_from = 'sensor', values_from = 'avg_values_fixed') %>%
+#   mutate(lagS1 = lag(S1)-S1,
+#           leadS1 = lead(S1)-S1,
+#          lagS2 = lag(S2)-S2,
+#          leadS2 = lead(S2)-S2,
+#          lagS3 = lag(S3)-S3,
+#          leadS3 = lead(S3)-S3,
+#          lagS4 = lag(S4)-S4,
+#          leadS4 = lead(S4)-S4,
+#          ) %>% 
+#    mutate(laglead = case_when(lagS1 > 200 & leadS1 < -200 ~ 'artifact',
+#                               lagS1 < -200 & leadS1 > 200 ~ 'artifact',
+#                               lagS2 > 200 & leadS2 < -200 ~ 'artifact',
+#                               lagS2 < -200 & leadS2 > 200 ~ 'artifact',
+#                               lagS3 > 200 & leadS3 < -200 ~ 'artifact',
+#                               lagS3 < -200 & leadS3 > 200 ~ 'artifact',
+#                               lagS4 > 200 & leadS4 < -200 ~ 'artifact',
+#                               lagS4 < -200 & leadS4 > 200 ~ 'artifact'))
+#  
+#   mutate(checknum = row_number())
+# 
+# eastdry_depths_probe1_dataonly =
+#   eastdry_depths_probe1 %>% 
+#   dplyr::select(-c("lagS1", 'leadS1', 'lagS2', "leadS2",
+#                    "lagS3", "leadS3", 'lagS4', "leadS4")) %>% 
+#   pivot_longer(-c("TIMESTAMP", "site", "position", "Betterdate",
+#                   "datalogger", "probe", "Plot"),
+#                names_to = "sensor", values_to = "avg_values_fixed") %>% 
+#   mutate(sensor = recode(sensor, "S1" = 1, "S2" = 2, "S3" = 3, "S4" = 4)) %>% 
+#   na.omit() %>% 
+#   left_join(eastdry_depths)
+  
+
+###currently lag/lead are being impossible. 
+
+eastdry_depths_probe1_artifacts =
+  eastdry_depths_probe1 %>% 
+  dplyr::select(-c("S1", 'S2', 'S3', "S4")) %>% 
+  # pivot_longer(-c("TIMESTAMP", "site", "position", "Betterdate",
+  #                 "datalogger", "probe", "Plot"),
+  #              names_to = "Lags", values_to = "") %>% 
+     mutate(laglead = case_when(lagS1 > 200 & leadS1 < -200 ~ 'artifact',
+                                lagS1 < -200 & leadS1 > 200 ~ 'artifact',
+                                lagS2 > 200 & leadS2 < -200 ~ 'artifact',
+                                lagS2 < -200 & leadS2 > 200 ~ 'artifact',
+                                lagS3 > 200 & leadS3 < -200 ~ 'artifact',
+                                lagS3 < -200 & leadS3 > 200 ~ 'artifact',
+                                lagS4 > 200 & leadS4 < -200 ~ 'artifact',
+                                lagS4 < -200 & leadS4 > 200 ~ 'artifact'))
+   
+
  
  
  
