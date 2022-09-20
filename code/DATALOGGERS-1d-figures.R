@@ -39,6 +39,20 @@ combo_redox_withdepths_bins =
          depth_stop_cm = as.integer(depth_stop_cm)) %>% 
   mutate(depth2 = depth_stop_cm - depth_start_cm)
 
+combo_redox_withdepths_bins_summarised =
+  combo_redox_withdepths_bins %>% 
+  group_by(Betterdate,site, position, depth_cm) %>% 
+  dplyr::summarise(redox_avg = round(mean(avg_values_fixed),2),
+                   redox_se = round(sd(avg_values_fixed)/sqrt(n()),2)) %>% 
+  mutate(Betterdate2 = Betterdate) %>% 
+  separate(Betterdate, sep = " ", into = c("date", "time")) %>% 
+  separate(date, sep = "-", into = c("year", "month", "day")) %>%
+  dplyr::mutate(month_name = case_when(grepl("06", month)~"june",
+                                       grepl("07", month)~"july",
+                                       grepl("08", month)~"august",
+                                       grepl("09", month)~"september")) %>% 
+  mutate(month_name = factor(month_name, levels = c("june", "july", "august", "september")))
+
 final_temp_sal_moist_dailynumbers =
   final_temp_sal_moist %>% 
   separate(Betterdate, sep = " ", into = c("date", "time")) %>% 
@@ -273,7 +287,103 @@ redox_hydric_fig =
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90), legend.position = "top")
 
+redox_mesic_fig =
+  combo_redox_withdepths_bins %>% 
+  filter(position == "mesic") %>% 
+  na.omit() %>% 
+  ggplot(aes(xmin = (as.Date(Betterdate))-0.4, xmax = (as.Date(Betterdate))+0.4, ymin = depth_start_cm, ymax = depth_stop_cm, fill = avg_values_fixed))+
+  geom_rect()+
+  labs(y = "depth, cm",
+       fill = "redox potential, mV")+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_y_reverse()+
+  scale_fill_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  facet_grid(site~position)+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90), legend.position = "top")
+
+redox_dry_fig =
+  combo_redox_withdepths_bins %>% 
+  filter(position == "dry") %>% 
+  na.omit() %>% 
+  ggplot(aes(xmin = (as.Date(Betterdate))-0.4, xmax = (as.Date(Betterdate))+0.4, ymin = depth_start_cm, ymax = depth_stop_cm, fill = avg_values_fixed))+
+  geom_rect()+
+  labs(y = "depth, cm",
+       fill = "redox potential, mV")+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_y_reverse()+
+  scale_fill_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  facet_grid(site~position)+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90), legend.position = "top")
+
 ggsave("output/redoxhydric.tiff", plot = redox_hydric_fig, height = 5.5, width = 6)
+ggsave("output/redoxmesic.tiff", plot = redox_mesic_fig, height = 5.5, width = 6)
+ggsave("output/redoxdry.tiff", plot = redox_dry_fig, height = 5.5, width = 6)
+
 
 ######
+
+
+redox_point_mesic =
+  combo_redox_withdepths_bins_summarised %>%
+  filter(position == "mesic") %>%
+  ggplot(aes(x = Betterdate, y = redox_avg))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV")+
+  facet_grid(site~position)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+
+redox_point_hydric =
+  combo_redox_withdepths_bins_summarised %>%
+  filter(position == "hydric") %>%
+  ggplot(aes(x = Betterdate, y = redox_avg))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV")+
+  facet_grid(site~position)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+
+
+redox_point_dry =
+  combo_redox_withdepths_bins_summarised %>%
+  filter(position == "dry") %>%
+  ggplot(aes(x = Betterdate, y = redox_avg))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV")+
+  facet_grid(site~position)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+
+
+ggsave("output/redox_point_mesic.png", plot = redox_point_mesic, width = 30, height = 15)
+ggsave("output/redox_point_dry.png", plot = redox_point_dry, width = 30, height = 15)
+ggsave("output/redox_point_hydric.png", plot = redox_point_hydric, width = 30, height = 15)
+
+redox_point_hydric_july =
+  combo_redox_withdepths_bins_summarised %>%
+  filter(position == "hydric" & month == "07" & day == "19") %>%
+  ggplot(aes(x = time, y = redox_avg))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV")+
+  facet_grid(site~position)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
 
