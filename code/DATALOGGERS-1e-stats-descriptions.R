@@ -11,7 +11,7 @@ source("code/0-packages.R")
 
 combo_redox_withdepths = read.csv("processed/all_combine.csv")
 
-redox_nosummary = read.csv('processed/all_combine_depthbins_nosummary.csv')
+#redox_nosummary = read.csv('processed/all_combine_depthbins_nosummary.csv')
 
 final_temp_sal_moist = read.csv("processed/final_temp_salinity_avgs.csv")
 
@@ -31,22 +31,81 @@ final_temp_sal_moist_bins =
          depth_stop_cm = as.integer(depth_stop_cm)) %>% 
   mutate(depth2 = depth_stop_cm - depth_start_cm)
 
+final_temp_sal_moist_bins_forjoin =
+  final_temp_sal_moist_bins %>% 
+  dplyr::select(site, position, Betterdate, depth, moisture, temp, salinity)
 
-combo_redox_withdepths_bins =
+
+combo_redox_threedepths_avg =
   combo_redox_withdepths %>% 
-  mutate(depth_bins = cut_width(depth_cm, width = 4, center=2)) %>% 
-  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "]","")) %>% 
-  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "[","")) %>% 
-  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "(","")) %>% 
-  # now separate this into two different columns
-  separate(depth_bins, sep = ",", into = c("depth_start_cm", "depth_stop_cm")) %>% 
-  mutate(depth_start_cm = as.integer(depth_start_cm),
-         depth_stop_cm = as.integer(depth_stop_cm)) %>% 
-  mutate(depth2 = depth_stop_cm - depth_start_cm)
+  rename(depth_redox = depth_cm) %>% 
+  mutate(depth = case_when(depth_redox <= 10 ~ 5,
+                              depth_redox <= 20 ~ 15,
+                              depth_redox >= 21 ~ 25)) %>% 
+  dplyr::select(site, position, Betterdate, Plot, avg_values_fixed, depth, depth_redox) %>%
+  group_by(Betterdate, site, position, depth) %>% 
+  dplyr::summarise(depth_avg = round(mean(avg_values_fixed),2),
+                   depth_avg_se = round(sd(avg_values_fixed)/sqrt(n()),2),
+                   n = n()) %>% 
+  left_join(final_temp_sal_moist_bins_forjoin) %>% 
+  mutate(Betterdate2 = Betterdate) %>% 
+  separate(Betterdate, sep = " ", into = c("date", "time")) %>% 
+  separate(date, sep = "-", into = c("year", "month", "day")) %>%
+  dplyr::mutate(month_name = case_when(grepl("06", month)~"june",
+                                       grepl("07", month)~"july",
+                                       grepl("08", month)~"august",
+                                       grepl("09", month)~"september")) %>% 
+  mutate(month_name = factor(month_name, levels = c("june", "july", "august", "september"))) %>% 
+  rename(redox_avg = depth_avg) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) 
+  
+
+
+#####ggplots-----
+
+moistXredox =
+  combo_redox_threedepths_avg %>% 
+  ggplot()+
+  geom_point(aes(x = moisture, y = redox_avg, color = month_name),
+             alpha = 0.7)+
+  labs(fill = "month",
+       y = "redox potential, mV",
+       x = "soil moisture, %")+
+  scale_color_manual(values = natparks.pals(name = "SmokyMtns", 4))+
+  facet_grid(site~position)+
+  theme_er1()
+
+tempXredox =
+  combo_redox_threedepths_avg %>% 
+  ggplot()+
+  geom_point(aes(x = temp, y = redox_avg, color = month_name),
+             alpha = 0.7)+
+  labs(fill = "month",
+       y = "redox potential, mV",
+       x = "soil temperature, C")+
+  scale_color_manual(values = natparks.pals(name = "SmokyMtns", 4))+
+  facet_grid(site~position)+
+  theme_er1()
+
+salXredox =
+  combo_redox_threedepths_avg %>% 
+  ggplot()+
+  geom_point(aes(x = salinity, y = redox_avg, color = month_name),
+             alpha = 0.7)+
+  labs(fill = "month",
+       y = "redox potential, mV",
+       x = "salinity, uS")+
+  scale_color_manual(values = natparks.pals(name = "SmokyMtns", 4))+
+  facet_grid(site~position)+
+  theme_er1()
+
+ggsave(plot = tempXredox, "output/tempXredox.tiff", width = 8.5, height = 5.5)
+ggsave(plot = moistXredox, "output/moistXredox.tiff", width = 8.5, height = 5.5)
+ggsave(plot = salXredox, "output/salXredox.tiff", width = 8.5, height = 5.5)
 
 
 
-###### earliest thaw 
+###### earliest thaw -----
 
 fallfreeze_dat =
   final_temp_sal_moist %>% 

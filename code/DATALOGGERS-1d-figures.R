@@ -205,6 +205,8 @@ combo_redox_withdepths_bins %>%
 redox_fig =
   combo_redox_withdepths_bins %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
   na.omit() %>% 
   ggplot(aes(xmin = (as.Date(Betterdate))-0.4, xmax = (as.Date(Betterdate))+0.4, ymin = depth_start_cm, ymax = depth_stop_cm, fill = avg_values_fixed))+
   geom_rect()+
@@ -221,6 +223,8 @@ redox_fig =
 moisture_fig =
   final_temp_sal_moist_bins %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                        "west" = "non-acidic tundra")) %>% 
   na.omit() %>% 
   ggplot(aes(xmin = (as.Date(Betterdate))-0.4, xmax = (as.Date(Betterdate))+0.4, ymin = depth_start_cm, ymax = depth_stop_cm, fill = moisture))+
   geom_rect()+
@@ -237,6 +241,8 @@ moisture_fig =
 temp_fig =
   final_temp_sal_moist_bins %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
   na.omit() %>% 
   ggplot(aes(xmin = (as.Date(Betterdate))-0.4, xmax = (as.Date(Betterdate))+0.4, ymin = depth_start_cm, ymax = depth_stop_cm, fill = temp))+
   geom_rect()+
@@ -252,6 +258,8 @@ temp_fig =
 sal_fig =
   final_temp_sal_moist_bins %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
   na.omit() %>% 
   ggplot(aes(xmin = (as.Date(Betterdate))-0.4, xmax = (as.Date(Betterdate))+0.4, ymin = depth_start_cm, ymax = depth_stop_cm, fill = salinity))+
   geom_rect()+
