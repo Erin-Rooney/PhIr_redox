@@ -140,8 +140,7 @@ acidic_salmoistredox =
   filter(site == "east" & month_name == "july") %>% 
   mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
   ggplot()+
-  geom_point(aes(x = moisture, y = salinity, color = redox_avg),
-             alpha = 0.5)+
+  geom_point(aes(x = moisture, y = salinity, color = redox_avg), alpha = 0.5)+
   labs(color = "redox potential, mV",
        subtitle = "acidic tundra",
        y = "salinity, uS",
@@ -154,7 +153,101 @@ ggsave(plot = acidic_salmoistredox, "output/acidic_salmoistredox.tiff", width = 
 ggsave(plot = nonacidic_salmoistredox, "output/nonacidic_salmoistredox.tiff", width = 6.75, height = 5.75)
 
 
+
+hydricacidic_salmoistredox =
+  combo_redox_threedepths_avg %>% 
+  filter(site == "east" & month_name == "july" & position == "hydric" & depth == "5") %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture, y = salinity, fill = redox_avg, color = redox_avg),
+             shape = c(21), alpha = 0.6, size = 4)+
+  labs(color = "redox potential, mV",
+       fill = "redox potential, mV",
+       subtitle = "acidic tundra, hydric 5 cm",
+       y = "salinity, uS",
+       x = "soil moisture, %")+
+  scale_fill_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  scale_color_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  facet_grid(month_name~.)+
+  theme_er1()+
+  theme(legend.position = "right")
+
+
+hydricacidic_salmoistredox =
+  combo_redox_threedepths_avg %>% 
+  filter(site == "east" & month_name == "august" & position == "hydric" & depth == "5") %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture, y = salinity, fill = redox_avg, color = redox_avg),
+             shape = c(21), alpha = 0.6, size = 4)+
+  labs(color = "redox potential, mV",
+       fill = "redox potential, mV",
+       subtitle = "acidic tundra, hydric 5 cm",
+       y = "salinity, uS",
+       x = "soil moisture, %")+
+  scale_fill_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  scale_color_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  facet_grid(month_name~.)+
+  theme_er1()+
+  theme(legend.position = "right")
+
+drynonacidic15_salmoistredox =
+  combo_redox_threedepths_avg %>% 
+  filter(site == "west" & month_name == "july" & position == "dry" & depth == "15") %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture, y = salinity, fill = redox_avg, color = redox_avg),
+             shape = c(21), alpha = 0.6, size = 4)+
+  labs(color = "redox potential, mV",
+       fill = "redox potential, mV",
+       subtitle = "non-acidic tundra, dry 15 cm",
+       y = "salinity, uS",
+       x = "soil moisture, %")+
+  scale_fill_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  scale_color_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  #facet_grid(depth~position)+
+  theme_er1()+
+  theme(legend.position = "right")
+
+drynonacidic25_salmoistredox =
+  combo_redox_threedepths_avg %>% 
+  filter(site == "west" & month_name == "july" & position == "dry" & depth == "25") %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture, y = salinity, fill = redox_avg, color = redox_avg),
+             shape = c(21), alpha = 0.6, size = 4)+
+  labs(color = "redox potential, mV",
+       fill = "redox potential, mV",
+       subtitle = "non-acidic tundra, dry 25 cm",
+       y = "salinity, uS",
+       x = "soil moisture, %")+
+  scale_fill_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  scale_color_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  #facet_grid(depth~position)+
+  theme_er1()+
+  theme(legend.position = "right")
+
+ggsave(plot = hydricacidic_salmoistredox, "output/hydricacidic_salmoistredox.tiff", width = 6, height = 4)
+ggsave(plot = drynonacidic15_salmoistredox, "output/drynonacidic15_salmoistredox.tiff", width = 6, height = 4)
+ggsave(plot = drynonacidic25_salmoistredox, "output/drynonacidic25_salmoistredox.tiff", width = 6, height = 4)
+
+######
+
+hydricacidic_salmoistredox_DATA =
+  combo_redox_threedepths_avg %>% 
+  filter(site == "east" & month_name == "july" & position == "hydric" & depth == "5") 
+
+
+
+
+
+
+
+
 ###### earliest thaw -----
+
+
+
 
 fallfreeze_dat =
   final_temp_sal_moist %>% 
