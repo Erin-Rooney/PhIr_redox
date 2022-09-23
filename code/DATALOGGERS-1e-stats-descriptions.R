@@ -58,7 +58,42 @@ combo_redox_threedepths_avg =
   mutate(month_name = factor(month_name, levels = c("june", "july", "august", "september"))) %>% 
   rename(redox_avg = depth_avg) %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) 
+
+
+final_temp_sal_moist_bins_forjoin_daily =
+  final_temp_sal_moist_bins_forjoin %>% 
+  separate(Betterdate, sep = " ", into = c("date", "time")) %>% 
+  separate(date, sep = "-", into = c("year", "month", "day")) %>% 
+  group_by(site, position, month, day, depth) %>% 
+  dplyr::summarise(temp_avg = round(mean(temp),2),
+                   temp_se = round(sd(temp)/sqrt(n()),2),
+                   moisture_avg = round(mean(moisture),2),
+                   moisture_se = round(sd(moisture)/sqrt(n()),2),
+                   salinity_avg = round(mean(salinity),2),
+                   salinity_se = round(sd(salinity)/sqrt(n()),2))
+
   
+combo_redox_threedepths_avgdaily =
+  combo_redox_withdepths %>% 
+  rename(depth_redox = depth_cm) %>% 
+  mutate(depth = case_when(depth_redox <= 10 ~ 5,
+                           depth_redox <= 20 ~ 15,
+                           depth_redox >= 21 ~ 25)) %>% 
+  separate(Betterdate, sep = " ", into = c("date", "time")) %>% 
+  separate(date, sep = "-", into = c("year", "month", "day")) %>%
+  dplyr::select(site, position, Plot, avg_values_fixed, month, day, depth, depth_redox) %>%
+  group_by(site, position, month, day, depth) %>% 
+  dplyr::summarise(depth_avg = round(mean(avg_values_fixed),2),
+                   depth_avg_se = round(sd(avg_values_fixed)/sqrt(n()),2),
+                   n = n()) %>% 
+  left_join(final_temp_sal_moist_bins_forjoin_daily) %>% 
+  rename(redox_avg = depth_avg) %>% 
+  dplyr::mutate(month_name = case_when(grepl("06", month)~"june",
+                                       grepl("07", month)~"july",
+                                       grepl("08", month)~"august",
+                                       grepl("09", month)~"september")) %>%
+  mutate(month_name = factor(month_name, levels = c("june", "july", "august", "september"))) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) 
 
 
 #####ggplots-----
@@ -237,6 +272,102 @@ hydricacidic_salmoistredox_DATA =
   combo_redox_threedepths_avg %>% 
   filter(site == "east" & month_name == "july" & position == "hydric" & depth == "5") 
 
+
+#all data but only for Fe important redox
+
+combo_redox_threedepths_avg %>% 
+  filter(redox_avg > 200 & redox_avg < 300) %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture, y = salinity, fill = position, color = position, shape = site),
+             alpha = 0.6, size = 4)+
+  labs(color = "redox potential, mV",
+       fill = "redox potential, mV",
+       subtitle = "Redox potentials 200-300 mV",
+       y = "salinity, uS",
+       x = "soil moisture, %")+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Shuksan", 3)))+
+  scale_color_manual(values = (PNWColors::pnw_palette("Shuksan", 3)))+
+  facet_grid(depth~.)+
+  theme_er1()+
+  theme(legend.position = "right")
+
+
+combo_redox_threedepths_avg %>% 
+  filter(redox_avg < 200) %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture, y = salinity, fill = position, color = position, shape = site),
+             alpha = 0.6, size = 2.5)+
+  labs(color = "redox potential, mV",
+       fill = "redox potential, mV",
+       subtitle = "Redox potentials < 300 mV",
+       y = "salinity, uS",
+       x = "soil moisture, %")+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Shuksan", 3)))+
+  scale_color_manual(values = (PNWColors::pnw_palette("Shuksan", 3)))+
+  facet_grid(depth~.)+
+  theme_er1()+
+  theme(legend.position = "right")
+
+
+  combo_redox_threedepths_avg %>% 
+  filter(redox_avg > 300) %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture, y = salinity, fill = position, color = position, shape = site),
+             alpha = 0.6, size = 2.5)+
+  labs(color = "redox potential, mV",
+       fill = "redox potential, mV",
+       subtitle = "Redox potentials > 300 mV",
+       y = "salinity, uS",
+       x = "soil moisture, %")+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Shuksan", 3)))+
+  scale_color_manual(values = (PNWColors::pnw_palette("Shuksan", 3)))+
+  facet_grid(depth~.)+
+  theme_er1()+
+  theme(legend.position = "right")
+
+lessthan300redox =
+  combo_redox_threedepths_avgdaily %>% 
+  filter(redox_avg < 300) %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture_avg, y = salinity_avg, fill = position, color = position, shape = site),
+             alpha = 0.6, size = 4)+
+  labs(color = "redox potential, mV",
+       fill = "redox potential, mV",
+       subtitle = "Redox potentials < 300 mV",
+       y = "salinity, uS",
+       x = "soil moisture, %")+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Shuksan", 3)))+
+  scale_color_manual(values = (PNWColors::pnw_palette("Shuksan", 3)))+
+  facet_grid(depth~.)+
+  theme_er1()+
+  theme(legend.position = "right")
+
+greaterthan300redox =
+  combo_redox_threedepths_avgdaily %>% 
+  filter(redox_avg > 300) %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture_avg, y = salinity_avg, fill = position, color = position, shape = site),
+             alpha = 0.6, size = 4)+
+  labs(color = "redox potential, mV",
+       fill = "redox potential, mV",
+       subtitle = "Redox potentials > 300 mV",
+       y = "salinity, uS",
+       x = "soil moisture, %")+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Shuksan", 3)))+
+  scale_color_manual(values = (PNWColors::pnw_palette("Shuksan", 3)))+
+  facet_grid(depth~.)+
+  theme_er1()+
+  theme(legend.position = "right")
+
+ggsave(plot = lessthan300redox, "output/lessthan300redox.tiff", width = 4.5, height = 6)
+ggsave(plot = greaterthan300redox, "output/greaterthan300redox.tiff", width = 4.5, height = 6)
+
+#############
 
 
 
