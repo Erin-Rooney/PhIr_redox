@@ -103,6 +103,55 @@ ggsave(plot = tempXredox, "output/tempXredox.tiff", width = 8.5, height = 5.5)
 ggsave(plot = moistXredox, "output/moistXredox.tiff", width = 8.5, height = 5.5)
 ggsave(plot = salXredox, "output/salXredox.tiff", width = 8.5, height = 5.5)
 
+#####ggplots by depth------
+
+moistXredoxeast =
+  combo_redox_threedepths_avg %>% 
+  filter(site == "east" & month_name == "july") %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture, y = redox_avg, color = depth),
+             alpha = 0.5)+
+  labs(fill = "month",
+       y = "redox potential, mV",
+       x = "soil moisture, %")+
+  scale_color_manual(values = natparks.pals(name = "Banff"))+
+  facet_grid(.~position)+
+  theme_er1()
+
+
+nonacidic_salmoistredox =
+  combo_redox_threedepths_avg %>% 
+  filter(site == "west" & month_name == "july") %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture, y = salinity, color = redox_avg),
+             alpha = 0.5)+
+  labs(color = "redox potenital, mV",
+       subtitle = "non-acidic tundra",
+       y = "salinity, uS",
+       x = "soil moisture, %")+
+  scale_color_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  facet_grid(depth~position)+
+  theme_er1()
+
+acidic_salmoistredox =
+  combo_redox_threedepths_avg %>% 
+  filter(site == "east" & month_name == "july") %>% 
+  mutate(depth = factor(depth, levels = c("5", "15", "25"))) %>% 
+  ggplot()+
+  geom_point(aes(x = moisture, y = salinity, color = redox_avg),
+             alpha = 0.5)+
+  labs(color = "redox potential, mV",
+       subtitle = "acidic tundra",
+       y = "salinity, uS",
+       x = "soil moisture, %")+
+  scale_color_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+  facet_grid(depth~position)+
+  theme_er1()
+
+ggsave(plot = acidic_salmoistredox, "output/acidic_salmoistredox.tiff", width = 6.75, height = 5.75)
+ggsave(plot = nonacidic_salmoistredox, "output/nonacidic_salmoistredox.tiff", width = 6.75, height = 5.75)
 
 
 ###### earliest thaw -----
