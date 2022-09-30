@@ -43,7 +43,8 @@ enzymes2021_fixed =
   dplyr::mutate(plotnum = case_when(grepl("1", plot)~"1",
                                     grepl("2", plot)~"2",
                                     grepl("3", plot)~"3")) %>% 
-  mutate(site = factor(site, levels = c("Dry", "Mesic", "Hydric")))
+  mutate(site = factor(site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  filter(month == "Aug")
 
 
 enzymes2022_fixed_longer =

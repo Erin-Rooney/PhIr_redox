@@ -90,6 +90,19 @@ thaw_depths_fig =
 
 ggsave("output/thawdepthsfig.TIFF", plot = thaw_depths_fig, height = 6, width = 5.75)
 
+thaw_depths_fig_30 =
+  thaw_depths_cleaned %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  ggplot()+
+    geom_point(aes(x = as.Date(date2), y = thaw_depth_cm), fill = "black", shape = c(21), alpha = 0.4)+
+    labs(x = "Date",
+       y = "Thaw Depth, cm")+
+  scale_y_reverse(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100))+
+  facet_grid(Site~Area)+
+  theme_er1()
+
+ggsave("output/thawdepthsfig30.TIFF", plot = thaw_depths_fig_30, height = 6, width = 5.75)
+
 
 bulk_density_fig =
   bd_grav_cleaned %>% 
