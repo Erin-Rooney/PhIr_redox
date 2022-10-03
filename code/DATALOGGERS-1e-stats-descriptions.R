@@ -117,7 +117,7 @@ write.csv(combo_redox_unbinned_avgdaily, "processed/dailyredox_unbinned.csv")
 #####ggplots-----
 
 
-
+#dual plot for redox x moisture  or redox x thaw depth...
 
 
 
