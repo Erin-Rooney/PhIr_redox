@@ -126,3 +126,122 @@ rain_EDC =
   #   airtemp_EDC/snow_EDC/rain_EDC+ #combines the two plots
   #     plot_layout(guides = "collect") # sets a common legend  
   
+###add in the redox data------------
+  
+daileyredoxunbinned = read.csv('processed/dailyredox_unbinned.csv')
+
+  
+daily_redox_forfigs = 
+  daileyredoxunbinned %>% 
+  mutate(year = 2021) %>% 
+  mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  na.omit() 
+  
+###temp----
+
+final_temp_sal_moist = read.csv("processed/final_temp_salinity_avgs.csv")
+
+final_temp_sal_moist_forfig =
+  final_temp_sal_moist %>% 
+  separate(TIMESTAMP, sep = " ", into = c("date2", "time")) %>% 
+  separate(date2, sep = "/", into =c('month', 'day', 'year')) %>% 
+  mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  dplyr::rename(depth_cm = depth) %>% 
+  na.omit() 
+  
+daily_redox_forfigs %>% 
+  filter(date < "2021-07-05" & date > "2021-06-01") %>% 
+    ggplot(aes(x = date, y = depth_cm))+
+    geom_point(aes(color = depth_avg))+
+    geom_point(data = final_temp_sal_moist_forfig %>% filter(temp < 1 & date < "2021-07-05" & date > "2021-06-01"),
+             size = 2, color = "Red"
+             )+
+    labs(y = "depth, cm")+
+    scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+  scale_y_reverse()+
+    scale_color_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
+    theme_er1()+
+    theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+    facet_grid(position~site)    
+  
+coeff <- 7.5
+
+hydric_dual =
+  final_temp_sal_moist_forfig %>% 
+  filter(depth_cm == 25 & position == "hydric") %>% 
+  ggplot(aes(x = date))+
+  geom_line(aes(y = moisture), color = "blue", size = 1.25, linetype = "dashed")+
+  geom_line(aes(y = temp*coeff), size = 0.8)+
+  labs(subtitle = "Hydric")+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_y_continuous(name = "Soil Moisture (dashed blue line)",
+                     sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~site, scales="free")    
+
+mesic_dual =
+  final_temp_sal_moist_forfig %>% 
+  filter(depth_cm == 25 & position == "mesic") %>% 
+  ggplot(aes(x = date))+
+  geom_line(aes(y = moisture), color = "blue", size = 1.25, linetype = "dashed")+
+  geom_line(aes(y = temp*coeff), size = 0.8)+
+  labs(subtitle = "Mesic")+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_y_continuous(name = "Soil Moisture (dashed blue line)",
+                     sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~site, scales="free")    
+
+dry_dual =
+  final_temp_sal_moist_forfig %>% 
+  filter(depth_cm == 25 & position == "dry") %>% 
+  ggplot(aes(x = date))+
+  geom_line(aes(y = moisture), color = "blue", size = 1.25, linetype = "dashed")+
+  geom_line(aes(y = temp*coeff), size = 0.8)+
+  labs(subtitle = "Dry")+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_y_continuous(name = "Soil Moisture (dashed blue line)",
+                     sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~site, scales="free") 
+
+combo_dual = dry_dual + mesic_dual + hydric_dual
+
+
+ggsave("output/combo_dual.png", plot = combo_dual, width = 15, height = 4)
+ggsave("output/dry_dual.png", plot = dry_dual, width = 8, height = 5)
+ggsave("output/mesic_dual.png", plot = mesic_dual, width = 8, height = 5)
+ggsave("output/hydric_dual.png", plot = hydric_dual, width = 8, height = 5)
+
+
+
+final_temp_sal_moist_forfig %>% 
+  filter(depth_cm == 25) %>% 
+  ggplot(aes(x = date))+
+  geom_line(aes(y = moisture))+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+   theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(position~site)    
+
+
+final_temp_sal_moist_forfig %>% 
+  filter(depth_cm == 25 & position == "hydric") %>% 
+  ggplot(aes(x = date))+
+  geom_line(aes(y = temp))+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~site)    
+
+
+  

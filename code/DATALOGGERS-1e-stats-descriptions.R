@@ -95,8 +95,38 @@ combo_redox_threedepths_avgdaily =
   mutate(month_name = factor(month_name, levels = c("june", "july", "august", "september"))) %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) 
 
+combo_redox_unbinned_avgdaily =
+  combo_redox_withdepths %>% 
+  separate(Betterdate, sep = " ", into = c("date", "time")) %>% 
+  separate(date, sep = "-", into = c("year", "month", "day")) %>%
+  dplyr::select(site, position, Plot, avg_values_fixed, month, day, depth_cm) %>%
+  group_by(site, position, month, day, depth_cm) %>% 
+  dplyr::summarise(depth_avg = round(mean(avg_values_fixed),2),
+                   depth_avg_se = round(sd(avg_values_fixed)/sqrt(n()),2),
+                   n = n()) %>% 
+  dplyr::mutate(month_name = case_when(grepl("06", month)~"june",
+                                       grepl("07", month)~"july",
+                                       grepl("08", month)~"august",
+                                       grepl("09", month)~"september")) %>%
+  mutate(month_name = factor(month_name, levels = c("june", "july", "august", "september"))) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) 
+
+write.csv(combo_redox_unbinned_avgdaily, "processed/dailyredox_unbinned.csv") 
+
 
 #####ggplots-----
+
+
+
+
+
+
+
+
+
+
+
+
 
 moistXredox =
   combo_redox_threedepths_avg %>% 
