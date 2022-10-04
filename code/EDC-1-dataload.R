@@ -277,33 +277,35 @@ coeff1 <- 10
 
 hydric_dual_temps =
   dualplot_temp_moist_airtemp %>% 
-  filter(depth_cm == 25 & position == "hydric") %>% 
+  filter(position == "hydric") %>% 
   ggplot(aes(x = date))+
-  geom_line(aes(y = air_temp_3m_avg), color = c("#f28482"), size = 1)+
-  geom_line(aes(y = temp*coeff), size = 0.8)+
-  labs(subtitle = "Hydric")+
+  geom_line(aes(y = air_temp_3m_avg), color = c("#ffd60a"), size = 1)+
+  geom_line(aes(y = temp*2, color = site), size = 0.65)+
+  labs(subtitle = "Hydric", color = "site")+
   scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
-  scale_y_continuous(name = "Air Temperature (orange line)",
-                     sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
+  scale_y_continuous(name = "Air Temperature (gold line)",
+                     sec.axis = sec_axis(~./2, name = "Soil Temperature"))+
+  scale_color_manual(values = c("#0a9396", "#ee9b00"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
-  facet_grid(.~site, scales="free")    
+  facet_grid(depth_cm~., scales="free")    
 
 
 
 hydric_dual_rain_temp =
   dualplot_temp_moist %>% 
-  filter(depth_cm == 25 & position == "hydric") %>% 
+  filter(position == "hydric") %>% 
   ggplot(aes(x = date))+
-  geom_line(aes(y = temp), size = 0.8)+
-  geom_line(aes(y = rain_avg*10), color = c("#a2d2ff"), size = 1)+
-  labs(subtitle = "Hydric")+
+  geom_line(aes(y = temp, color = site), size = 0.6)+
+  geom_line(aes(y = rain_avg*20), color = c("#001219"), size = 1)+
+  labs(subtitle = "Hydric", color = "site")+
   scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
   scale_y_continuous(name = "Soil Temperature, C",
-                     sec.axis = sec_axis(~./10, name = "Rain, mm (blue line)"))+
+                     sec.axis = sec_axis(~./20, name = "Rain, mm (black line)"))+
+  scale_color_manual(values = c("#0a9396", "#ee9b00"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
-  facet_grid(.~site, scales="free")    
+  facet_grid(depth_cm~., scales="free")    
 
 
 hydric_dual_airtemp_moisture =
@@ -323,24 +325,25 @@ hydric_dual_airtemp_moisture =
 
 hydric_dual_rain_moisture =
 dualplot_temp_moist %>% 
-  filter(depth_cm == 25 & position == "hydric") %>% 
+  filter(position == "hydric") %>% 
   ggplot(aes(x = date))+
-  geom_line(aes(y = rain_avg), color = c("#a2d2ff"), size = 1)+
-  geom_line(aes(y = moisture/50), size = 0.8)+
+  geom_line(aes(y = rain_avg), color = c("#001219"), size = 1)+
+  geom_line(aes(y = (moisture/100), color = site), size = 0.8)+
   labs(subtitle = "Hydric")+
   scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
-  scale_y_continuous(name = "Rain, mm (blue line)",
-                     sec.axis = sec_axis(~.*50, name = "Soil Moisture, %"))+
+  scale_y_continuous(name = "Rain, mm (black line)",
+                     sec.axis = sec_axis(~.*100, name = "Soil Moisture, %"))+
+  scale_color_manual(values = c("#0a9396", "#ee9b00"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
-  facet_grid(.~site, scales="free")  
+  facet_grid(depth_cm~.)
 
 
 
-ggsave("output/hydric_dual_temps.png", plot = hydric_dual_temps, width = 8, height = 5)
-ggsave("output/hydric_dual_rain_temp.png", plot = hydric_dual_rain_temp, width = 8, height = 5)
+ggsave("output/hydric_dual_temps.png", plot = hydric_dual_temps, width = 6, height = 6)
+ggsave("output/hydric_dual_rain_temp.png", plot = hydric_dual_rain_temp, width = 6, height = 6)
 ggsave("output/hydric_dual_airtemp_moisture.png", plot = hydric_dual_airtemp_moisture, width = 8, height = 5)
-ggsave("output/hydric_dual_rain_moisture.png", plot = hydric_dual_rain_moisture, width = 8, height = 5)
+ggsave("output/hydric_dual_rain_moisture.png", plot = hydric_dual_rain_moisture, width = 6, height = 6)
 
 ###stats-----
 
