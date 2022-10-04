@@ -155,20 +155,23 @@ final_temp_sal_moist_forfig =
   dplyr::rename(depth_cm = depth) %>% 
   na.omit() 
   
+daily_redox_wred =
 daily_redox_forfigs %>% 
-  filter(date < "2021-07-05" & date > "2021-06-01") %>% 
+  filter(date < "2021-07-15" & date > "2021-06-01") %>% 
     ggplot(aes(x = date, y = depth_cm))+
     geom_point(aes(color = depth_avg))+
     geom_point(data = final_temp_sal_moist_forfig %>% filter(temp < 1 & date < "2021-07-05" & date > "2021-06-01"),
              size = 2, color = "Red"
              )+
-    labs(y = "depth, cm")+
+    labs(y = "depth, cm", colors = "redox potential, mV")+
     scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
   scale_y_reverse()+
     scale_color_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
     theme_er1()+
     theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
-    facet_grid(position~site)    
+    facet_grid(position~site) 
+
+ggsave("output/daily_redox_wred.png", plot = daily_redox_wred, width = 8, height = 5.5)
   
 coeff <- 7.5
 
@@ -176,11 +179,11 @@ hydric_dual =
   final_temp_sal_moist_forfig %>% 
   filter(depth_cm == 25 & position == "hydric") %>% 
   ggplot(aes(x = date))+
-  geom_line(aes(y = moisture), color = "blue", size = 1.25, linetype = "dashed")+
+  geom_line(aes(y = moisture), color = c("#c8b6ff"), size = 1)+
   geom_line(aes(y = temp*coeff), size = 0.8)+
   labs(subtitle = "Hydric")+
   scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
-  scale_y_continuous(name = "Soil Moisture (dashed blue line)",
+  scale_y_continuous(name = "Soil Moisture, (purple line)",
                      sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
@@ -190,11 +193,11 @@ mesic_dual =
   final_temp_sal_moist_forfig %>% 
   filter(depth_cm == 25 & position == "mesic") %>% 
   ggplot(aes(x = date))+
-  geom_line(aes(y = moisture), color = "blue", size = 1.25, linetype = "dashed")+
+  geom_line(aes(y = moisture), color = c("#c8b6ff"), size = 1)+
   geom_line(aes(y = temp*coeff), size = 0.8)+
   labs(subtitle = "Mesic")+
   scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
-  scale_y_continuous(name = "Soil Moisture (dashed blue line)",
+  scale_y_continuous(name = "Soil Moisture (purple line)",
                      sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
@@ -204,11 +207,11 @@ dry_dual =
   final_temp_sal_moist_forfig %>% 
   filter(depth_cm == 25 & position == "dry") %>% 
   ggplot(aes(x = date))+
-  geom_line(aes(y = moisture), color = "blue", size = 1.25, linetype = "dashed")+
+  geom_line(aes(y = moisture), color = c("#c8b6ff"), size = 1)+
   geom_line(aes(y = temp*coeff), size = 0.8)+
   labs(subtitle = "Dry")+
   scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
-  scale_y_continuous(name = "Soil Moisture (dashed blue line)",
+  scale_y_continuous(name = "Soil Moisture (purple line)",
                      sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
@@ -243,5 +246,143 @@ final_temp_sal_moist_forfig %>%
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
   facet_grid(.~site)    
 
+#############dual plots for EDC x dataloggers-----
 
-  
+dualplot_temp_moist_airtemp =
+  final_temp_sal_moist_forfig %>% 
+  left_join(climate_1hr_data_airtemp_cleaned)
+
+dualplot_temp_moist =
+  final_temp_sal_moist_forfig %>% 
+  left_join(climate_1hr_data_cleaned)
+
+coeff <- 2
+
+hydric_dual_temps =
+  dualplot_temp_moist_airtemp %>% 
+  filter(depth_cm == 25 & position == "hydric") %>% 
+  ggplot(aes(x = date))+
+  geom_line(aes(y = air_temp_3m_avg), color = "blue", size = 1)+
+  geom_line(aes(y = temp*coeff), size = 0.8)+
+  labs(subtitle = "Hydric")+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_y_continuous(name = "Air Temperature (dashed blue line)",
+                     sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~site, scales="free")    
+
+coeff1 <- 10
+
+
+hydric_dual_temps =
+  dualplot_temp_moist_airtemp %>% 
+  filter(depth_cm == 25 & position == "hydric") %>% 
+  ggplot(aes(x = date))+
+  geom_line(aes(y = air_temp_3m_avg), color = c("#f28482"), size = 1)+
+  geom_line(aes(y = temp*coeff), size = 0.8)+
+  labs(subtitle = "Hydric")+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_y_continuous(name = "Air Temperature (orange line)",
+                     sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~site, scales="free")    
+
+
+
+hydric_dual_rain_temp =
+  dualplot_temp_moist %>% 
+  filter(depth_cm == 25 & position == "hydric") %>% 
+  ggplot(aes(x = date))+
+  geom_line(aes(y = temp), size = 0.8)+
+  geom_line(aes(y = rain_avg*10), color = c("#a2d2ff"), size = 1)+
+  labs(subtitle = "Hydric")+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_y_continuous(name = "Soil Temperature, C",
+                     sec.axis = sec_axis(~./10, name = "Rain, mm (blue line)"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~site, scales="free")    
+
+
+hydric_dual_airtemp_moisture =
+  dualplot_temp_moist_airtemp %>% 
+  filter(depth_cm == 25 & position == "hydric") %>% 
+  ggplot(aes(x = date))+
+  geom_line(aes(y = air_temp_3m_avg), color = c("#f28482"), size = 1)+
+  geom_line(aes(y = moisture/coeff), size = 0.8)+
+  labs(subtitle = "Hydric")+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_y_continuous(name = "Air Temperature, C (orange line)",
+                     sec.axis = sec_axis(~.*coeff, name = "Soil Moisture, %"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~site, scales="free")    
+
+
+hydric_dual_rain_moisture =
+dualplot_temp_moist %>% 
+  filter(depth_cm == 25 & position == "hydric") %>% 
+  ggplot(aes(x = date))+
+  geom_line(aes(y = rain_avg), color = c("#a2d2ff"), size = 1)+
+  geom_line(aes(y = moisture/50), size = 0.8)+
+  labs(subtitle = "Hydric")+
+  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_y_continuous(name = "Rain, mm (blue line)",
+                     sec.axis = sec_axis(~.*50, name = "Soil Moisture, %"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~site, scales="free")  
+
+
+
+ggsave("output/hydric_dual_temps.png", plot = hydric_dual_temps, width = 8, height = 5)
+ggsave("output/hydric_dual_rain_temp.png", plot = hydric_dual_rain_temp, width = 8, height = 5)
+ggsave("output/hydric_dual_airtemp_moisture.png", plot = hydric_dual_airtemp_moisture, width = 8, height = 5)
+ggsave("output/hydric_dual_rain_moisture.png", plot = hydric_dual_rain_moisture, width = 8, height = 5)
+
+###stats-----
+
+library(nlme)
+
+soiltemplme = lme(temp ~ rain_avg*moisture*snow_depth_1hr_avg, random = ~1|date, na.action = na.omit, data = dualplot_temp_moist %>% filter(position == 'hydric'))
+                                                                                                   
+summary(soiltemplme)
+print(soiltemplme)
+fortable = anova(soiltemplme)
+
+fortable %>% 
+  broom::tidy()
+
+write.csv(fortable, "output/lme_soiltemperature.csv")
+
+
+soiltemplme_mesic = lme(temp ~ rain_avg*moisture*snow_depth_1hr_avg, random = ~1|date, na.action = na.omit, data = dualplot_temp_moist %>% filter(position == 'mesic'))
+
+summary(soiltemplme_mesic)
+print(soiltemplme_mesic)
+fortable_mesic = anova(soiltemplme_mesic)
+
+fortable_mesic %>% 
+  broom::tidy()
+
+write.csv(fortable_mesic, "output/lme_soiltemperature_mesic.csv")
+
+
+dualplot_temp_moist_datefilter =
+  dualplot_temp_moist %>% 
+  dplyr::select(-c(air_temp_1m_avg)) %>% 
+  filter(date < '2021-09-16')
+
+soiltemplme_dry = lme(temp ~ rain_avg*moisture*snow_depth_1hr_avg, random = ~1|date, na.action = na.omit, data = dualplot_temp_moist_datefilter %>% filter(position == 'dry'))
+
+summary(soiltemplme_dry)
+print(soiltemplme_dry)
+fortable_dry = anova(soiltemplme_dry)
+
+fortable_dry %>% 
+  broom::tidy()
+
+write.csv(fortable_dry, "output/lme_soiltemperature_dry.csv")
+
