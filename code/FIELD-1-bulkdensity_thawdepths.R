@@ -116,6 +116,18 @@ bulk_density_fig =
   facet_grid(Site~Area)+
   theme_er1()
 
+bulk_density_fig2 =
+  bd_grav_cleaned %>% 
+  na.omit() %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  ggplot()+
+  geom_point(aes(y = grav_water_gh20_per_gdrysoil, x = soil_bulk_density_g_cm3, fill = Horizon), shape = c(21), 
+             size = 3, alpha = 0.4)+
+  labs(y = "volumetric soil water (g/g of dry soil)",
+       x = "soil bulk density, g/cm3")+
+  facet_grid(Site~Area)+
+  theme_er1()
+
 bulk_density_fig3 =
   bd_grav_cleaned %>% 
   na.omit() %>% 
@@ -171,16 +183,43 @@ soilmoisture_fig1=
   theme_er1()+
   theme(legend.position = "top")
 
+volumetricwater_fig=
+  bd_grav_cleaned %>% 
+  na.omit() %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(soil_material = factor(soil_material, levels = c("organic", "mineral"))) %>% 
+  ggplot()+
+  geom_point(aes(y = real_depth_cm, x = grav_water_gh20_per_gdrysoil, fill = soil_material), shape = c(21), 
+             size = 3, alpha = 0.4)+
+  labs(y = "depth, cm",
+       x = "volumetric water content (g per g of dry soil)",
+       fill = " ")+
+  scale_y_reverse()+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Sunset2", 2)))+
+  facet_grid(Site~Area)+
+  theme_er1()+
+  theme(legend.position = "top")
+
 ggsave("output/soilmoisture_fig1.TIFF", plot = soilmoisture_fig1, height = 6, width = 5)
 
+ggsave("output/volumetricwater_fig.TIFF", plot = volumetricwater_fig, height = 6, width = 5)
+ggsave("output/volumetricwater_fig.png", plot = volumetricwater_fig, height = 6, width = 5)
+
+combo_volumetricwater_bulkdensity = 
+  volumetricwater_fig+bulk_density_fig3+ #combines the two plots
+  plot_layout(guides = "collect") &
+  theme(legend.position='bottom') # sets a common legend
 
 combo_soilmoisture_bulkdensity = 
   soilmoisture_fig1+bulk_density_fig3+ #combines the two plots
   plot_layout(guides = "collect") &
   theme(legend.position='bottom') # sets a common legend
 
+
 ggsave("output/combo_soilmoisture_bulkdensity.TIFF", plot = combo_soilmoisture_bulkdensity, height = 5, width = 8)
 ggsave("output/combo_soilmoisture_bulkdensity.png", plot = combo_soilmoisture_bulkdensity, height = 5, width = 8)
 
+ggsave("output/combo_volumetricwater_bulkdensity.TIFF", plot = combo_volumetricwater_bulkdensity, height = 5, width = 8)
+ggsave("output/combo_volumetricwater_bulkdensity.png", plot = combo_volumetricwater_bulkdensity, height = 5, width = 8)
 
 #STATS
