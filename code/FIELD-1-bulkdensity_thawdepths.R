@@ -292,6 +292,21 @@ spfig %>%
 
 ggsave("figures_finalized/grav_bd.png", plot = grav_bd, width = 9, height = 5)
 
+vwc_bd =
+  spfig %>% 
+  ggplot(aes(x = Site))+
+  geom_col(aes(y = vwc_avg, fill = soil_material), color = c("#3a86ff"), alpha = 0.7, position = "dodge", width = 0.4)+
+  geom_point(aes(y = bd_avg/2), fill = c("#ffbd00"), shape = c(21), size = 4)+
+  scale_y_continuous(name = "volumetric water content, g/cm3 (bar)",
+                     sec.axis = sec_axis(~.*2, name = "bulk density, g/cm3 (gold point)"))+
+  labs(fill = "")+
+  scale_fill_manual(values = c("#6d6875", "#b5838d"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(soil_material~Area) 
+
+ggsave("figures_finalized/vwc_bd.png", plot = vwc_bd, width = 9, height = 5)
+
 
 depths_fig =
 spfig %>% 
