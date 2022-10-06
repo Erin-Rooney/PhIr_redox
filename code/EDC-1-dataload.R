@@ -271,7 +271,7 @@ hydric_dual_temps =
   labs(subtitle = "Hydric", x = "Date",
        caption = "depth = 25 cm")+
   scale_x_datetime(date_breaks = "1 week")+
-  scale_y_continuous(name = "Air Temperature (dashed blue line)",
+  scale_y_continuous(name = "Air Temperature (light blue line)",
                      sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
