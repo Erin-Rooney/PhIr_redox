@@ -228,6 +228,10 @@ ggsave("output/combo_dual.png", plot = combo_dual, width = 15, height = 4)
 ggsave("output/dry_dual.png", plot = dry_dual, width = 8, height = 5)
 ggsave("output/mesic_dual.png", plot = mesic_dual, width = 8, height = 5)
 ggsave("output/hydric_dual.png", plot = hydric_dual, width = 8, height = 5)
+ggsave("figures_finalized/combo_dual.png", plot = combo_dual, width = 15, height = 4)
+ggsave("figures_finalized/dry_dual.png", plot = dry_dual, width = 8, height = 5)
+ggsave("figures_finalized/mesic_dual.png", plot = mesic_dual, width = 8, height = 5)
+ggsave("figures_finalized/hydric_dual.png", plot = hydric_dual, width = 8, height = 5)
 
 
 
