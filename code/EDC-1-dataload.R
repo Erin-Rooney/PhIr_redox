@@ -266,9 +266,10 @@ hydric_dual_temps =
   dualplot_temp_moist_airtemp %>% 
   filter(depth_cm == 25 & position == "hydric") %>% 
   ggplot(aes(x = datetime))+
-  geom_line(aes(y = air_temp_3m_avg), color = "blue", size = 1)+
+  geom_line(aes(y = air_temp_3m_avg), color = c("#4cc9f0"), size = 1)+
   geom_line(aes(y = temp*coeff), size = 0.8)+
-  labs(subtitle = "Hydric", x = "Date")+
+  labs(subtitle = "Hydric", x = "Date",
+       caption = "depth = 25 cm")+
   scale_x_datetime(date_breaks = "1 week")+
   scale_y_continuous(name = "Air Temperature (dashed blue line)",
                      sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
@@ -348,12 +349,12 @@ dualplot_temp_moist %>%
 
 
 
-ggsave("figures_finalized/hydric_dual_temps.png", plot = hydric_dual_temps, width = 6, height = 6)
+ggsave("figures_finalized/hydric_dual_temps.png", plot = hydric_dual_temps, width = 8, height = 5)
 ggsave("figures_finalized/hydric_dual_rain_temp.png", plot = hydric_dual_rain_temp, width = 6, height = 6)
 ggsave("figures_finalized/hydric_dual_airtemp_moisture.png", plot = hydric_dual_airtemp_moisture, width = 8, height = 5)
 ggsave("figures_finalized/hydric_dual_rain_moisture.png", plot = hydric_dual_rain_moisture, width = 6, height = 6)
 
-ggsave("output/hydric_dual_temps.png", plot = hydric_dual_temps, width = 6, height = 6)
+ggsave("output/hydric_dual_temps.png", plot = hydric_dual_temps, width = 8, height = 5)
 ggsave("output/hydric_dual_rain_temp.png", plot = hydric_dual_rain_temp, width = 6, height = 6)
 ggsave("output/hydric_dual_airtemp_moisture.png", plot = hydric_dual_airtemp_moisture, width = 8, height = 5)
 ggsave("output/hydric_dual_rain_moisture.png", plot = hydric_dual_rain_moisture, width = 6, height = 6)
