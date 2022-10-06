@@ -16,7 +16,8 @@ bd_grav_cleaned = read.csv("raw/PhIr2021_Soil_Inventory_bd.csv") %>%
   mutate(Area = recode(Area, "East" = "acidic tundra",
                        "West" = "non-acidic tundra")) %>% 
   dplyr::mutate(soil_material = case_when(grepl("O",Horizon)~"organic",
-                                      grepl("M",Horizon)~"mineral")) 
+                                      grepl("M",Horizon)~"mineral")) %>% 
+  mutate(volumetric_water_content_gcm3 = soil_bulk_density_g_cm3 * grav_water_gh20_per_gdrysoil) 
 
 #nope! Did it all manually, ignore below code. Leaving in for now
 
@@ -121,7 +122,7 @@ bulk_density_fig2 =
   na.omit() %>% 
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   ggplot()+
-  geom_point(aes(y = grav_water_gh20_per_gdrysoil, x = soil_bulk_density_g_cm3, fill = Horizon), shape = c(21), 
+  geom_point(aes(y = volumetric_water_content_gcm3, x = soil_bulk_density_g_cm3, fill = Horizon), shape = c(21), 
              size = 3, alpha = 0.4)+
   labs(y = "volumetric soil water (g/g of dry soil)",
        x = "soil bulk density, g/cm3")+
@@ -222,4 +223,73 @@ ggsave("output/combo_soilmoisture_bulkdensity.png", plot = combo_soilmoisture_bu
 ggsave("output/combo_volumetricwater_bulkdensity.TIFF", plot = combo_volumetricwater_bulkdensity, height = 5, width = 8)
 ggsave("output/combo_volumetricwater_bulkdensity.png", plot = combo_volumetricwater_bulkdensity, height = 5, width = 8)
 
-#STATS
+#General soil properties figure----
+
+thaw_depths_cleaned_forspfig =
+  thaw_depths_cleaned %>% 
+  group_by(Area, Site) %>% 
+  dplyr::summarise(thawmax = max(thaw_depth_cm),
+                   thawmin = min(thaw_depth_cm),
+                   thawavg = mean(thaw_depth_cm),
+                   thawse = sd(thaw_depth_cm)/sqrt(n()))
+
+
+bd_grav_cleaned_forspfig =
+  bd_grav_cleaned %>% 
+  group_by(Area, Site, soil_material) %>% 
+  na.omit() %>% 
+  dplyr::summarise(depth_avg = round(mean(real_depth_cm),2),
+                   depth_se = round(sd(real_depth_cm)/sqrt(n()),2),
+                   depth_forstack_avg = round(mean(Average_Depth_cm),2),
+                   depth_forstack_se = round(sd(Average_Depth_cm)/sqrt(n()),2),
+                   bd_avg = round(mean(soil_bulk_density_g_cm3),2),
+                   bd_se = round(sd(soil_bulk_density_g_cm3)/sqrt(n()),2),
+                   vwc_avg = round(mean(volumetric_water_content_gcm3),2),
+                   vwc_se = round(sd(volumetric_water_content_gcm3)/sqrt(n()),2),
+                   grav_avg = round(mean(grav_moist_perc),2),
+                   grav_se = round(sd(grav_moist_perc)/sqrt(n()),2))
+
+
+
+
+spfig =
+  bd_grav_cleaned_forspfig %>% 
+  left_join(thaw_depths_cleaned_forspfig) %>% 
+  mutate(soil_material = factor(soil_material, levels = c("organic", "mineral"))) %>% 
+  mutate(site_num = recode(Site, "Dry" = "1",
+                           "Mesic" = "2",
+                           "Hydric" = "3")) %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(site_num = as.numeric(site_num))
+  
+  
+
+spfig %>% 
+  ggplot(aes(x = Site))+
+  geom_col(aes(y = depth_forstack_avg, fill = soil_material), position = "stack", width = 0.4)+
+  geom_point(aes(y = thawavg), fill = c("#f07167"), shape = c(21), size = 3)+
+  geom_point(aes(y = vwc_avg*20, fill = soil_material), shape = c(21), size = 3)+
+  scale_y_continuous(name = "horizon depth average, cm",
+                     sec.axis = sec_axis(~./20, name = "volumetric water content, g/cm3 (point)"))+
+  labs(fill = "")+
+  scale_fill_manual(values = c("#6d6875", "#b5838d"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~Area, scales="free") 
+
+depths_fig =
+spfig %>% 
+  mutate(soil_material = factor(soil_material, levels = c("mineral", "organic"))) %>% 
+  ggplot(aes(x = Site))+
+  geom_col(aes(y = depth_forstack_avg, fill = soil_material), position = "stack", width = 0.4)+
+  geom_point(aes(y = thawavg), fill = c("#f07167"), shape = c(21), size = 3)+
+  scale_y_reverse()+
+  labs(fill = "",
+       y = "depth, cm",
+       caption = "red point = average thaw depth (cm)")+
+  scale_fill_manual(values = c("#b5838d", "#6d6875"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~Area, scales="free") 
+
+ggsave("figures_finalized/depths_fig.png", plot = depths_fig, width = 7, height = 5)
