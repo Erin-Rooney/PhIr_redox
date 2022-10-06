@@ -284,7 +284,7 @@ hydric_dual_temps =
 coeff1 <- 10
 
 
-hydric_dual_temps =
+hydric_dual_temps_air =
   dualplot_temp_moist_airtemp %>% 
   filter(position == "hydric") %>% 
   ggplot(aes(x = datetime))+
@@ -352,7 +352,7 @@ dualplot_temp_moist %>%
   facet_grid(depth_cm~.)
 
 
-
+ggsave("figures_finalized/hydric_dual_tempsair.png", plot = hydric_dual_temps_air, width = 8, height = 5)
 ggsave("figures_finalized/hydric_dual_temps.png", plot = hydric_dual_temps, width = 8, height = 5)
 ggsave("figures_finalized/hydric_dual_rain_temp.png", plot = hydric_dual_rain_temp, width = 6, height = 6)
 ggsave("figures_finalized/hydric_dual_airtemp_moisture.png", plot = hydric_dual_airtemp_moisture, width = 8, height = 5)
@@ -362,6 +362,7 @@ ggsave("output/hydric_dual_temps.png", plot = hydric_dual_temps, width = 8, heig
 ggsave("output/hydric_dual_rain_temp.png", plot = hydric_dual_rain_temp, width = 6, height = 6)
 ggsave("output/hydric_dual_airtemp_moisture.png", plot = hydric_dual_airtemp_moisture, width = 8, height = 5)
 ggsave("output/hydric_dual_rain_moisture.png", plot = hydric_dual_rain_moisture, width = 6, height = 6)
+ggsave("output/hydric_dual_tempsair.png", plot = hydric_dual_temps_air, width = 8, height = 5)
 
 ###stats-----
 
