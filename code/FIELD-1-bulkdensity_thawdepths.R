@@ -266,16 +266,32 @@ spfig =
 
 spfig %>% 
   ggplot(aes(x = Site))+
-  geom_col(aes(y = depth_forstack_avg, fill = soil_material), position = "stack", width = 0.4)+
-  geom_point(aes(y = thawavg), fill = c("#f07167"), shape = c(21), size = 3)+
-  geom_point(aes(y = vwc_avg*20, fill = soil_material), shape = c(21), size = 3)+
-  scale_y_continuous(name = "horizon depth average, cm",
-                     sec.axis = sec_axis(~./20, name = "volumetric water content, g/cm3 (point)"))+
-  labs(fill = "")+
+  geom_point(aes(y = vwc_avg, fill = soil_material), shape = c(21), size = 4)+
+  # geom_point(aes(y = bd_avg*100, fill = soil_material), shape = c(21), size = 3)+
+  # scale_y_continuous(name = "volumetric water content, g/cm3 (square)",
+  #                    sec.axis = sec_axis(~./100, name = "bulk density, g/cm3 (circle)"))+
+  labs(fill = "",
+       y = "volumetric water content, g/cm3")+
   scale_fill_manual(values = c("#6d6875", "#b5838d"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
   facet_grid(.~Area, scales="free") 
+
+grav_bd =
+spfig %>% 
+  ggplot(aes(x = Site))+
+  geom_col(aes(y = grav_avg, fill = soil_material), color = c("#3a86ff"), alpha = 0.7, position = "dodge", width = 0.4)+
+  geom_point(aes(y = bd_avg*75), fill = c("#ffbd00"), shape = c(21), size = 4)+
+  scale_y_continuous(name = "gravimetric water content, % (bar)",
+                      sec.axis = sec_axis(~./75, name = "bulk density, g/cm3 (gold point)"))+
+  labs(fill = "")+
+  scale_fill_manual(values = c("#6d6875", "#b5838d"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(soil_material~Area) 
+
+ggsave("figures_finalized/grav_bd.png", plot = grav_bd, width = 9, height = 5)
+
 
 depths_fig =
 spfig %>% 
