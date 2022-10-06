@@ -182,13 +182,13 @@ coeff <- 7.5
 hydric_dual =
   final_temp_sal_moist_forfig %>% 
   filter(depth_cm == 25 & position == "hydric") %>% 
-  ggplot(aes(x = date))+
+  ggplot(aes(x = datetime))+
   geom_line(aes(y = moisture), color = c("#c8b6ff"), size = 1)+
-  geom_line(aes(y = temp*coeff), size = 0.8)+
+  geom_line(aes(y = temp*10), size = 0.8)+
   labs(subtitle = "Hydric")+
-  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_x_datetime(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
   scale_y_continuous(name = "Soil Moisture, (purple line)",
-                     sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
+                     sec.axis = sec_axis(~./10, name = "Soil Temperature"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
   facet_grid(.~site, scales="free")    
@@ -196,13 +196,13 @@ hydric_dual =
 mesic_dual =
   final_temp_sal_moist_forfig %>% 
   filter(depth_cm == 25 & position == "mesic") %>% 
-  ggplot(aes(x = date))+
+  ggplot(aes(x = datetime))+
   geom_line(aes(y = moisture), color = c("#c8b6ff"), size = 1)+
-  geom_line(aes(y = temp*coeff), size = 0.8)+
+  geom_line(aes(y = temp*10), size = 0.8)+
   labs(subtitle = "Mesic")+
-  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_x_datetime(date_breaks = "1 week")+
   scale_y_continuous(name = "Soil Moisture (purple line)",
-                     sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
+                     sec.axis = sec_axis(~./10, name = "Soil Temperature"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
   facet_grid(.~site, scales="free")    
@@ -210,13 +210,13 @@ mesic_dual =
 dry_dual =
   final_temp_sal_moist_forfig %>% 
   filter(depth_cm == 25 & position == "dry") %>% 
-  ggplot(aes(x = date))+
+  ggplot(aes(x = datetime))+
   geom_line(aes(y = moisture), color = c("#c8b6ff"), size = 1)+
-  geom_line(aes(y = temp*coeff), size = 0.8)+
+  geom_line(aes(y = temp*10), size = 0.8)+
   labs(subtitle = "Dry")+
-  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_x_datetime(date_breaks = "1 week")+
   scale_y_continuous(name = "Soil Moisture (purple line)",
-                     sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
+                     sec.axis = sec_axis(~./10, name = "Soil Temperature"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
   facet_grid(.~site, scales="free") 
