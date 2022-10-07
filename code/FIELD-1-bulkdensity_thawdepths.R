@@ -227,6 +227,7 @@ ggsave("output/combo_volumetricwater_bulkdensity.png", plot = combo_volumetricwa
 
 thaw_depths_cleaned_forspfig =
   thaw_depths_cleaned %>% 
+  filter(Month_num == 'Aug') %>% 
   group_by(Area, Site) %>% 
   dplyr::summarise(thawmax = max(thaw_depth_cm),
                    thawmin = min(thaw_depth_cm),
@@ -264,15 +265,19 @@ spfig =
   
   
 
-spfig %>% 
+vol_fig_2 =
+  spfig %>% 
   ggplot(aes(x = Site))+
   geom_point(aes(y = vwc_avg, fill = soil_material), shape = c(21), size = 4)+
+  geom_errorbar(aes(ymin=vwc_avg-vwc_se, ymax=vwc_avg+vwc_se, color = soil_material), width=.2)+
   # geom_point(aes(y = bd_avg*100, fill = soil_material), shape = c(21), size = 3)+
   # scale_y_continuous(name = "volumetric water content, g/cm3 (square)",
   #                    sec.axis = sec_axis(~./100, name = "bulk density, g/cm3 (circle)"))+
-  labs(fill = "",
+  labs(fill = "", color = "",
        y = "volumetric water content, g/cm3")+
   scale_fill_manual(values = c("#6d6875", "#b5838d"))+
+  scale_color_manual(values = c("#6d6875", "#b5838d"))+
+  ylim(0, 0.6)+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
   facet_grid(.~Area, scales="free") 
@@ -292,35 +297,84 @@ spfig %>%
 
 ggsave("figures_finalized/grav_bd.png", plot = grav_bd, width = 9, height = 5)
 
-vwc_bd =
+vwc_1 =
   spfig %>% 
   ggplot(aes(x = Site))+
-  geom_col(aes(y = vwc_avg, fill = soil_material), color = c("#3a86ff"), alpha = 0.7, position = "dodge", width = 0.4)+
-  geom_point(aes(y = bd_avg/2), fill = c("#ffbd00"), shape = c(21), size = 4)+
-  scale_y_continuous(name = "volumetric water content, g/cm3 (bar)",
-                     sec.axis = sec_axis(~.*2, name = "bulk density, g/cm3 (gold point)"))+
-  labs(fill = "")+
+  geom_col(aes(y = vwc_avg, fill = soil_material, color = soil_material), alpha = 0.7, position = position_dodge2(preserve = "single"), width = 0.4)+
+  geom_errorbar(aes(ymin=vwc_avg-vwc_se, ymax=vwc_avg+vwc_se, color = soil_material), position = position_dodge2(preserve = "single"), width=.4)+
+  #geom_point(aes(y = bd_avg/2), fill = c("#ffbd00"), shape = c(21), size = 4)+
+  # scale_y_continuous(name = "volumetric water content, g/cm3 (bar)",
+  #                    sec.axis = sec_axis(~.*2, name = "bulk density, g/cm3 (gold point)"))+
+  labs(fill = "", color = "", y = "volumetric water content, g/cm3")+
+  ylim(0, 0.6)+
   scale_fill_manual(values = c("#6d6875", "#b5838d"))+
+  scale_color_manual(values = c("grey35", "grey35"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
-  facet_grid(soil_material~Area) 
+  facet_grid(.~Area) 
 
-ggsave("figures_finalized/vwc_bd.png", plot = vwc_bd, width = 9, height = 5)
+ggsave("figures_finalized/vwc_1.png", plot = vwc_1, width = 9, height = 5)
+ggsave("figures_finalized/vol_fig_2.png", plot = vol_fig_2, width = 9, height = 5)
+
+#####comprehensive figure----------
+
+spfig2 =
+  spfig %>% 
+  dplyr::select(c(Area, Site, soil_material, depth_forstack_avg, bd_avg, bd_se))
+
+
+library(tibble)
+
+gglabel = tribble(
+  ~soil_material, ~Area, ~x, ~y, ~label,
+  "mineral", 'acidic tundra', 1, 10, '0.73 ± 0.23',        
+  "organic", 'acidic tundra', 1, 5, '0.15 ± 0.04',        
+  "mineral", 'acidic tundra', 3, 10, '0.8',
+  "organic", 'acidic tundra', 3, 5, '0.11 ± 0.02',
+  "mineral", 'acidic tundra', 2, 10, '1.06 ± 0.06',        
+  "organic", 'acidic tundra', 2, 5, '0.09 ± 0.02',
+  "organic", 'non-acidic tundra', 1, 5, '0.13 ± 0.03',        
+  "organic", 'non-acidic tundra', 2, 5, '0.11 ± 0.02',
+  "organic", 'non-acidic tundra', 3, 5, '0.12 ± 0.01',        
+  "mineral", 'non-acidic tundra', 2, 10, '0.91 ± 0.07',
+  
+)
+
+
 
 
 depths_fig =
 spfig %>% 
   mutate(soil_material = factor(soil_material, levels = c("mineral", "organic"))) %>% 
   ggplot(aes(x = Site))+
-  geom_col(aes(y = depth_forstack_avg, fill = soil_material), position = "stack", width = 0.4)+
+  geom_col(aes(y = depth_forstack_avg, fill = soil_material), position = "stack", width = 0.7)+
   geom_point(aes(y = thawavg), fill = c("#f07167"), shape = c(21), size = 3)+
+  # geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 2)+
   scale_y_reverse()+
   labs(fill = "",
        y = "depth, cm",
-       caption = "red point = average thaw depth (cm)")+
+       caption = "red point = average thaw depth in August (cm)")+
   scale_fill_manual(values = c("#b5838d", "#6d6875"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
   facet_grid(.~Area, scales="free") 
 
 ggsave("figures_finalized/depths_fig.png", plot = depths_fig, width = 7, height = 5)
+
+depths_fig_bd =
+  spfig %>% 
+  mutate(soil_material = factor(soil_material, levels = c("mineral", "organic"))) %>% 
+  ggplot(aes(x = Site))+
+  geom_col(aes(y = depth_forstack_avg, fill = soil_material), position = "stack", width = 0.7)+
+  geom_point(aes(y = thawavg), fill = c("#f07167"), shape = c(21), size = 3)+
+  geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 2)+
+  scale_y_reverse()+
+  labs(fill = "",
+       y = "depth, cm",
+       caption = "red point = average thaw depth in August (cm)")+
+  scale_fill_manual(values = c("#b5838d", "#6d6875"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~Area, scales="free") 
+
+ggsave("figures_finalized/depths_fig_bd.png", plot = depths_fig_bd, width = 7, height = 5)
