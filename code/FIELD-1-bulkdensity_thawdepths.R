@@ -72,6 +72,24 @@ thaw_depths_cleaned =
                        "West" = "non-acidic tundra")) 
 
 
+water_table =
+  bd_grav_cleaned %>% 
+  dplyr::select(Area, Site, Date_collected, Horizon, Plot_num, real_depth_cm, Average_Depth_cm, volumetric_water_content_gcm3, grav_moist_perc) %>% 
+  na.omit() %>% 
+  group_by(Area, Site, Date_collected, Plot_num, Horizon) %>% 
+  na.omit() %>% 
+  dplyr::summarise(vwc_mean = mean(volumetric_water_content_gcm3),
+                   vwc_se = sd(volumetric_water_content_gcm3)/sqrt(n()),
+                   grav_perc_mean = mean(grav_moist_perc),
+                   grav_perc_se = sd(grav_moist_perc)/sqrt(n()),
+                   real_depth_mean = mean(real_depth_cm),
+                   real_depth_se = sd(real_depth_cm)/sqrt(n()),
+                   thickness_mean = mean(Average_Depth_cm),
+                   thickness_se = sd(Average_Depth_cm)/sqrt(n()),
+                   ) %>% 
+  ungroup()
+
+
   
 
 
@@ -321,6 +339,90 @@ ggsave("figures_finalized/vol_fig_2.png", plot = vol_fig_2, width = 9, height = 
 spfig2 =
   spfig %>% 
   dplyr::select(c(Area, Site, soil_material, depth_forstack_avg, bd_avg, bd_se))
+
+
+acidic_watertable =
+  water_table %>% 
+  filter(Area == "acidic tundra" & Date_collected != "30-Jul-21") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Date_collected = factor(Date_collected, levels = c("6-Jul-21", "14-Jul-21", "7-Aug-21"))) %>% 
+  ggplot() +
+  geom_col(aes(y = thickness_mean, x = Plot_num, fill = vwc_mean), position = 'stack', width = 0.7)+
+  scale_y_reverse()+
+  labs(fill = "volumetric water content, g/cm3",
+       y = "depth, cm",
+       x = "plot",
+       subtitle = "acidic tundra")+
+  scale_fill_gradientn(colors = c("#caf0f8", "#ade8f4", "#90e0ef", "#48cae4",
+                                  "#00b4d8", "#0096c7", "#0077b6", "#023e8a",
+                                  "#03045e"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(Date_collected~Site, scales="free") 
+
+nonacidic_watertable =
+  water_table %>% 
+  filter(Area == "non-acidic tundra") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Date_collected = factor(Date_collected, levels = c("7-Jul-21", "13-Jul-21", "31-Jul-21", "7-Aug-21"))) %>% 
+  ggplot() +
+  geom_col(aes(y = thickness_mean, x = Plot_num, fill = vwc_mean), position = 'stack', width = 0.7)+
+  scale_y_reverse()+
+  labs(fill = "volumetric water content, g/cm3",
+       y = "depth, cm",
+       x = "plot",
+       subtitle = "non-acidic tundra")+
+  scale_fill_gradientn(colors = c("#caf0f8", "#ade8f4", "#90e0ef", "#48cae4",
+                                  "#00b4d8", "#0096c7", "#0077b6", "#023e8a",
+                                  "#03045e"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(Date_collected~Site, scales="free") 
+
+ggsave("figures_finalized/nonacidic_watertable.png", plot = nonacidic_watertable, height = 7, width = 5.5)
+ggsave("figures_finalized/acidic_watertable.png", plot = acidic_watertable, height = 6, width = 5.5)
+
+
+acidic_watertable_grav =
+  water_table %>% 
+  filter(Area == "acidic tundra" & Date_collected != "30-Jul-21") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Date_collected = factor(Date_collected, levels = c("6-Jul-21", "14-Jul-21", "7-Aug-21"))) %>% 
+  ggplot() +
+  geom_col(aes(y = thickness_mean, x = Plot_num, fill = grav_perc_mean), position = 'stack', width = 0.7)+
+  scale_y_reverse()+
+  labs(fill = "gravimetric water content, %",
+       y = "depth, cm",
+       x = "plot",
+       subtitle = "acidic tundra")+
+  scale_fill_gradientn(colors = c("#caf0f8", "#ade8f4", "#90e0ef", "#48cae4",
+                                  "#00b4d8", "#0096c7", "#0077b6", "#023e8a",
+                                  "#03045e"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(Date_collected~Site, scales="free") 
+
+nonacidic_watertable_grav =
+  water_table %>% 
+  filter(Area == "non-acidic tundra") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Date_collected = factor(Date_collected, levels = c("7-Jul-21", "13-Jul-21", "31-Jul-21", "7-Aug-21"))) %>% 
+  ggplot() +
+  geom_col(aes(y = thickness_mean, x = Plot_num, fill = grav_perc_mean), position = 'stack', width = 0.7)+
+  scale_y_reverse()+
+  labs(fill = "gravimetric water content, %",
+       y = "depth, cm",
+       x = "plot",
+       subtitle = "non-acidic tundra")+
+  scale_fill_gradientn(colors = c("#caf0f8", "#ade8f4", "#90e0ef", "#48cae4",
+                                  "#00b4d8", "#0096c7", "#0077b6", "#023e8a",
+                                  "#03045e"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(Date_collected~Site, scales="free") 
+
+ggsave("figures_finalized/nonacidic_watertable_grav.png", plot = nonacidic_watertable_grav, height = 7, width = 5.5)
+ggsave("figures_finalized/acidic_watertable_grav.png", plot = acidic_watertable_grav, height = 6, width = 5.5)
 
 
 library(tibble)
