@@ -27,7 +27,7 @@ theme_er1 <- function() {  # this for all the elements common across plots
           #legend.title = element_blank(),
           legend.text = element_text(size = 12),
           legend.key.size = unit(1.5, 'lines'),
-          panel.border = element_rect(color="black",size=2, fill = NA),
+          panel.border = element_rect(color="black",size=1, fill = NA),
           
           plot.title = element_text(hjust = 0.5, size = 14),
           plot.subtitle = element_text(hjust = 0.5, size = 12, lineheight = 1.5),

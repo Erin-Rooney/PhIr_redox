@@ -277,6 +277,105 @@ ggsave("output/temperature.tiff", plot = temp_fig, height = 6, width = 8)
 ggsave("output/salinity.tiff", plot = sal_fig, height = 6, width = 8)
 ggsave("output/redox.tiff", plot = redox_fig, height = 6, width = 8)
 
+####comparison fig-----------
+
+library(lubridate)
+
+final_temp_sal_moist_forfig =
+  final_temp_sal_moist_bins %>% 
+  separate(TIMESTAMP, sep = " ", into = c("date2", "time")) %>% 
+  separate(date2, sep = "/", into =c('month', 'day', 'year')) %>% 
+  mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
+  mutate(datetime = ymd_hm(paste(date, time)),
+         date = ymd(date)) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  dplyr::rename(depth_cm = depth) %>% 
+  na.omit() %>% 
+  group_by(site, position, depth_cm, date, datetime) %>% 
+  dplyr::summarise(moisture_avg = round(mean(moisture), 2),
+                  moisture_se = round(sd(moisture)/sqrt(n()),2),
+                  temp_avg = round(mean(temp), 2),
+                  temp_se = round(sd(temp)/sqrt(n()),2),
+                  salinity_avg = round(mean(salinity), 2),
+                  salinity_se = round(sd(salinity)/sqrt(n()),2)) %>% 
+  ungroup() %>% 
+  mutate(depth_bins = cut_width(depth_cm, width = 10, center=5)) %>% 
+  # mutate(depth_bins = case_when(depth_cm = 5 ~ cut_width(depth_cm, width = 1, center = 5))) %>% 
+  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "]","")) %>% 
+  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "[","")) %>% 
+  mutate(depth_bins = stringi::stri_replace_all_fixed(depth_bins, "(","")) %>% 
+  # now separate this into two different columns
+  separate(depth_bins, sep = ",", into = c("depth_start_cm", "depth_stop_cm")) %>% 
+  mutate(depth_start_cm = as.integer(depth_start_cm),
+         depth_stop_cm = as.integer(depth_stop_cm)) %>% 
+  mutate(depth2 = depth_stop_cm - depth_start_cm)
+
+
+moisture_fig_lineplot_dry =
+  final_temp_sal_moist_forfig %>% 
+  filter(position == "dry") %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  ggplot(aes(x = datetime))+
+  geom_line(aes(y = moisture_avg, color = site), size = 0.65)+
+  #geom_line(aes(y = temp_avg))+
+  labs(y = "soil moisture, %",
+       x = "",
+       color = "")+
+  scale_x_datetime(date_breaks = "3 days")+
+  scale_color_manual(values = c("#0a9396", "#ee9b00"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90), legend.position = "bottom",
+        panel.grid.minor = element_blank())+
+  facet_grid(depth_cm~position)
+
+moisture_fig_lineplot_mesic =
+  final_temp_sal_moist_forfig %>% 
+  filter(position == "mesic") %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  ggplot(aes(x = datetime))+
+  geom_line(aes(y = moisture_avg, color = site), size = 0.65)+
+  #geom_line(aes(y = temp_avg))+
+  labs(y = "soil moisture, %",
+       x = "",
+       color = "")+
+  scale_x_datetime(date_breaks = "3 days")+
+  scale_color_manual(values = c("#0a9396", "#ee9b00"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90), legend.position = "bottom",
+        panel.grid.minor = element_blank())+
+  facet_grid(depth_cm~position)
+
+moisture_fig_lineplot_hydric =
+  final_temp_sal_moist_forfig %>% 
+  filter(position == "hydric") %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  ggplot(aes(x = datetime))+
+  geom_line(aes(y = moisture_avg, color = site), size = 0.65)+
+  #geom_line(aes(y = temp_avg))+
+  labs(y = "soil moisture, %",
+       x = "",
+       color = "")+
+  scale_x_datetime(date_breaks = "3 days")+
+  scale_color_manual(values = c("#0a9396", "#ee9b00"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90), legend.position = "bottom",
+        panel.grid.minor = element_blank())+
+  facet_grid(depth_cm~position)
+
+
+
+ggsave("figures_finalized/moisture_fig_lineplot_dry.png", plot = moisture_fig_lineplot_dry, height = 6, width = 7)
+ggsave("figures_finalized/moisture_fig_lineplot_mesic.png", plot = moisture_fig_lineplot_mesic, height = 6, width = 7)
+ggsave("figures_finalized/moisture_fig_lineplot_hydric.png", plot = moisture_fig_lineplot_hydric, height = 6, width = 7)
+
 
 ###individual sites
 
