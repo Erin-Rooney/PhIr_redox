@@ -272,8 +272,9 @@ bd_grav_cleaned_forspfig =
                    grav_avg = round(mean(grav_moist_perc),2),
                    grav_se = round(sd(grav_moist_perc)/sqrt(n()),2))
 
+write.csv(bd_grav_cleaned_forspfig, "processed/bd_grav_cleaned_forspfig.csv")
 
-
+bd_grav_cleaned_forspfig = read.csv("processed/bd_grav_cleaned_forspfig_manual_fix.csv")
 
 spfig =
   bd_grav_cleaned_forspfig %>% 
@@ -447,13 +448,14 @@ gglabel = tribble(
 )
 
 
-##something weird going on with depths
+##manual fix used for depths
 
 depths_fig =
 spfig %>% 
   mutate(soil_material = factor(soil_material, levels = c("mineral", "organic"))) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(x = Site))+
-  geom_col(aes(y = depth_forstack_avg, fill = soil_material), position = "stack", width = 0.7)+
+  geom_col(aes(y = manual_depth_avg, fill = soil_material), position = "stack", width = 0.7)+
   geom_point(aes(y = thawavg), fill = c("#f07167"), shape = c(21), size = 3)+
   geom_errorbar(aes(ymin = thawavg - thawsd, ymax = thawavg + thawsd), color = "black", width = 0.2)+
   geom_errorbar(aes(ymin = depth_avg - depth_sd, ymax = depth_avg + depth_sd, color = soil_material), width = 0.2)+
