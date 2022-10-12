@@ -69,8 +69,9 @@ thaw_depths_cleaned =
   mutate(Month = recode(Month_num, "Jun" = "06", "Jul" = "07", "Aug" = "08")) %>% 
   mutate(date2 = as.Date(paste(Year,Month,Day, sep = "-"))) %>% 
   mutate(Area = recode(Area, "East" = "acidic tundra",
-                       "West" = "non-acidic tundra")) 
-
+                       "West" = "non-acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) 
+  
 
 water_table =
   bd_grav_cleaned %>% 
@@ -250,6 +251,7 @@ thaw_depths_cleaned_forspfig =
   dplyr::summarise(thawmax = max(thaw_depth_cm),
                    thawmin = min(thaw_depth_cm),
                    thawavg = mean(thaw_depth_cm),
+                   thawsd = sd(thaw_depth_cm),
                    thawse = sd(thaw_depth_cm)/sqrt(n()))
 
 
@@ -259,8 +261,10 @@ bd_grav_cleaned_forspfig =
   na.omit() %>% 
   dplyr::summarise(depth_avg = round(mean(real_depth_cm),2),
                    depth_se = round(sd(real_depth_cm)/sqrt(n()),2),
+                   depth_sd = round(sd(real_depth_cm),2),
                    depth_forstack_avg = round(mean(Average_Depth_cm),2),
                    depth_forstack_se = round(sd(Average_Depth_cm)/sqrt(n()),2),
+                   depth_forstack_sd = round(sd(Average_Depth_cm),2),
                    bd_avg = round(mean(soil_bulk_density_g_cm3),2),
                    bd_se = round(sd(soil_bulk_density_g_cm3)/sqrt(n()),2),
                    vwc_avg = round(mean(volumetric_water_content_gcm3),2),
@@ -338,7 +342,7 @@ ggsave("figures_finalized/vol_fig_2.png", plot = vol_fig_2, width = 9, height = 
 
 spfig2 =
   spfig %>% 
-  dplyr::select(c(Area, Site, soil_material, depth_forstack_avg, bd_avg, bd_se))
+  dplyr::select(c(Area, Site, soil_material, depth_forstack_sd, depth_forstack_avg, bd_avg, bd_se))
 
 
 acidic_watertable =
@@ -443,7 +447,7 @@ gglabel = tribble(
 )
 
 
-
+##something weird going on with depths
 
 depths_fig =
 spfig %>% 
@@ -451,12 +455,15 @@ spfig %>%
   ggplot(aes(x = Site))+
   geom_col(aes(y = depth_forstack_avg, fill = soil_material), position = "stack", width = 0.7)+
   geom_point(aes(y = thawavg), fill = c("#f07167"), shape = c(21), size = 3)+
+  geom_errorbar(aes(ymin = thawavg - thawsd, ymax = thawavg + thawsd), color = "black", width = 0.2)+
+  geom_errorbar(aes(ymin = depth_avg - depth_sd, ymax = depth_avg + depth_sd, color = soil_material), width = 0.2)+
   # geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 2)+
   scale_y_reverse()+
-  labs(fill = "",
+  labs(fill = "", color = "",
        y = "depth, cm",
        caption = "red point = average thaw depth in August (cm)")+
   scale_fill_manual(values = c("#b5838d", "#6d6875"))+
+  scale_color_manual(values = c("#adb5bd", "#495057"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
   facet_grid(.~Area, scales="free") 

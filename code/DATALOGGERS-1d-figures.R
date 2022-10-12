@@ -177,31 +177,6 @@ library(scales)
 
 pal <- pnw_palette("Bay",100)
 
-combo_redox_withdepths %>% 
-  na.omit() %>% 
-  ggplot(aes(x = as.Date(Betterdate), y = depth_cm, fill = avg_values_fixed))+
-  geom_bar(position = "stack", stat= "identity")+
-  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
-  scale_y_reverse()+
-  scale_fill_gradient2(low = "blue", high = "red", mid = "yellow", midpoint = 0)+
-  theme_er1()+
-  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90))+
-  facet_grid(position~site)
-
-combo_redox_withdepths_bins %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
-  na.omit() %>% 
-  ggplot(aes(xmin = (as.Date(Betterdate))-0.4, xmax = (as.Date(Betterdate))+0.4, ymin = depth_start_cm, ymax = depth_stop_cm, fill = avg_values_summarised))+
-  geom_rect()+
-  labs(y = "depth, cm",
-       fill = "redox potential")+
-  scale_x_date(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
-  scale_y_reverse()+
-  scale_fill_gradientn(colors = natparks.pals("Banff"))+
-  theme_er1()+
-  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90))+
-  facet_grid(position~site)
-
 redox_fig =
   combo_redox_withdepths_bins %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%

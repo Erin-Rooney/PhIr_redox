@@ -128,17 +128,43 @@ rain_EDC =
   
 ###add in the redox data------------
   
-daileyredoxunbinned = read.csv('processed/dailyredox_unbinned.csv')
+dailyredoxunbinned = read.csv('processed/dailyredox_unbinned.csv')
+combo_redox_withdepths = read.csv("processed/all_combine.csv")
+  
 
   
-daily_redox_forfigs = 
-  daileyredoxunbinned %>% 
-  mutate(year = 2021) %>% 
-  mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
+grouped_redox_forfigs = 
+  combo_redox_withdepths %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
-  na.omit() 
+  group_by(site, position, depth_cm) %>% 
+  dplyr::summarise(redox_avg_mV = round(mean(avg_values_fixed),2),
+                   redox_sd = round(sd(avg_values_fixed),2),
+                   redox_se = round(sd(avg_values_fixed)/sqrt(n()),2),
+                   redox_sd2 = (redox_sd)/2)
+                   
+                   
+redoxfig_depth_sd =
+  grouped_redox_forfigs %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = position, fill = position), group = 'position')+
+  geom_point(size = 3, alpha = 0.4, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE)+
+  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+  scale_color_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  ylim(60, 0)+
+    labs(x = 'redox potential (mV)',
+         y = "depth (cm)",
+         color = "", fill = "")+
+  scale_x_continuous(position="top")+
+  facet_grid(.~site, switch = "x")
+
+
+ggsave("figures_finalized/redox_groupdepth.tiff", plot = redoxfig_depth_sd, height = 7, width = 5)
+ggsave("figures_finalized/redox_groupdepth.png", plot = redoxfig_depth_sd, height = 7, width = 5)
+
   
 ###temp----
 
