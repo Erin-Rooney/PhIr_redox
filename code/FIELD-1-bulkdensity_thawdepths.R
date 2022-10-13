@@ -458,7 +458,7 @@ spfig %>%
   geom_col(aes(y = manual_depth_avg, fill = soil_material), position = "stack", width = 0.7)+
   geom_point(aes(y = thawavg), fill = c("#f07167"), shape = c(21), size = 3)+
   geom_errorbar(aes(ymin = thawavg - thawsd, ymax = thawavg + thawsd), color = "black", width = 0.2)+
-  geom_errorbar(aes(ymin = depth_avg - depth_sd, ymax = depth_avg + depth_sd, color = soil_material), width = 0.2)+
+  #geom_errorbar(aes(ymin = depth_avg - depth_sd, ymax = depth_avg + depth_sd, color = soil_material), width = 0.2)+
   # geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 2)+
   scale_y_reverse()+
   labs(fill = "", color = "",

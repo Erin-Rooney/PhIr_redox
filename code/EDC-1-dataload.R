@@ -143,8 +143,26 @@ grouped_redox_forfigs =
                    redox_sd = round(sd(avg_values_fixed),2),
                    redox_se = round(sd(avg_values_fixed)/sqrt(n()),2),
                    redox_sd2 = (redox_sd)/2)
-                   
-                   
+
+library(lubridate)
+
+ungrouped_redox_forfigs = 
+  combo_redox_withdepths %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  separate(TIMESTAMP, sep = " ", into = c("date2", "time")) %>% 
+  separate(date2, sep = "/", into =c('month', 'day', 'year')) %>% 
+  mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
+  mutate(datetime = ymd_hm(paste(date, time)),
+         date = ymd(date)) %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("5", "7", "9", "11", "13", "23", "33", "53")))   %>% 
+  group_by(site, position, depth_2, datetime) %>% 
+  dplyr::summarise(redox_avg_mV = round(mean(avg_values_fixed),2),
+                   redox_sd = round(sd(avg_values_fixed),2))
+
+  
+
 redoxfig_depth_sd =
   grouped_redox_forfigs %>% 
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
@@ -162,8 +180,32 @@ redoxfig_depth_sd =
   facet_grid(.~site, switch = "x")
 
 
+nonacidic_hydric_redox =
+  ungrouped_redox_forfigs %>% 
+  filter(position == "hydric" & site == "non-acidic tundra") %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
+  geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_point(aes(color = depth_2, fill = depth_2), size = 2.5, alpha = 0.6, shape = c(21))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%m-%d")+
+  scale_color_manual(values = rev(natparks.pals(name = "Olympic")))+
+  scale_fill_manual(values = rev(natparks.pals(name = "Olympic")))+
+  ylim(-250, 700)+
+  labs(x = "", y = "redox potential (mV)",
+       color = "depth (cm)", fill = "depth (cm)",
+       subtitle = "non-acidic hydric")+
+  #facet_grid(position~site)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
+        legend.position = "right")
+
+
 ggsave("figures_finalized/redox_groupdepth.tiff", plot = redoxfig_depth_sd, height = 7, width = 5)
 ggsave("figures_finalized/redox_groupdepth.png", plot = redoxfig_depth_sd, height = 7, width = 5)
+ggsave("figures_finalized/nonacidic_hydric_redox.tiff", plot = nonacidic_hydric_redox, height = 5.75, width = 9.5)
+ggsave("figures_finalized/nonacidic_hydric_redox.png", plot = nonacidic_hydric_redox, height = 5.75, width = 9.5)
 
   
 ###temp----
@@ -204,6 +246,32 @@ daily_redox_forfigs %>%
 ggsave("output/daily_redox_wred.png", plot = daily_redox_wred, width = 8, height = 5.5)
   
 coeff <- 7.5
+
+
+moisture_depth_lineplot =
+  final_temp_sal_moist_forfig %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
+  filter(position == "hydric" & site == "non-acidic tundra") %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot(aes(y = moisture, x = datetime), group = 'depth_cm')+
+  #geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_point(aes(color = depth_2, fill = depth_2), size = 1.5, alpha = 0.6, shape = c(21))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%m-%d")+
+  scale_color_manual(values = rev(c("#536036","#A1B076", "#EDA24E")))+
+  scale_fill_manual(values = rev(c("#536036","#A1B076", "#EDA24E")))+
+  ylim(0, 60)+
+  labs(x = "", y = "soil moisture (%)",
+       color = "depth (cm)", fill = "depth (cm)",
+       subtitle = "non-acidic hydric")+
+  #facet_grid(position~site)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
+        legend.position = "right")
+
+ggsave("figures_finalized/moisture_depth_lineplot.png", plot = moisture_depth_lineplot, width = 5, height = 4)
+
 
 hydric_dual =
   final_temp_sal_moist_forfig %>% 
