@@ -108,6 +108,60 @@ thaw_depths_fig =
   facet_grid(Site~Area)+
   theme_er1()
 
+thaw_depths_fig_violin_nonacidic =
+  thaw_depths_cleaned %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  filter(Area == "non-acidic tundra") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = as.Date(date2)), alpha = 0.4)+
+  labs(x = "Date",
+       y = "Thaw Depth, cm")+
+  geom_rect(aes(xmin=as_date('2021-06-18'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=50, ymax=50), fill = "grey", alpha = 0.5)+
+  scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  ylim(90, 0)+
+  facet_grid(Site~Area)+
+  theme_er1()+
+  theme(legend.position = 'none')
+
+
+thaw_depths_fig_violin_acidic =
+  thaw_depths_cleaned %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  filter(Area == "acidic tundra") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = as.Date(date2)), alpha = 0.4)+
+  labs(x = "Date",
+       y = "Thaw Depth, cm")+
+  scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  ylim(90, 0)+
+  facet_grid(Site~Area)+
+  theme_er1()+
+  theme(legend.position = 'none')
+
+thaw_depths_fig_violin_all =
+  thaw_depths_cleaned %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  #filter(Area == "acidic tundra") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = as.Date(date2)), alpha = 0.4)+
+  labs(x = "Date",
+       y = "Thaw Depth, cm")+
+  scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  ylim(90, 0)+
+  facet_grid(Site~Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = 'none')
+
+ggsave("output/thaw_depths_fig_violin_all.png", plot = thaw_depths_fig_violin_all, height = 4.5, width = 12)
+
+
+ggsave("output/thaw_depths_fig_violin_acidic.png", plot = thaw_depths_fig_violin_acidic, height = 4.5, width = 3.5)
+ggsave("output/thaw_depths_fig_violin_acidic.TIFF", plot = thaw_depths_fig_violin_acidic, height = 4.5, width = 5)
+
+ggsave("output/thaw_depths_fig_violin_nonacidic.png", plot = thaw_depths_fig_violin_nonacidic, height = 4.5, width = 3.5)
+ggsave("output/thaw_depths_fig_violin_nonacidic.TIFF", plot = thaw_depths_fig_violin_nonacidic, height = 4.5, width = 5)
+
+
 ggsave("output/thawdepthsfig.TIFF", plot = thaw_depths_fig, height = 6, width = 5.75)
 
 thaw_depths_fig_30 =
