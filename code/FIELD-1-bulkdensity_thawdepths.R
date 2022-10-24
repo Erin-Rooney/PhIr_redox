@@ -104,6 +104,7 @@ thaw_depths_fig =
   geom_point(aes(x = as.Date(date2), y = thaw_depth_cm), fill = "black", shape = c(21), alpha = 0.4)+
   labs(x = "Date",
        y = "Thaw Depth, cm")+
+  geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
   scale_y_reverse()+
   facet_grid(Site~Area)+
   theme_er1()
@@ -116,7 +117,7 @@ thaw_depths_fig_violin_nonacidic =
   geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = as.Date(date2)), alpha = 0.4)+
   labs(x = "Date",
        y = "Thaw Depth, cm")+
-  geom_rect(aes(xmin=as_date('2021-06-18'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=50, ymax=50), fill = "grey", alpha = 0.5)+
+  geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
   scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
   ylim(90, 0)+
   facet_grid(Site~Area)+
@@ -130,6 +131,7 @@ thaw_depths_fig_violin_acidic =
   filter(Area == "acidic tundra") %>% 
   ggplot()+
   geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = as.Date(date2)), alpha = 0.4)+
+  geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-10'), ymin=49.5, ymax=50.5), fill = "black")+
   labs(x = "Date",
        y = "Thaw Depth, cm")+
   scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
@@ -138,21 +140,21 @@ thaw_depths_fig_violin_acidic =
   theme_er1()+
   theme(legend.position = 'none')
 
-thaw_depths_fig_violin_all =
-  thaw_depths_cleaned %>% 
-  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
-  #filter(Area == "acidic tundra") %>% 
-  ggplot()+
-  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = as.Date(date2)), alpha = 0.4)+
-  labs(x = "Date",
-       y = "Thaw Depth, cm")+
-  scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
-  ylim(90, 0)+
-  facet_grid(Site~Area, scales = "free_x")+
-  theme_er1()+
-  theme(legend.position = 'none')
+# thaw_depths_fig_violin_all =
+#   thaw_depths_cleaned %>% 
+#   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+#   #filter(Area == "acidic tundra") %>% 
+#   ggplot()+
+#   geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = as.Date(date2)), alpha = 0.4)+
+#   labs(x = "Date",
+#        y = "Thaw Depth, cm")+
+#   scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+#   ylim(90, 0)+
+#   facet_grid(Site~Area, scales = "free_x")+
+#   theme_er1()+
+#   theme(legend.position = 'none')
 
-ggsave("output/thaw_depths_fig_violin_all.png", plot = thaw_depths_fig_violin_all, height = 4.5, width = 12)
+#ggsave("output/thaw_depths_fig_violin_all.png", plot = thaw_depths_fig_violin_all, height = 4.5, width = 12)
 
 
 ggsave("output/thaw_depths_fig_violin_acidic.png", plot = thaw_depths_fig_violin_acidic, height = 4.5, width = 3.5)
@@ -488,16 +490,16 @@ library(tibble)
 
 gglabel = tribble(
   ~soil_material, ~Area, ~x, ~y, ~label,
-  "mineral", 'acidic tundra', 1, 10, '0.73 ± 0.23',        
-  "organic", 'acidic tundra', 1, 5, '0.15 ± 0.04',        
-  "mineral", 'acidic tundra', 3, 10, '0.8',
-  "organic", 'acidic tundra', 3, 5, '0.11 ± 0.02',
-  "mineral", 'acidic tundra', 2, 10, '1.06 ± 0.06',        
-  "organic", 'acidic tundra', 2, 5, '0.09 ± 0.02',
+  "mineral", 'acidic tundra', 1, 16, '0.73 ± 0.23',        
+  "organic", 'acidic tundra', 1, 8, '0.15 ± 0.04',        
+  "mineral", 'acidic tundra', 3, 16, '0.8',
+  "organic", 'acidic tundra', 3, 8, '0.11 ± 0.02',
+  "mineral", 'acidic tundra', 2, 16, '1.06 ± 0.06',        
+  "organic", 'acidic tundra', 2, 8, '0.09 ± 0.02',
   "organic", 'non-acidic tundra', 1, 5, '0.13 ± 0.03',        
   "organic", 'non-acidic tundra', 2, 5, '0.11 ± 0.02',
   "organic", 'non-acidic tundra', 3, 5, '0.12 ± 0.01',        
-  "mineral", 'non-acidic tundra', 2, 10, '0.91 ± 0.07',
+  "mineral", 'non-acidic tundra', 2, 16, '0.91 ± 0.07',
   
 )
 
@@ -510,21 +512,21 @@ spfig %>%
   mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(x = Site))+
   geom_col(aes(y = manual_depth_avg, fill = soil_material), position = "stack", width = 0.7)+
-  geom_point(aes(y = thawavg), fill = c("#f07167"), shape = c(21), size = 3)+
+  geom_point(aes(y = thawavg), fill = c("#f07167"), shape = c(21), size = 4)+
   geom_errorbar(aes(ymin = thawavg - thawsd, ymax = thawavg + thawsd), color = "black", width = 0.2)+
   #geom_errorbar(aes(ymin = depth_avg - depth_sd, ymax = depth_avg + depth_sd, color = soil_material), width = 0.2)+
-  # geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 2)+
+   geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 3)+
   scale_y_reverse()+
   labs(fill = "", color = "",
        y = "depth, cm",
-       caption = "red point = average thaw depth in August (cm)")+
+       caption = "numbers are bulk density g/cm3")+
   scale_fill_manual(values = c("#b5838d", "#6d6875"))+
   scale_color_manual(values = c("#adb5bd", "#495057"))+
   theme_er1()+
-  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right")+
   facet_grid(.~Area, scales="free") 
 
-ggsave("figures_finalized/depths_fig.png", plot = depths_fig, width = 7, height = 5)
+ggsave("figures_finalized/depths_fig.png", plot = depths_fig, width = 8, height = 6)
 
 depths_fig_bd =
   spfig %>% 

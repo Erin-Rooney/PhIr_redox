@@ -421,7 +421,7 @@ ggsave("output/daily_redox_wred.png", plot = daily_redox_wred, width = 8, height
 coeff <- 7.5
 
 
-moisture_depth_lineplot =
+moisture_depth_lineplot_hydric =
   final_temp_sal_moist_forfig %>% 
   mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
   filter(position == "hydric" & site == "non-acidic tundra") %>% 
@@ -443,7 +443,30 @@ moisture_depth_lineplot =
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
         legend.position = "right")
 
-ggsave("figures_finalized/moisture_depth_lineplot.png", plot = moisture_depth_lineplot, width = 5, height = 4)
+moisture_depth_lineplot_dry =
+  final_temp_sal_moist_forfig %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
+  filter(position == "dry" & site == "non-acidic tundra") %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot(aes(y = moisture, x = datetime), group = 'depth_cm')+
+  #geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_point(aes(color = depth_2, fill = depth_2), size = 1.5, alpha = 0.6, shape = c(21))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%m-%d")+
+  scale_color_manual(values = rev(c("#536036","#A1B076", "#EDA24E")))+
+  scale_fill_manual(values = rev(c("#536036","#A1B076", "#EDA24E")))+
+  ylim(0, 60)+
+  labs(x = "", y = "soil moisture (%)",
+       color = "depth (cm)", fill = "depth (cm)",
+       subtitle = "non-acidic dry")+
+  #facet_grid(position~site)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
+        legend.position = "right")
+
+ggsave("figures_finalized/moisture_depth_lineplothydric.png", plot = moisture_depth_lineplot_hydric, width = 5, height = 4)
+ggsave("figures_finalized/moisture_depth_lineplotdry.png", plot = moisture_depth_lineplot_dry, width = 5, height = 4)
 
 
 hydric_dual =
