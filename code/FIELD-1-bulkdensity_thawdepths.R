@@ -81,6 +81,7 @@ water_table =
   na.omit() %>% 
   dplyr::summarise(vwc_mean = mean(volumetric_water_content_gcm3),
                    vwc_se = sd(volumetric_water_content_gcm3)/sqrt(n()),
+                   vwcperc_mean = vwc_mean*100,
                    grav_perc_mean = mean(grav_moist_perc),
                    grav_perc_se = sd(grav_moist_perc)/sqrt(n()),
                    real_depth_mean = mean(real_depth_cm),
@@ -156,6 +157,38 @@ thaw_depths_fig_violin_acidic =
 
 #ggsave("output/thaw_depths_fig_violin_all.png", plot = thaw_depths_fig_violin_all, height = 4.5, width = 12)
 
+thaw_depths_fig_violin_nonacidic_dry =
+  thaw_depths_cleaned %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  filter(Area == "non-acidic tundra" & Site == "Dry") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = as.Date(date2)), alpha = 0.4)+
+  labs(x = "Date",
+       y = "Thaw Depth, cm")+
+  geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
+  scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  ylim(90, 0)+
+  facet_grid(Site~Area)+
+  theme_er1()+
+  theme(legend.position = 'none')
+
+thaw_depths_fig_violin_nonacidic_hydric =
+  thaw_depths_cleaned %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  filter(Area == "non-acidic tundra" & Site == "Hydric") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = as.Date(date2)), alpha = 0.4)+
+  labs(x = "Date",
+       y = "Thaw Depth, cm")+
+  geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
+  scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  ylim(90, 0)+
+  facet_grid(Site~Area)+
+  theme_er1()+
+  theme(legend.position = 'none')
+
+ggsave("output/thaw_depths_fig_violin_nonacidic_hydric.png", plot = thaw_depths_fig_violin_nonacidic_hydric, height = 4, width = 4.5)
+ggsave("output/thaw_depths_fig_violin_nonacidic_dry.png", plot = thaw_depths_fig_violin_nonacidic_dry, height = 4, width = 4.5)
 
 ggsave("output/thaw_depths_fig_violin_acidic.png", plot = thaw_depths_fig_violin_acidic, height = 4.5, width = 3.5)
 ggsave("output/thaw_depths_fig_violin_acidic.TIFF", plot = thaw_depths_fig_violin_acidic, height = 4.5, width = 5)
@@ -439,6 +472,52 @@ nonacidic_watertable =
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
   facet_grid(Date_collected~Site, scales="free") 
+
+
+nonacidic_watertable_dry =
+  water_table %>% 
+  filter(Area == "non-acidic tundra" & Site == 
+           "Dry") %>% 
+  #mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Date_collected = factor(Date_collected, levels = c("7-Jul-21", "13-Jul-21", "31-Jul-21", "7-Aug-21"))) %>% 
+  ggplot() +
+  geom_col(aes(y = thickness_mean, x = Plot_num, fill = vwcperc_mean), position = 'stack', width = 0.7)+
+  scale_y_reverse()+
+  labs(fill = "vwc, %",
+       y = "depth, cm",
+       x = "plot",
+       subtitle = "non-acidic tundra")+
+  scale_fill_gradientn(colors = c("#caf0f8", "#ade8f4", "#90e0ef", "#48cae4",
+                                  "#00b4d8", "#0096c7", "#0077b6", "#023e8a",
+                                  "#03045e"), limits = c(0,80))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right")+
+  facet_grid(Date_collected~Site, scales="free") 
+
+nonacidic_watertable_hydric =
+  water_table %>% 
+  filter(Area == "non-acidic tundra" & Site == 
+           "Hydric") %>% 
+  #mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Date_collected = factor(Date_collected, levels = c("7-Jul-21", "13-Jul-21", "31-Jul-21", "7-Aug-21"))) %>% 
+  ggplot() +
+  geom_col(aes(y = thickness_mean, x = Plot_num, fill = vwcperc_mean), position = 'stack', width = 0.7)+
+  scale_y_reverse()+
+  labs(fill = "vwc, %",
+       y = "depth, cm",
+       x = "plot",
+       subtitle = "non-acidic tundra")+
+  scale_fill_gradientn(colors = c("#caf0f8", "#ade8f4", "#90e0ef", "#48cae4",
+                                  "#00b4d8", "#0096c7", "#0077b6", "#023e8a",
+                                  "#03045e"), limits = c(0,80))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right")+
+  facet_grid(Date_collected~Site, scales="free") 
+
+
+ggsave("figures_finalized/nonacidic_watertable_dry.png", plot = nonacidic_watertable_dry, height = 5.25, width = 3.75)
+ggsave("figures_finalized/nonacidic_watertable_hydric.png", plot = nonacidic_watertable_hydric, height = 5.25, width = 3.75)
+
 
 ggsave("figures_finalized/nonacidic_watertable.png", plot = nonacidic_watertable, height = 7, width = 5.5)
 ggsave("figures_finalized/acidic_watertable.png", plot = acidic_watertable, height = 6, width = 5.5)
