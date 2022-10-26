@@ -168,6 +168,22 @@ aluminum_fig =
   
   
 
+# phosphorus_fig = 
+#   rhizon_meta_combine_notransect_forelements %>%
+#   filter(ICP == "phosphorus") %>% 
+#   ggplot(aes(x = Betterdate, y = mean, color = Site, fill = Site)) +
+#   #geom_point(size = 3, alpha = 0.7)+
+#   geom_col(position = 'dodge', width = 0.7)+
+#   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+#                 position=position_dodge(.9), color = "black")+
+#   labs(y = "phosphorus, ug/mL")+
+#   scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+#   scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+#   theme_er1()+
+#   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
+#   facet_grid(Area ~ .)
+
+
 phosphorus_fig = 
   rhizon_meta_combine_notransect_forelements %>%
   filter(ICP == "phosphorus") %>% 
@@ -181,22 +197,53 @@ phosphorus_fig =
   scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
-  facet_grid(Area ~ .)
+  facet_grid(Area ~ Site)
 
-iron_fig = 
+east_rhizon_fig = 
   rhizon_meta_combine_notransect_forelements %>%
-  filter(ICP == "iron") %>% 
+  filter(ICP == c("iron", "phosphorus") & Area == "East") %>% 
+  mutate(ICP = recode(ICP, "phosphorus" = "phosphorus ug/mL",
+                      "iron" = "iron ug/mL")) %>% 
   ggplot(aes(x = Betterdate, y = mean, color = Site, fill = Site)) +
   #geom_point(size = 3, alpha = 0.7)+
   geom_col(position = 'dodge', width = 0.7)+
   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
                 position=position_dodge(.9), color = "black")+
-  labs(y = "iron, ug/mL")+
+  labs(x = "date", y = "",
+       subtitle = "East/ Acidic Tundra")+
   scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
   scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
   theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
-  facet_grid(Area ~ .)
+  # theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
+  facet_grid(ICP ~ Site, switch = "y", scale = "free_y")+
+  theme(legend.position = "NONE", axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        strip.placement = "outside")+
+  NULL
+
+west_rhizon_fig = 
+  rhizon_meta_combine_notransect_forelements %>%
+  filter(ICP == c("iron", "phosphorus") & Area == "West") %>% 
+  mutate(ICP = recode(ICP, "phosphorus" = "phosphorus ug/mL",
+                      "iron" = "iron ug/mL")) %>% 
+  ggplot(aes(x = Betterdate, y = mean, color = Site, fill = Site)) +
+  #geom_point(size = 3, alpha = 0.7)+
+  geom_col(position = 'dodge', width = 0.7)+
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                position=position_dodge(.9), color = "black")+
+  labs(x = "date", y = "",
+       subtitle = "West/ Non-Acidic Tundra")+
+  scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  theme_er1()+
+  # theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
+  facet_grid(ICP ~ Site, switch = "y", scale = "free_y")+
+  theme(legend.position = "NONE", axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        strip.placement = "outside")+
+  NULL
+
+ggsave("figures_finalized/west_rhizon_fig.png", plot = west_rhizon_fig, width = 7, height = 6)
+ggsave("figures_finalized/east_rhizon_fig.png", plot = east_rhizon_fig, width = 7, height = 6)
+
 
 calcium_fig = 
   rhizon_meta_combine_notransect_forelements %>%
