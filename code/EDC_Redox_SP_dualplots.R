@@ -226,7 +226,7 @@ nonacidic_hydric_redox =
   geom_point(aes(color = depth_2, fill = depth_2), size = 2.5, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
-  scale_x_datetime(date_breaks = "1 week", date_labels = "%m-%d")+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
   scale_color_manual(values = rev(natparks.pals(name = "Olympic")))+
   scale_fill_manual(values = rev(natparks.pals(name = "Olympic")))+
   ylim(-250, 700)+
@@ -251,12 +251,11 @@ nonacidic_mesic_redox =
   scale_fill_manual(values = rev(natparks.pals(name = "Olympic")))+
   ylim(-250, 700)+
   labs(x = "", y = "redox potential (mV)",
-       color = "depth (cm)", fill = "depth (cm)",
-       subtitle = "non-acidic mesic")+
-  #facet_grid(position~site)+
+       color = "depth (cm)", fill = "depth (cm)")+
+  facet_grid(position~site)+
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
-        legend.position = "right")
+        legend.position = "bottom")
 
 nonacidic_dry_redox =
   ungrouped_redox_forfigs_nonhydric %>% 
@@ -371,9 +370,9 @@ acidic_dry_redox =
 ggsave("figures_finalized/redox_groupdepth.tiff", plot = redoxfig_depth_sd, height = 7, width = 5)
 ggsave("figures_finalized/redox_groupdepth.png", plot = redoxfig_depth_sd, height = 7, width = 5)
 ggsave("figures_finalized/nonacidic_hydric_redox.tiff", plot = nonacidic_hydric_redox, height = 5.75, width = 9.5)
-ggsave("figures_finalized/nonacidic_hydric_redox.png", plot = nonacidic_hydric_redox, height = 6, width = 6)
-ggsave("figures_finalized/nonacidic_mesic_redox.png", plot = nonacidic_mesic_redox, height = 5.75, width = 9.5)
-ggsave("figures_finalized/nonacidic_dry_redox.png", plot = nonacidic_dry_redox, height = 6, width = 6)
+ggsave("figures_finalized/nonacidic_hydric_redox.png", plot = nonacidic_hydric_redox, height = 6.5, width = 4.5)
+ggsave("figures_finalized/nonacidic_mesic_redox.png", plot = nonacidic_mesic_redox, height = 6, width = 4.5)
+ggsave("figures_finalized/nonacidic_dry_redox.png", plot = nonacidic_dry_redox, height = 6, width = 4.5)
 ggsave("figures_finalized/acidic_hydric_redox.png", plot = acidic_hydric_redox, height = 6, width = 6)
 ggsave("figures_finalized/acidic_mesic_redox.png", plot = acidic_mesic_redox, height = 5.75, width = 9.5)
 ggsave("figures_finalized/acidic_dry_redox.png", plot = acidic_dry_redox, height = 5.75, width = 9.5)
@@ -417,6 +416,51 @@ daily_redox_forfigs %>%
 ggsave("output/daily_redox_wred.png", plot = daily_redox_wred, width = 8, height = 5.5)
   
 coeff <- 7.5
+
+allsoilmoisture_fig =
+final_temp_sal_moist_forfig %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
+  #filter(position == "hydric" & site == "non-acidic tundra") %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot(aes(y = moisture, x = datetime, group = 'depth_cm'))+
+  #geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_point(aes(color = depth_2, fill = depth_2), size = 0.5, alpha = 0.6, shape = c(21))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  scale_color_manual(values = rev(c("#ffd60a","#EDA24E", "#9b2226")))+
+  scale_fill_manual(values = rev(c("#ffd60a","#EDA24E", "#9b2226")))+
+  ylim(0, 60)+
+  labs(x = "", y = "soil moisture (%)",
+       color = "depth (cm)", fill = "depth (cm)")+
+  facet_grid(position~site, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "bottom", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
+
+ggsave("figures_finalized/allsoilmoisture_fig.tiff", plot = allsoilmoisture_fig, width = 6, height = 5.5)
+
+allsoiltemperature_fig =
+  final_temp_sal_moist_forfig %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
+  #filter(position == "hydric" & site == "non-acidic tundra") %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot(aes(y = temp, x = datetime, group = 'depth_cm'))+
+  #geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_point(aes(color = depth_2, fill = depth_2), size = 0.5, alpha = 0.6, shape = c(21))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  scale_color_manual(values = rev(c("#ffd60a","#EDA24E", "#9b2226")))+
+  scale_fill_manual(values = rev(c("#ffd60a","#EDA24E", "#9b2226")))+
+  ylim(0, 25)+
+  labs(x = "", y = "soil temperature (C)",
+       color = "depth (cm)", fill = "depth (cm)")+
+  facet_grid(position~site, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "bottom", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
+
+ggsave("figures_finalized/allsoiltemp_fig.tiff", plot = allsoiltemperature_fig, width = 6, height = 5.5)
+
 
 
 moisture_depth_lineplot_hydric =
@@ -470,7 +514,7 @@ hydric_dual =
   geom_line(aes(y = moisture), color = c("#c8b6ff"), size = 1)+
   geom_line(aes(y = temp*10), size = 0.8)+
   labs(subtitle = "Hydric")+
-  scale_x_datetime(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  scale_x_datetime(date_breaks = "1 week" , date_labels = "%b-%d")+
   scale_y_continuous(name = "Soil Moisture, (purple line)",
                      sec.axis = sec_axis(~./10, name = "Soil Temperature"))+
   theme_er1()+
@@ -484,7 +528,7 @@ mesic_dual =
   geom_line(aes(y = moisture), color = c("#c8b6ff"), size = 1)+
   geom_line(aes(y = temp*10), size = 0.8)+
   labs(subtitle = "Mesic")+
-  scale_x_datetime(date_breaks = "1 week")+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
   scale_y_continuous(name = "Soil Moisture (purple line)",
                      sec.axis = sec_axis(~./10, name = "Soil Temperature"))+
   theme_er1()+
@@ -498,7 +542,7 @@ dry_dual =
   geom_line(aes(y = moisture), color = c("#c8b6ff"), size = 1)+
   geom_line(aes(y = temp*10), size = 0.8)+
   labs(subtitle = "Dry")+
-  scale_x_datetime(date_breaks = "1 week")+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
   scale_y_continuous(name = "Soil Moisture (purple line)",
                      sec.axis = sec_axis(~./10, name = "Soil Temperature"))+
   theme_er1()+
