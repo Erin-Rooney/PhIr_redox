@@ -443,7 +443,7 @@ allsoiltemperature_fig =
   final_temp_sal_moist_forfig %>% 
   mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
   #filter(position == "hydric" & site == "non-acidic tundra") %>% 
-  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot(aes(y = temp, x = datetime, group = 'depth_cm'))+
   #geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
   geom_point(aes(color = depth_2, fill = depth_2), size = 0.5, alpha = 0.6, shape = c(21))+
@@ -460,6 +460,50 @@ allsoiltemperature_fig =
   theme(legend.position = "bottom", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
 
 ggsave("figures_finalized/allsoiltemp_fig.tiff", plot = allsoiltemperature_fig, width = 6, height = 5.5)
+
+nonacidic_hydric_soiltemperature_fig =
+  final_temp_sal_moist_forfig %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
+  filter(position == "hydric" & site == "non-acidic tundra") %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot(aes(y = temp, x = datetime, group = 'depth_cm'))+
+  #geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_point(aes(color = depth_2, fill = depth_2), size = 1, alpha = 0.6, shape = c(21))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  scale_color_manual(values = rev(c("#ffd60a","#EDA24E", "#9b2226")))+
+  scale_fill_manual(values = rev(c("#ffd60a","#EDA24E", "#9b2226")))+
+  ylim(0, 25)+
+  labs(x = "", y = "soil temperature (C)",
+       color = "depth (cm)", fill = "depth (cm)")+
+  facet_grid(position~site, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "bottom", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
+
+ggsave("figures_finalized/nonacidic_hydric_soiltemperature_fig.png", plot = nonacidic_hydric_soiltemperature_fig, width = 6, height = 4)
+
+nonacidic_dry_soiltemperature_fig =
+  final_temp_sal_moist_forfig %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
+  filter(position == "dry" & site == "non-acidic tundra") %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot(aes(y = temp, x = datetime, group = 'depth_cm'))+
+  #geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_point(aes(color = depth_2, fill = depth_2), size = 1, alpha = 0.6, shape = c(21))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  scale_color_manual(values = rev(c("#ffd60a","#EDA24E", "#9b2226")))+
+  scale_fill_manual(values = rev(c("#ffd60a","#EDA24E", "#9b2226")))+
+  ylim(0, 25)+
+  labs(x = "", y = "soil temperature (C)",
+       color = "depth (cm)", fill = "depth (cm)")+
+  facet_grid(position~site, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "bottom", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
+
+ggsave("figures_finalized/nonacidic_dry_soiltemperature_fig.png", plot = nonacidic_dry_soiltemperature_fig, width = 6, height = 4)
 
 
 
@@ -519,7 +563,8 @@ hydric_dual =
                      sec.axis = sec_axis(~./10, name = "Soil Temperature"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
-  facet_grid(.~site, scales="free")    
+  facet_grid(.~site, scales="free")  
+
 
 mesic_dual =
   final_temp_sal_moist_forfig %>% 
@@ -584,6 +629,8 @@ final_temp_sal_moist_forfig %>%
 
 #############dual plots for EDC x dataloggers-----
 
+###SOMETHING IS WRONG WHEN DATA IS JOINED
+
 dualplot_temp_moist_airtemp =
   final_temp_sal_moist_forfig %>% 
   left_join(climate_1hr_data_airtemp_cleaned)
@@ -607,7 +654,61 @@ hydric_dual_temps =
                      sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(.~site, scales="free")   
+
+dualplot_temp_moist_airtemp %>% 
+  filter(depth_cm == 25 & position == "hydric") %>% 
+  ggplot(aes(x = datetime))+
+  geom_line(aes(y = air_temp_3m_avg), color = c("#4cc9f0"), size = 1)+
+  #geom_line(aes(y = temp*coeff), size = 0.8)+
+  labs(subtitle = "Hydric", x = "Date",
+       caption = "depth = 25 cm")+
+  scale_x_datetime(date_breaks = "1 week")+
+  # scale_y_continuous(name = "Air Temperature (light blue line)",
+  #                    sec.axis = sec_axis(~./coeff, name = "Soil Temperature"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
   facet_grid(.~site, scales="free")    
+
+
+non_acidic_hydric_dual_temps =
+  dualplot_temp_moist_airtemp %>% 
+  filter(depth_cm == 25 & position == "hydric" & site == "non-acidic tundra") %>% 
+  ggplot(aes(x = datetime))+
+  geom_line(aes(y = air_temp_3m_avg), color = c("#4cc9f0"), size = 1)+
+  geom_line(aes(y = temp*coeff), size = 0.8)+
+  labs(x = "Date",
+       caption = "depth = 25 cm")+
+  scale_x_datetime(date_breaks = "1 week")+
+  scale_y_continuous(name = "Air Temperature (light blue line)",
+                     sec.axis = sec_axis(~./coeff, name = "Soil Temperature (black line)"))+
+  theme_er1()+
+  #theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(position~site, scales="free") +
+  theme(legend.position = "bottom", axis.text.x = element_text(vjust = 0.5, hjust=1, angle = 90, size = 9),
+        strip.placement = "outside")
+
+ggsave("output/non_acidic_hydric_dual_temps.png", plot = non_acidic_hydric_dual_temps, width = 8, height = 5)
+
+non_acidic_dry_dual_temps =
+  dualplot_temp_moist_airtemp %>% 
+  filter(depth_cm == 25 & position == "dry" & site == "non-acidic tundra") %>% 
+  ggplot(aes(x = datetime))+
+  geom_line(aes(y = air_temp_3m_avg), color = c("#4cc9f0"), size = 1)+
+  geom_line(aes(y = temp*coeff), size = 0.8)+
+  labs(x = "Date",
+       caption = "depth = 25 cm")+
+  scale_x_datetime(date_breaks = "1 week")+
+  scale_y_continuous(name = "Air Temperature (light blue line)",
+                     sec.axis = sec_axis(~./coeff, name = "Soil Temperature (black line)"))+
+  theme_er1()+
+  #theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(position~site, scales="free") +
+  theme(legend.position = "bottom", axis.text.x = element_text(vjust = 0.5, hjust=1, angle = 90, size = 9),
+        strip.placement = "outside")
+
+ggsave("output/non_acidic_dry_dual_temps.png", plot = non_acidic_dry_dual_temps, width = 8, height = 5)
+
 
 coeff1 <- 10
 
