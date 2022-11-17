@@ -99,3 +99,52 @@ bd_select %>%
 
 ggsave("output/bd_nonacidic.png", plot = bd_nonacidic, height = 4.5, width = 8.5)
 ggsave("output/bd_acidic.png", plot = bd_acidic, height = 4.5, width = 8.5)
+
+bd_grouped =
+  bd_select %>% 
+  mutate(horizon_simplified = recode(Horizon, "O" = "Organic Surface", "O1" = "Organic Surface",
+                                     "O2" = "Organic Subsurface", "O3" = "Organic Subsurface", "M" = "Mineral Subsurface",
+                                     "M1" = "Mineral Subsurface", "M2" = "Mineral Subsurface")) %>% 
+  group_by(Area, Site, Plot_num, Core_ID, horizon_simplified) %>% 
+  dplyr::summarise(mean_bd = mean(soil_bulk_density_g_cm3),
+                   mean_vwc = mean(volumetric_water_content_gcm3),
+                   mean_depth = mean(real_depth_cm)) %>% 
+  na.omit()
+
+
+bulkdensity_simplified =
+  bd_grouped %>% 
+  filter(Site != "Transect") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(horizon_simplified = factor(horizon_simplified, levels = c("Mineral Subsurface", "Organic Subsurface", "Organic Surface"))) %>% 
+  ggplot()+
+  #geom_line(aes(y = mean_depth, x = soil_bulk_density_g_cm3, group = Core_ID))+
+  geom_point(aes(y = mean_depth, x = mean_bd, color = horizon_simplified, group = Core_ID), size = 3)+
+  scale_y_reverse()+
+  labs(fill = "", color = "",
+       y = "depth, cm",
+       x = "bulk density (g/cm3)")+
+  scale_color_manual(values = c("#D6AB7D", "#8A5A44", "#482919"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(Area~Site) 
+
+vwc_simplified =
+bd_grouped %>% 
+  filter(Site != "Transect") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(horizon_simplified = factor(horizon_simplified, levels = c("Mineral Subsurface", "Organic Subsurface", "Organic Surface"))) %>% 
+  ggplot()+
+  #geom_line(aes(y = mean_depth, x = soil_bulk_density_g_cm3, group = Core_ID))+
+  geom_point(aes(y = mean_depth, x = mean_vwc, color = horizon_simplified, group = Core_ID), size = 3)+
+  scale_y_reverse()+
+  labs(fill = "", color = "",
+       y = "depth, cm",
+       x = "Volumetric Water Content (g/cm3)")+
+  scale_color_manual(values = c("#D6AB7D", "#8A5A44", "#482919"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
+  facet_grid(Area~Site) 
+
+ggsave("output/bd_simplified.png", plot = bulkdensity_simplified, height = 4.5, width = 6)
+ggsave("output/vwc_simplified.png", plot = vwc_simplified, height = 4.5, width = 6)
