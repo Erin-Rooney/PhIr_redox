@@ -17,13 +17,13 @@ bd_grav_cleaned = read.csv("raw/PhIr2021_Soil_Inventory_bd.csv") %>%
                        "West" = "non-acidic tundra")) %>% 
   dplyr::mutate(soil_material = case_when(grepl("O",Horizon)~"organic",
                                           grepl("M",Horizon)~"mineral")) %>% 
-  mutate(volumetric_water_content_gcm3 = soil_bulk_density_g_cm3 * grav_water_gh20_per_gdrysoil) 
+  mutate(volumetric_water_content_cm3_cm3 = soil_bulk_density_g_cm3 * grav_water_gh20_per_gdrysoil) 
 
 bd_select = 
   bd_grav_cleaned %>% 
   dplyr::select(Sample_ID, Core_ID, Date_collected, Area, Site, Plot_num, Plot_ID, 
                 Horizon, Depth_1_cm, Depth_2_cm, Depth_3_cm, Depth_4_cm, Average_Depth_cm, real_depth_cm, 
-                soil_bulk_density_g_cm3, volumetric_water_content_gcm3, soil_material) 
+                soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3, soil_material) 
   
 horizons_acidic =
   bd_select %>% 
@@ -107,7 +107,7 @@ bd_grouped =
                                      "M1" = "Mineral Subsurface", "M2" = "Mineral Subsurface")) %>% 
   group_by(Area, Site, Plot_num, Core_ID, horizon_simplified) %>% 
   dplyr::summarise(mean_bd = mean(soil_bulk_density_g_cm3),
-                   mean_vwc = mean(volumetric_water_content_gcm3),
+                   mean_vwc = mean(volumetric_water_content_cm3_cm3),
                    mean_depth = mean(real_depth_cm)) %>% 
   na.omit()
 
@@ -140,7 +140,7 @@ bd_grouped %>%
   scale_y_reverse()+
   labs(fill = "", color = "",
        y = "depth, cm",
-       x = "Volumetric Water Content (g/cm3)")+
+       x = "Volumetric Water Content (cm3 water/ cm3 soil)")+
   scale_color_manual(values = c("#D6AB7D", "#8A5A44", "#482919"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+

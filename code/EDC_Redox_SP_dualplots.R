@@ -317,12 +317,11 @@ acidic_hydric_redox =
   scale_fill_manual(values = rev(natparks.pals(name = "Olympic")))+
   ylim(-250, 700)+
   labs(x = "", y = "redox potential (mV)",
-       color = "depth (cm)", fill = "depth (cm)",
-       subtitle = "acidic hydric")+
-  #facet_grid(position~site)+
+       color = "depth (cm)", fill = "depth (cm)")+
+  facet_grid(position~site)+
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
-        legend.position = "right")
+        legend.position = "bottom")
 
 acidic_mesic_redox =
   ungrouped_redox_forfigs_nonhydric %>% 
@@ -359,12 +358,11 @@ acidic_dry_redox =
   scale_fill_manual(values = rev(natparks.pals(name = "Olympic")))+
   ylim(-250, 700)+
   labs(x = "", y = "redox potential (mV)",
-       color = "depth (cm)", fill = "depth (cm)",
-       subtitle = "acidic dry")+
-  #facet_grid(position~site)+
+       color = "depth (cm)", fill = "depth (cm)")+
+  facet_grid(position~site)+
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
-        legend.position = "right")
+        legend.position = "bottom")
 
 
 ggsave("figures_finalized/redox_groupdepth.tiff", plot = redoxfig_depth_sd, height = 7, width = 5)
@@ -373,9 +371,9 @@ ggsave("figures_finalized/nonacidic_hydric_redox.tiff", plot = nonacidic_hydric_
 ggsave("figures_finalized/nonacidic_hydric_redox.png", plot = nonacidic_hydric_redox, height = 6.5, width = 4.5)
 ggsave("figures_finalized/nonacidic_mesic_redox.png", plot = nonacidic_mesic_redox, height = 6, width = 4.5)
 ggsave("figures_finalized/nonacidic_dry_redox.png", plot = nonacidic_dry_redox, height = 6, width = 4.5)
-ggsave("figures_finalized/acidic_hydric_redox.png", plot = acidic_hydric_redox, height = 6, width = 6)
+ggsave("figures_finalized/acidic_hydric_redox.png", plot = acidic_hydric_redox, height = 6.5, width = 4.5)
 ggsave("figures_finalized/acidic_mesic_redox.png", plot = acidic_mesic_redox, height = 5.75, width = 9.5)
-ggsave("figures_finalized/acidic_dry_redox.png", plot = acidic_dry_redox, height = 5.75, width = 9.5)
+ggsave("figures_finalized/acidic_dry_redox.png", plot = acidic_dry_redox, height = 6, width = 4.5)
 
   
 ###temp----
