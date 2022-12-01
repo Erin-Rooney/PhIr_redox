@@ -23,7 +23,11 @@ bd_select =
   bd_grav_cleaned %>% 
   dplyr::select(Sample_ID, Core_ID, Date_collected, Area, Site, Plot_num, Plot_ID, 
                 Horizon, Depth_1_cm, Depth_2_cm, Depth_3_cm, Depth_4_cm, Average_Depth_cm, real_depth_cm, 
-                soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3, soil_material) 
+                soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3, soil_material) %>% 
+  mutate(label = Horizon) %>% 
+  mutate(label = factor(label, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2"))) 
+  
+  
   
 horizons_acidic =
   bd_select %>% 
@@ -39,7 +43,8 @@ horizons_acidic =
   scale_fill_manual(values = c("#D6AB7D", "#B3895D", "#B3895D", "#734F38", "#553725", "#482919", "#482919"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right")+
-  facet_grid(Area~Site, scales="free") 
+  facet_grid(Area~Site, scales="free") +
+  guides(fill = guide_legend(reverse = TRUE))
 
 horizons_nonacidic =
   bd_select %>% 
@@ -55,7 +60,8 @@ horizons_nonacidic =
   scale_fill_manual(values = c("#B3895D", "#553725", "#482919", "#482919"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right")+
-  facet_grid(Area~Site, scales="free") 
+  facet_grid(Area~Site, scales="free") +
+  guides(fill = guide_legend(reverse = TRUE))
 
 ggsave("output/horizons_nonacidic.png", plot = horizons_nonacidic, height = 4.5, width = 9.5)
 ggsave("output/horizons_acidic.png", plot = horizons_acidic, height = 4.5, width = 9.5)
@@ -127,7 +133,8 @@ bulkdensity_simplified =
   scale_color_manual(values = c("#D6AB7D", "#8A5A44", "#482919"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
-  facet_grid(Area~Site) 
+  facet_grid(Area~Site) +
+  guides(color = guide_legend(reverse = TRUE))
 
 vwc_simplified =
 bd_grouped %>% 
@@ -144,7 +151,8 @@ bd_grouped %>%
   scale_color_manual(values = c("#D6AB7D", "#8A5A44", "#482919"))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
-  facet_grid(Area~Site) 
+  facet_grid(Area~Site) +
+  guides(color = guide_legend(reverse = TRUE))
 
 ggsave("output/bd_simplified.png", plot = bulkdensity_simplified, height = 4.5, width = 6)
 ggsave("output/vwc_simplified.png", plot = vwc_simplified, height = 4.5, width = 6)

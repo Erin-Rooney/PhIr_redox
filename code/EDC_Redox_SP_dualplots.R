@@ -3,6 +3,12 @@
 
 #load all packages
 
+#dual plots
+#EDC data
+#PhIr data
+#redox contour plots
+#redox line/dot plots
+
 source("code/0-packages.R")
 
 #load data
@@ -305,14 +311,14 @@ print(acidicdry$depth_cm)
 
 acidic_hydric_redox =
   ungrouped_redox_forfigs_acidichydric %>% 
-  filter(site == "acidic tundra" & position == "hydric" & probe == 1) %>% 
+  filter(site == "acidic tundra" & position == "hydric" & probe == 3) %>% 
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
   geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
   geom_point(aes(color = depth_2, fill = depth_2), size = 2.5, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
-  scale_x_datetime(date_breaks = "1 week", date_labels = "%m-%d")+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
   scale_color_manual(values = rev(natparks.pals(name = "Olympic")))+
   scale_fill_manual(values = rev(natparks.pals(name = "Olympic")))+
   ylim(-250, 700)+
@@ -332,7 +338,7 @@ acidic_mesic_redox =
   geom_point(aes(color = depth_2, fill = depth_2), size = 2.5, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
-  scale_x_datetime(date_breaks = "1 week", date_labels = "%m-%d")+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
   scale_color_manual(values = rev(natparks.pals(name = "Olympic")))+
   scale_fill_manual(values = rev(natparks.pals(name = "Olympic")))+
   ylim(-250, 700)+
@@ -342,7 +348,7 @@ acidic_mesic_redox =
   #facet_grid(position~site)+
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
-        legend.position = "right")
+        legend.position = "bottom")
 
 acidic_dry_redox =
   ungrouped_redox_forfigs_nonhydric %>% 
@@ -353,7 +359,7 @@ acidic_dry_redox =
   geom_point(aes(color = depth_2, fill = depth_2), size = 2.5, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
-  scale_x_datetime(date_breaks = "1 week", date_labels = "%m-%d")+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
   scale_color_manual(values = rev(natparks.pals(name = "Olympic")))+
   scale_fill_manual(values = rev(natparks.pals(name = "Olympic")))+
   ylim(-250, 700)+
@@ -364,7 +370,6 @@ acidic_dry_redox =
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
         legend.position = "bottom")
 
-
 ggsave("figures_finalized/redox_groupdepth.tiff", plot = redoxfig_depth_sd, height = 7, width = 5)
 ggsave("figures_finalized/redox_groupdepth.png", plot = redoxfig_depth_sd, height = 7, width = 5)
 ggsave("figures_finalized/nonacidic_hydric_redox.tiff", plot = nonacidic_hydric_redox, height = 5.75, width = 9.5)
@@ -374,6 +379,88 @@ ggsave("figures_finalized/nonacidic_dry_redox.png", plot = nonacidic_dry_redox, 
 ggsave("figures_finalized/acidic_hydric_redox.png", plot = acidic_hydric_redox, height = 6.5, width = 4.5)
 ggsave("figures_finalized/acidic_mesic_redox.png", plot = acidic_mesic_redox, height = 5.75, width = 9.5)
 ggsave("figures_finalized/acidic_dry_redox.png", plot = acidic_dry_redox, height = 6, width = 4.5)
+
+####contour plots----
+
+
+
+contour_nonacidic_hydric =
+  ungrouped_redox_forfigs_nonacidichydric %>%
+  filter(site == "non-acidic tundra" & probe == 1) %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot()+
+  geom_contour_filled(aes(y = depth_cm, x = datetime, z = redox_avg_mV))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  ylim(55, 5)+
+  labs(x = "", y = "depth, cm",
+       fill = "redox potential, mV")+
+  scale_fill_manual(values=pnw_palette("Bay", 11))+
+  facet_grid(position~site)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
+        legend.position = "bottom")
+
+contour_acidic_hydric =
+  ungrouped_redox_forfigs_acidichydric %>% 
+  filter(site == "acidic tundra" & position == "hydric" & probe == 3) %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot()+
+  geom_contour_filled(aes(y = depth_cm, x = datetime, z = redox_avg_mV))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  ylim(55, 5)+
+  labs(x = "", y = "depth, cm",
+        fill = "redox potential, mV")+
+  #scale_fill_manual(values=natparks.pals("Arches", 11))+
+  scale_fill_manual(values=pnw_palette("Bay", 11))+
+  facet_grid(position~site)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
+        legend.position = "bottom")
+
+contour_nonacidic_dry =
+  ungrouped_redox_forfigs_nonhydric %>% 
+  filter(position == "dry" & site == "acidic tundra" & probe == 1) %>% 
+  ggplot()+
+  geom_contour_filled(aes(y = depth_cm, x = datetime, z = redox_avg_mV))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  ylim(30, 5)+
+  labs(x = "", y = "depth, cm",
+       fill = "redox potential, mV")+
+  #scale_fill_manual(values=natparks.pals("Arches", 11))+
+  scale_fill_manual(values=pnw_palette("Bay", 11))+
+  facet_grid(position~site)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
+        legend.position = "bottom")
+
+contour_acidic_dry =
+  ungrouped_redox_forfigs_nonhydric %>% 
+  filter(position == "dry" & site == "non-acidic tundra" & probe == 1) %>% 
+  ggplot()+
+  geom_contour_filled(aes(y = depth_cm, x = datetime, z = redox_avg_mV))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  ylim(30, 5)+
+  labs(x = "", y = "depth, cm",
+       fill = "redox potential, mV")+
+  #scale_fill_manual(values=natparks.pals("Arches", 11))+
+  scale_fill_manual(values=pnw_palette("Bay", 11))+
+  facet_grid(position~site)+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
+        legend.position = "bottom")
+
+ggsave("figures_finalized/contour_acidic_dry.png", plot = contour_acidic_dry, height = 5.5, width = 8)
+ggsave("figures_finalized/contour_nonacidic_dry.png", plot = contour_nonacidic_dry, height = 5.5, width = 8)
+ggsave("figures_finalized/contour_acidic_hydric.png", plot = contour_acidic_hydric, height = 5.5, width = 8)
+ggsave("figures_finalized/contour_nonacidic_hydric.png", plot = contour_nonacidic_hydric, height = 5.5, width = 8)
 
   
 ###temp----
