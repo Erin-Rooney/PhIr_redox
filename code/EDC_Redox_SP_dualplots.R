@@ -3,6 +3,11 @@
 
 #load all packages
 
+#Datasets were provided by the Toolik Field Station Environmental Data Center. 
+#This material is based upon work supported by the National Science Foundation under grant #1623461.
+
+
+
 #dual plots
 #EDC data
 #PhIr data
@@ -56,30 +61,67 @@ airtemp_EDC =
 snow_EDC =
   climate_1hr_data_cleaned %>% 
   dplyr::select(date, snow_depth_1hr_avg) %>% 
-  filter(date > "2020-03-01") %>% 
+  filter(date > "2021-05-01") %>% 
   na.omit() %>% 
   ggplot() + 
-  geom_point(aes(y = snow_depth_1hr_avg, x = date))+
+  geom_col(aes(y = snow_depth_1hr_avg, x = date))+
   scale_x_date(date_breaks = "2 weeks")+
   labs(y = 'EDC daily snow depth average, cm')+
   theme_er1()+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
-rain_EDC =
+accumulation_EDC =
   climate_1hr_data_cleaned %>% 
-  dplyr::select(date, rain_avg) %>% 
-  filter(date > "2020-03-01") %>% 
+  dplyr::select(date, rain_avg, snow_depth_1hr_avg) %>% 
+  mutate(rain_avg_cm = (rain_avg/10)) %>% 
+  dplyr::select(-rain_avg) %>% 
+  pivot_longer(-c(date), names_to = "precip_type", values_to = "accumulation") %>% 
+  mutate(precip_type = recode(precip_type, "rain_avg_cm" = "rain",
+                              "snow_depth_1hr_avg" = "snow"))
+
+accumulation_fig =
+  accumulation_EDC %>% 
+  #dplyr::select(date, rain_avg) %>% 
+  filter(date > "2021-06-21" & date < "2021-09-20") %>% 
   na.omit() %>% 
   ggplot() + 
-  labs(y = 'EDC daily rain average, mm')+
-  geom_point(aes(y = rain_avg, x = date))+
-  scale_x_date(date_breaks = "2 weeks")+
+  labs(y = 'EDC accumulation average, cm', x = "",
+       fill = "")+
+  geom_col(aes(y = accumulation, x = date, fill = precip_type))+
+  scale_y_reverse()+
+  scale_x_date(date_breaks = "1 weeks", date_labels = "%b-%d", position = "top")+
+  scale_fill_manual(values = c("#64a8a8", "#cde5f9"))+
+  #scale_color_manual(values = c("#64a8a8", "#cde5f9"))+
   theme_er1()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  theme(axis.text.x = element_text(size = 9), legend.position = "NONE")+
+  facet_grid(precip_type~., scales = "free_y")+
+NULL
+
+accumulationrain_fig =
+  accumulation_EDC %>% 
+  #dplyr::select(date, rain_avg) %>% 
+  filter(date > "2021-06-14" & date < "2021-09-20" & precip_type == "rain") %>% 
+  na.omit() %>% 
+  ggplot() + 
+  labs(y = 'EDC rain, cm', x = "",
+       fill = "")+
+  geom_col(aes(y = accumulation, x = date, fill = precip_type))+
+  scale_y_reverse()+
+  scale_x_date(date_breaks = "1 weeks", date_labels = "%b-%d", position = "top")+
+  scale_fill_manual(values = c("#64a8a8", "#cde5f9"))+
+  #scale_color_manual(values = c("#64a8a8", "#cde5f9"))+
+  theme_minimal()+
+  theme(axis.text.x = element_text(size = 9), legend.position = "NONE")+
+  #facet_grid(precip_type~., scales = "free_y")+
+  NULL
+ 
 
   ggsave("output/rain_EDC.png", plot = rain_EDC, height = 4.5, width = 10)
   ggsave("output/snow_EDC.png", plot = snow_EDC, height = 4.5, width = 10)
   ggsave("output/air_EDC.png", plot = airtemp_EDC, height = 4.5, width = 10)
+  ggsave("output/accumulation_EDC.png", plot = accumulation_fig, height = 4.5, width = 7.5)
+  ggsave("formanuscript/accumulationrain_EDC.png", plot = accumulationrain_fig, height = 2, width = 7.5)
+  
 
   
   
@@ -220,7 +262,8 @@ redoxfig_depth_sd =
          y = "depth (cm)",
          color = "", fill = "")+
   scale_x_continuous(position="top")+
-  facet_grid(.~site, switch = "x")
+  facet_grid(.~site, switch = "x")+
+  theme_er1()
 
 
 nonacidic_hydric_redox =
@@ -228,7 +271,7 @@ nonacidic_hydric_redox =
   filter(site == "non-acidic tundra" & probe == 1) %>% 
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
-  geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
   geom_point(aes(color = depth_2, fill = depth_2), size = 2.5, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
@@ -238,9 +281,9 @@ nonacidic_hydric_redox =
   ylim(-250, 700)+
   labs(x = "", y = "redox potential (mV)",
        color = "depth (cm)", fill = "depth (cm)")+
-  facet_grid(position~site)+
-  theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
+  facet_grid(.~position)+
+  theme_minimal()+
+  theme(axis.text.x = element_text(size = 9),
         legend.position = "bottom")
 
 nonacidic_mesic_redox =
@@ -248,7 +291,7 @@ nonacidic_mesic_redox =
   filter(position == "mesic" & site == "non-acidic tundra" & probe == "3") %>% 
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
-  geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
   geom_point(aes(color = depth_2, fill = depth_2), size = 2.5, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
@@ -258,9 +301,9 @@ nonacidic_mesic_redox =
   ylim(-250, 700)+
   labs(x = "", y = "redox potential (mV)",
        color = "depth (cm)", fill = "depth (cm)")+
-  facet_grid(position~site)+
-  theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
+  facet_grid(.~position)+
+  theme_minimal()+
+  theme(axis.text.x = element_text(size = 9),
         legend.position = "bottom")
 
 nonacidic_dry_redox =
@@ -268,7 +311,7 @@ nonacidic_dry_redox =
   filter(position == "dry" & site == "non-acidic tundra" & probe == 1) %>% 
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
-  geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-06 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_rect(aes(xmin=as_datetime('2021-06-21 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
   geom_point(aes(color = depth_2, fill = depth_2), size = 2.5, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
@@ -278,9 +321,9 @@ nonacidic_dry_redox =
   ylim(-250, 700)+
   labs(x = "", y = "redox potential (mV)",
        color = "depth (cm)", fill = "depth (cm)")+
-  facet_grid(position~site)+
-  theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
+  facet_grid(.~position)+
+  theme_minimal()+
+  theme(axis.text.x = element_text(size = 9),
         legend.position = "bottom")
 
 acidichydric =
@@ -314,7 +357,7 @@ acidic_hydric_redox =
   filter(site == "acidic tundra" & position == "hydric" & probe == 3) %>% 
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
-  geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
   geom_point(aes(color = depth_2, fill = depth_2), size = 2.5, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
@@ -324,9 +367,9 @@ acidic_hydric_redox =
   ylim(-250, 700)+
   labs(x = "", y = "redox potential (mV)",
        color = "depth (cm)", fill = "depth (cm)")+
-  facet_grid(position~site)+
-  theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
+  facet_grid(.~position)+
+  theme_minimal()+
+  theme(axis.text.x = element_text (size = 9),
         legend.position = "bottom")
 
 acidic_mesic_redox =
@@ -379,6 +422,17 @@ ggsave("figures_finalized/nonacidic_dry_redox.png", plot = nonacidic_dry_redox, 
 ggsave("figures_finalized/acidic_hydric_redox.png", plot = acidic_hydric_redox, height = 6.5, width = 4.5)
 ggsave("figures_finalized/acidic_mesic_redox.png", plot = acidic_mesic_redox, height = 5.75, width = 9.5)
 ggsave("figures_finalized/acidic_dry_redox.png", plot = acidic_dry_redox, height = 6, width = 4.5)
+
+ggsave("figures_finalized/redox_groupdepth.tiff", plot = redoxfig_depth_sd, height = 7, width = 5)
+ggsave("formanuscript/nonacidic_hydric_redox.tiff", plot = nonacidic_hydric_redox, height = 3, width = 7.5)
+ggsave("formanuscript/nonacidic_mesic_redox.tiff", plot = nonacidic_mesic_redox, height = 3, width = 7.5)
+ggsave("formanuscript/nonacidic_dry_redox.tiff", plot = nonacidic_dry_redox, height = 3, width = 7.5)
+ggsave("formanuscript/acidic_hydric_redox.tiff", plot = acidic_hydric_redox, height = 3, width = 7.5)
+ggsave("formanuscript/acidic_mesic_redox.tiff", plot = acidic_mesic_redox, height = 3, width = 7.5)
+ggsave("formanuscript/acidic_dry_redox.tiff", plot = acidic_dry_redox, height = 3, width = 7.5)
+
+
+
 
 ####contour plots----
 
@@ -481,6 +535,8 @@ final_temp_sal_moist_forfig =
                        "west" = "non-acidic tundra")) %>% 
   dplyr::rename(depth_cm = depth) %>% 
   na.omit() 
+
+
   
 daily_redox_wred =
 daily_redox_forfigs %>% 
@@ -522,7 +578,49 @@ final_temp_sal_moist_forfig %>%
   theme_er1()+
   theme(legend.position = "bottom", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
 
-ggsave("figures_finalized/allsoilmoisture_fig.tiff", plot = allsoilmoisture_fig, width = 6, height = 5.5)
+acidic_moisture_contour=
+  final_temp_sal_moist_forfig %>% 
+  filter(site == "acidic tundra") %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot()+
+  geom_contour_filled(aes(y = depth_cm, x = datetime, z = moisture))+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  ylim(25, 5)+
+  labs(x = "", y = "depth, cm",
+       fill = "redox potential, mV")+
+  #scale_fill_manual(values=natparks.pals("Arches", 11))+
+  scale_fill_manual(values=rev(pnw_palette("Bay", 11)))+
+  facet_grid(position~.)+
+  theme_minimal()+
+  theme(axis.text.x = element_text (size = 9),
+        legend.position = "bottom")
+
+nonacidic_moisture_contour=
+  final_temp_sal_moist_forfig %>% 
+  filter(site == "non-acidic tundra") %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot()+
+  geom_contour_filled(aes(y = depth_cm, x = datetime, z = moisture))+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  ylim(25, 5)+
+  labs(x = "", y = "depth, cm",
+       fill = "redox potential, mV")+
+  #scale_fill_manual(values=natparks.pals("Arches", 11))+
+  scale_fill_manual(values=rev(pnw_palette("Bay", 11)))+
+  facet_grid(position~.)+
+  theme_minimal()+
+  theme(axis.text.x = element_text (size = 9),
+        legend.position = "bottom")
+
+
+ggsave("formanuscript/acidic_moisture_contour.tiff", plot = acidic_moisture_contour, width = 7.5, height = 5.5)
+ggsave("formanuscript/nonacidic_moisture_contour.tiff", plot = nonacidic_moisture_contour, width = 7.5, height = 5.5)
+
+
 
 allsoiltemperature_fig =
   final_temp_sal_moist_forfig %>% 

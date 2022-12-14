@@ -144,6 +144,46 @@ thaw_depths_fig_violin_acidic =
   theme_er1()+
   theme(legend.position = "none", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
 
+
+thaw_depths_fig_violin_nonacidic_hydric =
+  thaw_depths_cleaned %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  filter(Area == "non-acidic tundra" & Site == "Hydric") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = Site), alpha = 0.4)+
+  labs(x = " ",
+       y = "Thaw Depth, cm")+
+  geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-09-20'), ymin=49.5, ymax=50.5), fill = "black")+
+  #scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_x_date(date_breaks = "1 week", date_labels = "%b-%d")+
+  ylim(90, 0)+
+  #facet_grid(Site~Area)+
+  theme_minimal()+
+  theme(legend.position = "none", axis.text.x = element_text (size = 9))
+
+ggsave("formanuscript/thaw_depths_fig_violin_nonacidichydric.TIFF", plot = thaw_depths_fig_violin_nonacidic_hydric, height = 2, width = 7.5)
+
+thaw_depths_fig_violin_acidic_hydric =
+  thaw_depths_cleaned %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  filter(Area == "acidic tundra" & Site == "Hydric") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = Site), alpha = 0.4)+
+  labs(x = " ",
+       y = "Thaw Depth, cm")+
+  geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-09-20'), ymin=49.5, ymax=50.5), fill = "black")+
+  #scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_x_date(date_breaks = "1 week", date_labels = "%b-%d")+
+  ylim(90, 0)+
+  #facet_grid(Site~Area)+
+  theme_minimal()+
+  theme(legend.position = "none", axis.text.x = element_text (size = 9))
+
+ggsave("formanuscript/thaw_depths_fig_violin_acidichydric.TIFF", plot = thaw_depths_fig_violin_nonacidic_hydric, height = 2, width = 7.5)
+
+
 # thaw_depths_fig_violin_all =
 #   thaw_depths_cleaned %>% 
 #   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
