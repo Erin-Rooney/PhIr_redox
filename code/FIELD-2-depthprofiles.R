@@ -63,8 +63,47 @@ horizons_nonacidic =
   facet_grid(Area~Site, scales="free") +
   guides(fill = guide_legend(reverse = TRUE))
 
+horizons_dry_acidic =
+  bd_select %>% 
+  filter(Site == "Dry" & Area == "acidic tundra") %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
+  ggplot()+
+  geom_col(aes(y = Average_Depth_cm, x = Core_ID, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
+  scale_y_reverse()+
+  labs(fill = "", color = "",
+       y = "depth, cm",
+       x = "plot")+
+  # scale_fill_manual(values = c("#D6AB7D", "#B3895D", "#B3895D", "#734F38", "#553725", "#482919", "#482919"))+
+  scale_fill_manual(values = c("#D6AB7D", "#734F38", "#553725", "#482919"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right")+
+  facet_grid(Site~Area, scales="free_x") +
+  guides(fill = guide_legend(reverse = TRUE))
+
+horizons_dry_nonacidic =
+  bd_select %>% 
+  filter(Site == "Dry" & Area == "non-acidic tundra") %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
+  ggplot()+
+  geom_col(aes(y = Average_Depth_cm, x = Core_ID, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
+  scale_y_reverse()+
+  labs(fill = "", color = "",
+       y = "depth, cm",
+       x = "plot")+
+  # scale_fill_manual(values = c("#D6AB7D", "#B3895D", "#B3895D", "#734F38", "#553725", "#482919", "#482919"))+
+  scale_fill_manual(values = c( "#734F38", "#553725", "#482919", "#482919"))+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right")+
+  facet_grid(Site~Area, scales="free_x") +
+  guides(fill = guide_legend(reverse = TRUE))
+
 ggsave("output/horizons_nonacidic.png", plot = horizons_nonacidic, height = 4.5, width = 9.5)
 ggsave("output/horizons_acidic.png", plot = horizons_acidic, height = 4.5, width = 9.5)
+
+ggsave("formanuscript/horizons_nonacidic_dry.png", plot = horizons_dry_nonacidic, height = 4, width = 7)
+ggsave("formanuscript/horizons_acidic_dry.png", plot = horizons_dry_acidic, height = 4, width = 7)
 
 
 #Bulk density
