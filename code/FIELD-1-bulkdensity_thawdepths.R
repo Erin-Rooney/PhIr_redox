@@ -10,6 +10,7 @@ source("code/0-packages.R")
 #load data
 
 thaw_depths = read.csv("raw/thaw_depth_2021.csv")
+thaw_depths_2022 = read.csv("raw/thaw_depth_2022.csv")
 
 bd_grav_cleaned = read.csv("raw/PhIr2021_Soil_Inventory_bd.csv") %>% 
   #dplyr::select(-c(X)) %>% 
@@ -71,7 +72,21 @@ thaw_depths_cleaned =
   mutate(Area = recode(Area, "East" = "acidic tundra",
                        "West" = "non-acidic tundra")) %>% 
   mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) 
-  
+
+thaw_depths_cleaned_2022 =
+  thaw_depths_2022 %>% 
+  dplyr::select(Date, Area, Site, Plot, Plot_ID, X1, X2, X3, X4, X5, X6, X7, X8, X9, X10,
+                X11, X12, X13, X14, X15) %>% 
+  na.omit() %>% 
+  pivot_longer(-c(Date, Area, Site, Plot, Plot_ID), names_to = "rep", values_to = "thaw_depth_cm") %>% 
+  separate(Date, sep = "-", into = c("Day", "Month_num", "Year")) %>% 
+  mutate(Year = recode(Year, "22" = "2022")) %>% 
+  mutate(Month = recode(Month_num, "Jun" = "06", "Jul" = "07", "Aug" = "08")) %>% 
+  mutate(date2 = as.Date(paste(Year,Month,Day, sep = "-"))) %>% 
+  mutate(Area = recode(Area, "East" = "acidic tundra",
+                       "West" = "non-acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) 
+
 
 water_table =
   bd_grav_cleaned %>% 
@@ -109,6 +124,98 @@ thaw_depths_fig =
   scale_y_reverse()+
   facet_grid(Site~Area)+
   theme_er1()
+
+thaw_depths_fig_violin =
+  thaw_depths_cleaned %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  #filter(Area == "non-acidic tundra") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = Site), alpha = 0.4)+
+  labs(x = " ",
+       y = "Thaw Depth, cm")+
+  #geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
+  #scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_x_date(date_breaks = "1 week", date_labels = "%b-%d-%Y")+
+  ylim(90, 0)+
+  facet_grid(Site~Area)+
+  theme_er1()+
+  theme(legend.position = "none", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
+
+
+thaw_depths_fig_violin_2022 =
+  thaw_depths_cleaned_2022 %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  #filter(Area == "non-acidic tundra") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = Site), alpha = 0.4)+
+  labs(x = " ",
+       y = "Thaw Depth, cm")+
+  #geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
+  #scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_x_date(date_breaks = "1 week", date_labels = "%b-%d-%Y")+
+  ylim(90, 0)+
+  facet_grid(Site~Area)+
+  theme_er1()+
+  theme(legend.position = "none", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
+
+ggsave("formanuscript/thaw_depths_fig_violin_2021.png", plot = thaw_depths_fig_violin, height = 5, width = 6)
+ggsave("formanuscript/thaw_depths_fig_violin_2022.png", plot = thaw_depths_fig_violin_2022, height = 5, width = 6)
+
+
+thawdepths2021_2022 =
+  thaw_depths_cleaned %>% 
+  vctrs::vec_c(thaw_depths_cleaned_2022)
+
+thaw_depths_fig_violin_2021_2022_nonacidic =
+  thawdepths2021_2022 %>%
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  filter(Area == "non-acidic tundra") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = Site), alpha = 0.4)+
+  labs(title = "non-acidic tundra",
+         x = " ",
+       y = "Thaw Depth, cm")+
+  #geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
+  #scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_x_date(date_breaks = "1 week", date_labels = "%b-%d-%Y")+
+  ylim(90, 0)+
+  facet_grid(Site~Year, scales = "free")+
+  theme_er1()+
+  theme(legend.position = "none", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9),
+        strip.text.y = element_blank())
+
+thaw_depths_fig_violin_2021_2022_acidic =
+  thawdepths2021_2022 %>%
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  filter(Area == "acidic tundra") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = Site), alpha = 0.4)+
+  labs(title = "acidic tundra",
+       x = " ",
+       y = "Thaw Depth, cm")+
+  #geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
+  #scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_x_date(date_breaks = "1 week", date_labels = "%b-%d-%Y")+
+  ylim(90, 0)+
+  facet_grid(Site~Year, scales = "free")+
+  theme_er1()+
+  theme(legend.position = "none", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9),
+        axis.title.y = element_blank(), axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+
+library(patchwork)
+
+thawdepths_all = thaw_depths_fig_violin_2021_2022_nonacidic + thaw_depths_fig_violin_2021_2022_acidic
+
+ggsave("formanuscript/thawdepths_all.png", plot = thawdepths_all, height = 5, width = 10)
+
+
+
 
 thaw_depths_fig_violin_nonacidic =
   thaw_depths_cleaned %>% 

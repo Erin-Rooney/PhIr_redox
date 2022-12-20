@@ -360,7 +360,7 @@ redox_temporal_fig_dry =
 
 ggsave("formanuscript/redox_temporal_fig_dry.png", plot = redox_temporal_fig_dry, height = 7, width = 7)
 
-redox_temporal_fig_2 =
+redox_temporal_fig_2_a =
   grouped_redox_forfigs_temporal %>% 
   #filter(position == "dry") %>% 
   mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
@@ -382,7 +382,35 @@ redox_temporal_fig_2 =
   theme_er1()+
   theme(legend.position = "right")
 
-ggsave("formanuscript/redox_temporal_fig_2.png", plot = redox_temporal_fig_2, height = 6.5, width = 8)
+redox_temporal_fig_2 =
+  grouped_redox_forfigs_temporal %>% 
+  #filter(position == "dry") %>% 
+  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'month')+
+  geom_point(size = 4, alpha = 0.9, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE)+
+  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+  # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  # scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = (pnw_palette('Sailboat', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sailboat', 4)))+
+  ylim(60, 0)+
+  labs(x = 'redox potential (mV)',
+       y = "depth (cm)",
+       color = "", fill = "")+
+  scale_x_continuous(position="top")+
+  facet_grid(position~site, switch = "x")+
+  theme_er1()+
+  theme(legend.position = "none",
+        strip.text.y = element_blank())
+
+redox_moisture_temporal = redox_temporal_fig_2 + moisturefig_temporal
+
+ggsave("formanuscript/redox_temporal_fig_2.png", plot = redox_temporal_fig_2, height = 10, width = 5)
+ggsave("formanuscript/redox_moisture_temporal.png", plot = redox_moisture_temporal, height = 10, width = 10)
+
+
 
 
 nonacidic_hydric_redox =
@@ -777,6 +805,28 @@ grouped_moisture_forfigs_temporal %>%
   theme_er1()
 
 ggsave("formanuscript/moisture_temporal_fig.tiff", plot = moisturefig_temporal, height = 7, width = 7)
+
+moisturefig_temporal =
+  grouped_moisture_forfigs_temporal %>% 
+  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
+  geom_point(size = 4, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE)+
+  geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE)+
+  scale_color_manual(values = (pnw_palette('Sailboat', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sailboat', 4)))+
+  ylim(60, 0)+
+  labs(x = 'soil moisture (%)',
+       y = "depth (cm)",
+       color = "", fill = "")+
+  scale_x_continuous(position="top")+
+  facet_grid(position~site, switch = "x")+
+  theme_er1()+
+  theme(legend.position = "none", axis.title.y = element_blank(), axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
+
+
 
 
 allsoilmoisture_fig =

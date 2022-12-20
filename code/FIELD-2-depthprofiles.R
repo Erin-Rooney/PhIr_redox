@@ -25,7 +25,14 @@ bd_select =
                 Horizon, Depth_1_cm, Depth_2_cm, Depth_3_cm, Depth_4_cm, Average_Depth_cm, real_depth_cm, 
                 soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3, soil_material) %>% 
   mutate(label = Horizon) %>% 
-  mutate(label = factor(label, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2"))) 
+  mutate(label = factor(label, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2"))) %>% 
+  mutate(date_simple = recode(Date_collected, "6-Jul-21" = "Plot-1", "7-Jul-21" = "Plot-1",
+                              "13-Jul-21" = "Plot-2", "14-Jul-21" = "Plot-2",
+                              "24-Jul-21" = "Plot-3",
+                              "30-Jul-21" = "Plot-4", "31-Jul-21" = "Plot-4",
+                              "7-Aug-21" = "Plot-5")) %>% 
+  mutate(label = paste0(date_simple, "-", Plot_num))  
+  
   
   
   
@@ -35,16 +42,19 @@ horizons_acidic =
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
   ggplot()+
-  geom_col(aes(y = Average_Depth_cm, x = Core_ID, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
+  geom_col(aes(y = Average_Depth_cm, x = label, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
   scale_y_reverse()+
-  labs(fill = "", color = "",
+  labs(title = "acidic tundra",
+       fill = "", color = "",
        y = "depth, cm",
-       x = "plot")+
-  scale_fill_manual(values = c("#D6AB7D", "#B3895D", "#B3895D", "#734F38", "#553725", "#482919", "#482919"))+
+       x = " ")+
+  scale_fill_manual(values = c("#BFAFA6", "#AA968A", "#AA968A", "#734F38", "#553725", "#482919", "#482919"))+
+  facet_grid(Site~., scales="free_x") +
+  guides(fill = guide_legend(reverse = TRUE))+
   theme_er1()+
-  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right")+
-  facet_grid(Area~Site, scales="free") +
-  guides(fill = guide_legend(reverse = TRUE))
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right",
+        axis.title.y = element_blank(), axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 horizons_nonacidic =
   bd_select %>% 
@@ -52,16 +62,23 @@ horizons_nonacidic =
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
   ggplot()+
-  geom_col(aes(y = Average_Depth_cm, x = Core_ID, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
+  geom_col(aes(y = Average_Depth_cm, x = label, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
   scale_y_reverse()+
-  labs(fill = "", color = "",
+  labs(title = "non-acidic tundra",
+         fill = "", color = "",
        y = "depth, cm",
-       x = "plot")+
-  scale_fill_manual(values = c("#B3895D", "#553725", "#482919", "#482919"))+
+       x = " ")+
+  scale_fill_manual(values = c("#AA968A", "#553725", "#482919", "#482919"))+
+  facet_grid(Site~., scales="free_x") +
   theme_er1()+
-  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right")+
-  facet_grid(Area~Site, scales="free") +
-  guides(fill = guide_legend(reverse = TRUE))
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "none",
+        )
+
+horizons_all = horizons_nonacidic + horizons_acidic
+
+ggsave("formanuscript/horizons_all.png", plot = horizons_all, height = 6, width = 10)
+
+ 
 
 horizons_dry_acidic =
   bd_select %>% 
