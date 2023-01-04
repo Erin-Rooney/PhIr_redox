@@ -92,7 +92,7 @@ ungrouped_redox_forfigs_nonhydric =
   mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
   mutate(datetime = ymd_hm(paste(date, time)),
          date = ymd(date)) %>%
-  mutate(depth_2 = factor(depth_cm, levels = c("3.5", "5", "8.5", "10", "15", "16", "18.5", "20", "25", "26", "28.5", "30"))) %>%
+  mutate(depth_2 = factor(depth_cm, levels = c("1", "3.5", "5", "6", "8.5", "10", "15", "16", "18.5", "20", "25", "26", "28.5", "30"))) %>%
   #filter(probe == 1) %>%
   dplyr::rename(redox_avg_mV = avg_values_fixed) 
 # group_by(site, position, depth_2, datetime) %>%
@@ -219,7 +219,7 @@ ggsave("formanuscript/2022redox_fig.png", plot = redoxfig_depth_sd, height = 7, 
 
 nonacidic_hydric_redox =
   ungrouped_redox_forfigs_hydric %>% 
-  filter(site == "non-acidic tundra") %>% 
+  filter(site == "non-acidic tundra" & probe == "3") %>% 
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
   #geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
@@ -227,13 +227,13 @@ nonacidic_hydric_redox =
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
   scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
-  scale_color_manual(values = rev(natparks.pals(name = "Olympic", 12)))+
-  scale_fill_manual(values = rev(natparks.pals(name = "Olympic", 12)))+
+  scale_color_manual(values = rev(pnw_palette(name = "Bay", 4)))+
+  scale_fill_manual(values = rev(pnw_palette(name = "Bay", 4)))+
   ylim(-250, 700)+
   labs(x = "", y = "redox potential (mV)",
        color = "depth (cm)", fill = "depth (cm)")+
-  facet_grid(probe~position)+
-  theme_minimal()+
+  facet_grid(.~position)+
+  theme_er1()+
   theme(axis.text.x = element_text(size = 9),
         legend.position = "bottom")
 
@@ -328,10 +328,10 @@ acidic_hydric_redox =
 
 acidic_mesic_redox =
   ungrouped_redox_forfigs_nonhydric %>% 
-  filter(position == "mesic" & site == "acidic tundra" & probe == 1) %>% 
+  filter(position == "mesic" & site == "acidic tundra") %>% 
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
-  geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  #geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
   geom_point(aes(color = depth_2, fill = depth_2), size = 2.5, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
@@ -342,7 +342,7 @@ acidic_mesic_redox =
   labs(x = "", y = "redox potential (mV)",
        color = "depth (cm)", fill = "depth (cm)",
        subtitle = "acidic mesic")+
-  #facet_grid(position~site)+
+  facet_grid(probe~site)+
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90),
         legend.position = "bottom")
