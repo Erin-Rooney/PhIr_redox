@@ -101,12 +101,11 @@ ggsave("formanuscript/frozen_2022_fig.tiff", plot = frozen_2022_fig, height = 10
 
 df1 =
   frozen_2021 %>% 
-  filter(frozen == "frozen" & position == "hydric") %>% 
-  mutate(depth_cm = as.factor(depth_cm))
+  filter(frozen == "frozen" & probe == '1') 
 
 df2 =
   frozen_2021 %>% 
-  filter(frozen != "frozen" & position == "hydric") 
+  filter(frozen != "frozen" & probe == '1') 
 
 fig_2021 =
   ggplot()+
@@ -143,6 +142,26 @@ fig_2021_b =
   theme_er1()+
   theme(legend.position = "right")
 
+
+fig_2021 =
+  frozen_2021 %>% 
+  filter(site == "acidic tundra" & position == "hydric" & probe == "3") %>% 
+  ggplot()+
+  geom_point(aes(y = avg_values_fixed, x = as_datetime(Betterdate), color = depth_cm, fill = depth_cm), size = 2, alpha = 0.4, shape = c(21))+
+  labs(y = "redox potential (mV)",
+       x = "2021",
+       color = "depth, cm", fill = "depth, cm")+
+  scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
+  scale_color_gradientn(colors = rev(natparks.pals(name = "Olympic")))+
+  scale_fill_gradientn(colors = rev(natparks.pals(name = "Olympic")))+
+  #scale_y_reverse()+
+  #scale_x_continuous(position="top")+
+  facet_grid(position~site)+
+  theme_er1()+
+  theme(legend.position = "right")
+
+
+
 fig_2021_c =
   ggplot()+
   #geom_point(data = df2, aes(y = avg_values_fixed, x = as_datetime(Betterdate), color = depth_cm, fill = depth_cm), size = 2, alpha = 0.4, shape = c(21))+
@@ -159,9 +178,7 @@ fig_2021_c =
   theme_er1()+
   theme(legend.position = "right")
 
-ggsave("formanuscript/frozen_2021_figc.tiff", plot = fig_2021_c, height = 5, width = 15)
-
-
+ggsave("formanuscript/frozen_2021_figb.png", plot = fig_2021_b, height = 9, width = 15)
 
 
 df3 =

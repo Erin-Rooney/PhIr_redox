@@ -320,9 +320,9 @@ alldata_cleaned =
 ###go through and make sure artifacts parameters are okay.
 
 
-temporary_fig_eastmesic_2022 =
+temporary_fig_2022_25 =
   alldata_cleaned %>%
-  filter(position == "mesic" & site == "east") %>%
+  filter(position == "hydric" & site == "west") %>%
   ggplot(aes(x = Betterdate, y = avg_values_fixed))+
   geom_point(aes(color = depth_cm), alpha = 0.5)+
   geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
@@ -334,10 +334,10 @@ temporary_fig_eastmesic_2022 =
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
 
-ggsave("output/temporary_fig_cleaned_eastmesic_2022.png", plot = temporary_fig_eastmesic_2022, width = 20, height = 10)
+ggsave("output/temporary_fig_cleaned_2022_25.png", plot = temporary_fig_2022_25, width = 20, height = 10)
 
 alldata_cleaned %>%
-  filter(position == "mesic" & site == "west") %>%
+  #filter(position == "mesic" & site == "west") %>%
   ggplot(aes(x = Betterdate, y = avg_values_fixed))+
   geom_point(aes(color = depth_cm), alpha = 0.5)+
   geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
