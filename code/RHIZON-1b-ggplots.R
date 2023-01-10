@@ -306,21 +306,25 @@ west_rhizon_fig_cations =
 
 rhizon_meta_combine_notransect_forelements_simplified=
   rhizon_meta_combine_notransect_forelements %>%
-  separate(Betterdate, sep = "-", into = c("year", "month", "day")) 
+  separate(Betterdate, sep = "-", into = c("year", "month", "day")) %>% 
+  mutate(month = recode(month, "06" = "June", "07" = "July", "08" = "August")) %>% 
+  mutate(date = (paste(month, day, sep = "-"))) %>% 
+  mutate(date = factor(date, levels = c("June-24", "June-28", "July-06", "July-07", "July-14", "July-24", "July-30", "July-31",
+                                        "August-07", "August-10")))
   
   
 
-rhizon_simplified_P_2021 = 
-  rhizon_meta_combine_notransect_forelements %>%
+rhizon_simplified_P_2021_westhydric = 
+  rhizon_meta_combine_notransect_forelements_simplified %>%
   mutate(Area = recode(Area, "West" = "non-acidic tundra")) %>% 
   filter(ICP %in% c("phosphorus") & Area == "non-acidic tundra" & Site == "Hydric") %>% 
   mutate(ICP = recode(ICP, "phosphorus" = "phosphorus μg/mL")) %>% 
-  ggplot(aes(x = Betterdate, y = mean, color = Site, fill = Site)) +
+  ggplot(aes(x = date, y = mean, color = Site, fill = Site)) +
   #geom_point(size = 3, alpha = 0.7)+
   geom_col(position = 'dodge', width = 0.7, alpha = 0.5)+
   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
                 position=position_dodge(.9), color = "black")+
-  labs(x = "date", y = "phosphorus μg/mL")+
+  labs(x = "", y = "phosphorus μg/mL")+
   scale_color_manual(values = c("#118ab2"))+
   scale_fill_manual(values = c("#118ab2"))+
   # scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
@@ -328,29 +332,78 @@ rhizon_simplified_P_2021 =
   theme_er1()+
   # theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
   facet_grid(Site ~ Area)+
-  theme(legend.position = "NONE", axis.text.x = element_text(size = 9),
-        strip.placement = "outside")+
+  theme(legend.position = "NONE", axis.text.x = element_text(size = 9, angle = 90))+
   NULL
+
+ggsave("figures_finalized/rhizon_simplified_P_2021_westhydric.png", plot = rhizon_simplified_P_2021_westhydric, width = 4, height = 6)
+
+rhizon_simplified_P_2021_easthydric = 
+  rhizon_meta_combine_notransect_forelements_simplified %>%
+  mutate(Area = recode(Area, "East" = "acidic tundra")) %>% 
+  filter(ICP %in% c("phosphorus") & Area == "acidic tundra" & Site == "Hydric") %>% 
+  mutate(ICP = recode(ICP, "phosphorus" = "phosphorus μg/mL")) %>% 
+  ggplot(aes(x = date, y = mean, color = Site, fill = Site)) +
+  #geom_point(size = 3, alpha = 0.7)+
+  geom_col(position = 'dodge', width = 0.7, alpha = 0.5)+
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                position=position_dodge(.9), color = "black")+
+  labs(x = "", y = "phosphorus μg/mL")+
+  scale_color_manual(values = c("#118ab2"))+
+  scale_fill_manual(values = c("#118ab2"))+
+  # scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  # scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  theme_er1()+
+  # theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
+  facet_grid(Site ~ Area)+
+  theme(legend.position = "NONE", axis.text.x = element_text(size = 9, angle = 90))+
+
+  NULL
+
+ggsave("figures_finalized/rhizon_simplified_P_2021_easthydric.png", plot = rhizon_simplified_P_2021_easthydric, width = 4, height = 6)
 
 
 rhizon_meta_combine_notransect_forFe =
-  rhizon_meta_combine_notransect_forelements %>% 
+  rhizon_meta_combine_notransect_forelements_simplified %>% 
   mutate(Area = recode(Area, "West" = "non-acidic tundra")) %>% 
   filter(ICP %in% c("iron") & Area == "non-acidic tundra" & Site == "Hydric") %>% 
   mutate(ICP = recode(ICP, "iron" = "iron μg/mL")) 
 
-rhizon_simplified_Fe_2021 = 
+rhizon_simplified_Fe_2021_westhydric = 
   rhizon_meta_combine_notransect_forFe %>%
-  ggplot(aes(x = Betterdate, y = mean, color = Site, fill = Site)) +
+  ggplot(aes(x = date, y = mean, color = Site, fill = Site)) +
   geom_col(position = 'dodge', width = 0.7, alpha = 0.5)+
   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
                 position=position_dodge(.9), color = "black") +
-  labs(x = "date", y = "iron μg/mL")+
+  labs(x = "", y = "iron μg/mL")+
   scale_color_manual(values = c("#118ab2"))+
   scale_fill_manual(values = c("#118ab2"))+
   facet_grid(Site ~ Area)+
   theme_er1()+
-  theme(legend.position = "NONE", axis.text.x = element_text(size = 9))
+  theme(legend.position = "NONE", axis.text.x = element_text(size = 9, angle = 90))
+
+ggsave("figures_finalized/rhizon_simplified_Fe_2021_westhydric.png", plot = rhizon_simplified_Fe_2021_westhydric, width = 4, height = 6)
+
+rhizon_meta_combine_notransect_forFe_east =
+  rhizon_meta_combine_notransect_forelements_simplified %>% 
+  mutate(Area = recode(Area, "East" = "acidic tundra")) %>% 
+  filter(ICP %in% c("iron") & Area == "acidic tundra" & Site == "Hydric") %>% 
+  mutate(ICP = recode(ICP, "iron" = "iron μg/mL")) 
+
+rhizon_simplified_Fe_2021_easthydric = 
+  rhizon_meta_combine_notransect_forFe_east %>%
+  ggplot(aes(x = date, y = mean, color = Site, fill = Site)) +
+  geom_col(position = 'dodge', width = 0.7, alpha = 0.5)+
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                position=position_dodge(.9), color = "black") +
+  labs(x = "", y = "iron μg/mL")+
+  scale_color_manual(values = c("#118ab2"))+
+  scale_fill_manual(values = c("#118ab2"))+
+  facet_grid(Site ~ Area)+
+  theme_er1()+
+  theme(legend.position = "NONE", axis.text.x = element_text(size = 9, angle = 90))
+
+ggsave("figures_finalized/rhizon_simplified_Fe_2021_easthydric.png", plot = rhizon_simplified_Fe_2021_easthydric, width = 4, height = 6)
+
 
 
 rhizon_simplified_Fe_2021 = 

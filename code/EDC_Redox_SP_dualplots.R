@@ -884,21 +884,21 @@ dry_moisture_contour=
   ggplot()+
   geom_contour_filled(aes(y = depth_cm, x = datetime, z = moisture))+
   #geom_line(orientation = "x", show.legend = FALSE)+
-  geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-07-01 00:00:00'), 
-                ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
-    geom_rect(aes(xmin=as_datetime('2021-07-01 00:00:00'), xmax= as_datetime('2021-08-01 00:00:00'), 
-                  ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
-    geom_rect(aes(xmin=as_datetime('2021-08-01 00:00:00'), xmax= as_datetime('2021-09-01 00:00:00'), 
-                  ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
-    geom_rect(aes(xmin=as_datetime('2021-09-01 00:00:00'), xmax= as_datetime('2021-09-20 00:00:00'), 
-                  ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
+  # geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-07-01 00:00:00'), 
+  #               ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
+  #   geom_rect(aes(xmin=as_datetime('2021-07-01 00:00:00'), xmax= as_datetime('2021-08-01 00:00:00'), 
+  #                 ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
+  #   geom_rect(aes(xmin=as_datetime('2021-08-01 00:00:00'), xmax= as_datetime('2021-09-01 00:00:00'), 
+  #                 ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
+  #   geom_rect(aes(xmin=as_datetime('2021-09-01 00:00:00'), xmax= as_datetime('2021-09-20 00:00:00'), 
+  #                 ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
   scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
   ylim(25, 5)+
   labs(x = "", y = "depth, cm",
        fill = "soil moisture, %")+
   #scale_fill_manual(values=natparks.pals("Arches", 11))+
   scale_fill_manual(values=rev(pnw_palette("Bay", 11)))+
-  facet_grid(site~., scales = "free_x")+
+  facet_grid(site~position, scales = "free_x")+
   theme_minimal()+
   theme(axis.text.x = element_text (size = 9),
         legend.position = "bottom")
@@ -916,26 +916,49 @@ dry_temp_contour=
   ggplot()+
   geom_contour_filled(aes(y = depth_cm, x = datetime, z = temp))+
   #geom_line(orientation = "x", show.legend = FALSE)+
-  geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-07-01 00:00:00'), 
-                ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
-  geom_rect(aes(xmin=as_datetime('2021-07-01 00:00:00'), xmax= as_datetime('2021-08-01 00:00:00'), 
-                ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
-  geom_rect(aes(xmin=as_datetime('2021-08-01 00:00:00'), xmax= as_datetime('2021-09-01 00:00:00'), 
-                ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
-  geom_rect(aes(xmin=as_datetime('2021-09-01 00:00:00'), xmax= as_datetime('2021-09-20 00:00:00'), 
-                ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
+  # geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-07-01 00:00:00'), 
+  #               ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
+  # geom_rect(aes(xmin=as_datetime('2021-07-01 00:00:00'), xmax= as_datetime('2021-08-01 00:00:00'), 
+  #               ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
+  # geom_rect(aes(xmin=as_datetime('2021-08-01 00:00:00'), xmax= as_datetime('2021-09-01 00:00:00'), 
+  #               ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
+  # geom_rect(aes(xmin=as_datetime('2021-09-01 00:00:00'), xmax= as_datetime('2021-09-20 00:00:00'), 
+  #               ymin=5, ymax=25), color = c("#fbff12"), fill = NA, size = 1.5)+
   scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
   ylim(25, 5)+
   labs(x = "", y = "depth, cm",
        fill = "soil temperature, C")+
   #scale_fill_manual(values=natparks.pals("Arches", 11))+
   scale_fill_manual(values=(pnw_palette("Sailboat", 11)))+
-  facet_grid(site~., scales = "free_x")+
+  facet_grid(site~position, scales = "free_x")+
   theme_minimal()+
   theme(axis.text.x = element_text (size = 9),
         legend.position = "bottom")
 
 ggsave("formanuscript/dry_temp_contour.tiff", plot = dry_temp_contour, width = 8, height = 5)
+
+dry_temp_lines=
+  final_temp_sal_moist_forfig %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
+  #filter(site == "acidic tundra") %>% 
+  filter(position == "dry") %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot()+
+  geom_line(aes(y = temp, x = datetime, color = depth_2, group = depth_2), size = 1)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  #ylim(25, 5)+
+  labs(x = "", y = "soil temperature, celsius",
+       color = "soil depth cm")+
+  #scale_fill_manual(values=natparks.pals("Arches", 11))+
+  scale_color_manual(values=(pnw_palette("Lake", 3)))+
+  facet_grid(site~position, scales = "free_x")+
+  theme_minimal()+
+  theme(axis.text.x = element_text (size = 9),
+        legend.position = "bottom")
+
+ggsave("formanuscript/dry_temp_lines.tiff", plot = dry_temp_lines, width = 8, height = 5)
 
 
 
