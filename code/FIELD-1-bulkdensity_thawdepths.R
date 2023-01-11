@@ -214,7 +214,47 @@ thawdepths_all = thaw_depths_fig_violin_2021_2022_nonacidic + thaw_depths_fig_vi
 
 ggsave("formanuscript/thawdepths_all.png", plot = thawdepths_all, height = 5, width = 10)
 
+thaw_depths_fig_violin_2021_dry =
+  thawdepths2021_2022 %>%
+  #mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  filter(Site == "Dry" & Year == 2021) %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = Area), alpha = 0.8)+
+  labs(x = " ",
+       y = "Thaw Depth, cm")+
+  #geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
+  #scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  # scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_fill_manual(values = pnw_palette("Cascades", 2))+
+  scale_x_date(date_breaks = "1 week", date_labels = "%b-%d-%Y")+
+  ylim(90, 0)+
+  facet_grid(Area~Site, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "none", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
 
+ggsave("formanuscript/thawdepths_2021_dry.png", plot = thaw_depths_fig_violin_2021_dry, height = 5, width = 6)
+
+
+
+thaw_depths_fig_violin_2021_2022_acidic =
+  thawdepths2021_2022 %>%
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  filter(Area == "acidic tundra") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = Site), alpha = 0.4)+
+  labs(title = "acidic tundra",
+       x = " ",
+       y = "Thaw Depth, cm")+
+  #geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
+  #scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_x_date(date_breaks = "1 week", date_labels = "%b-%d-%Y")+
+  ylim(90, 0)+
+  facet_grid(Site~Year, scales = "free")+
+  theme_er1()+
+  theme(legend.position = "none", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9),
+        axis.title.y = element_blank(), axis.text.y = element_blank(),
+        axis.ticks.y = element_blank())
 
 
 thaw_depths_fig_violin_nonacidic =

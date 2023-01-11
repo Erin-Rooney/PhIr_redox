@@ -38,6 +38,24 @@ TOC_select =
                               grepl("standard", samplename)~"stdcheck",
                               grepl("4x", samplename)~"4")) 
 
+
+TOC_rerun =
+  run1 %>% 
+  rename("samplename" = "Sample.Name",
+         "result" = "Result",
+         "exclude" = "Excluded") %>% 
+  dplyr::select(c(samplename, result, exclude)) %>% 
+  separate(result, sep = " ", into = c("NPOC_mgL", "TN_mgL")) %>%
+  mutate(NPOC_mgL = str_remove(NPOC_mgL, "NPOC:")) %>% 
+  mutate(NPOC_mgL = str_remove(NPOC_mgL, "mg/L")) %>% 
+  mutate(TN_mgL = str_remove(TN_mgL, "TN:")) %>% 
+  mutate(TN_mgL = str_remove(TN_mgL, "mg/L")) %>% 
+  mutate(rerun = case_when(grepl("4x", samplename)~"yes")) %>% 
+  na.omit()
+
+
+write.csv(TOC_rerun, 'processed/TOC_rerun.csv')
+
 blanks =
   TOC_select %>% 
   filter(dilution == "blank")
