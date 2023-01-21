@@ -431,7 +431,8 @@ ggsave("formanuscript/redox_temporal_fig_dry.png", plot = redox_temporal_fig_dry
 
 redox_temporal_fig_2 =
   grouped_redox_forfigs_temporal2022 %>% 
-  filter(position == "hydric" & site == "non-acidic tundra") %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+ # filter(position == "hydric" & site == "acidic tundra") %>% 
   mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
  # mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'month')+
@@ -454,7 +455,7 @@ redox_temporal_fig_2 =
 
 redox_temporal_fig_2021_nonacidichydric =
   grouped_redox_forfigs_temporal2021 %>% 
-  filter(position == "hydric" & site == "non-acidic tundra") %>% 
+ filter(position == "hydric" & site == "non-acidic tundra") %>% 
   mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'month')+
@@ -477,7 +478,7 @@ redox_temporal_fig_2021_nonacidichydric =
 
 redox_moisture_temporal = redox_temporal_fig_2 + moisturefig_temporal
 
-ggsave("formanuscript/2022redox_temporal_fig_2.png", plot = redox_temporal_fig_2, height = 5, width = 5)
+ggsave("formanuscript/2022redox_temporal_all.png", plot = redox_temporal_fig_2, height = 8, width = 6.5)
 ggsave("formanuscript/2021redox_temporal_fig_2.png", plot = redox_temporal_fig_2021_nonacidichydric, height = 5, width = 5)
 
 
