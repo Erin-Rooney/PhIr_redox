@@ -165,7 +165,7 @@ eastdry_avg =
 sensor_depths_prename = read.csv("raw/2022_Sensor_depths.csv") 
 
 #when we left_join, we want columns with the same information to combine into one column
-#this menas we needd to fix some stuff for sensor_depth
+#this means we need to fix some stuff for sensor_depth
 #rename Site as position
 #rename Area as site
 #recode so that there are no capital words in site and position
@@ -281,6 +281,8 @@ datacleaning_function <- function(dat){
   
 }
 
+
+
 #################
 
 
@@ -313,6 +315,12 @@ alldata_cleaned =
                eastdry_depths_outliers)
 
 
+alldata_notcleaned =
+  westhydric_depths %>% 
+  vctrs::vec_c(easthydric_depths, westmesic_depths,
+               eastmesic_depths, westdry_depths,
+               eastdry_depths)
+
 
 
 #####
@@ -322,37 +330,68 @@ alldata_cleaned =
 
 temporary_fig_2022_25 =
   alldata_cleaned %>%
-  filter(position == "hydric" & site == "west") %>%
-  ggplot(aes(x = Betterdate, y = avg_values_fixed))+
+  filter(probe == 1) %>%
+  ggplot(aes(x = as_datetime(Betterdate), y = avg_values_fixed))+
   geom_point(aes(color = depth_cm), alpha = 0.5)+
-  geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  #geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
   scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
-  #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+  scale_x_datetime(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
   #scale_x_discrete(breaks = seq(-1,31,2))+
   labs(y = "redox potential, mV")+
-  facet_wrap(site~position)+
+  facet_grid(site~position)+
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
 
 ggsave("output/temporary_fig_cleaned_2022_25.png", plot = temporary_fig_2022_25, width = 20, height = 10)
 
+artifact_fig_2022 =
 alldata_cleaned %>%
-  #filter(position == "mesic" & site == "west") %>%
-  ggplot(aes(x = Betterdate, y = avg_values_fixed))+
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(probe == 3) %>%
+  ggplot(aes(x = as_datetime(Betterdate), y = avg_values_fixed))+
   geom_point(aes(color = depth_cm), alpha = 0.5)+
-  geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  #geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
   scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
-  #scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
+  scale_x_datetime(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
   #scale_x_discrete(breaks = seq(-1,31,2))+
-  labs(y = "redox potential, mV")+
-  facet_wrap(site~position)+
+  labs(y = "redox potential, mV",
+       x = "Post-cleaning",
+       color = "depth, cm")+
+  facet_grid(position~site)+
   theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+  theme(legend.position = "top", axis.text.x = element_text (size = 10, vjust = 0.5, angle = 45))
 
+ggsave("output/temporary_fig_cleaned_2022_25.png", plot = artifact_fig_2022, width = 6, height = 7.5)
+
+artifact_fig_2022_uncleaned =
+  alldata_notcleaned %>%
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(probe == 3) %>%
+  ggplot(aes(x = as_datetime(Betterdate), y = avg_values_fixed))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  #geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  scale_x_datetime(date_breaks = "1 week" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV",
+       x = "Pre-cleaning",
+       color = "depth, cm")+
+  facet_grid(position~site)+
+  theme_er1()+
+  theme(legend.position = "top", axis.text.x = element_text (size = 10 , vjust = 0.5, angle = 45))
+
+ggsave("output/temporary_fig_uncleaned_2022.png", plot = artifact_fig_2022_uncleaned, width = 6, height = 7.5)
 
 
 #write csv
 
+#comment in if running for the first time
 
-write.csv(alldata_cleaned, "processed/all_combine_2022.csv")
+#write.csv(alldata_cleaned, "processed/all_combine_2022.csv")
 

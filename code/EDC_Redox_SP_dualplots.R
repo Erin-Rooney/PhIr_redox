@@ -115,7 +115,8 @@ accumulation_EDC =
 accumulation_fig =
   accumulation_EDC %>% 
   #dplyr::select(date, rain_avg) %>% 
-  filter(date > "2021-06-21" & date < "2021-09-20" & precip_type == "rain") %>% 
+  #filter(date > "2021-06-21" & date < "2021-09-20" & precip_type == "rain") %>% 
+  filter(date > "2021-06-21" & date < "2021-09-20") %>% 
   na.omit() %>% 
   ggplot() + 
   labs(y = 'EDC accumulation average, cm', x = "",
@@ -855,12 +856,13 @@ moisturefig_temporal =
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
   geom_point(size = 4, alpha = 0.8, shape = c(21))+
-  geom_line(orientation = "y", show.legend = FALSE)+
+  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
   geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE)+
-  scale_color_manual(values = (pnw_palette('Sailboat', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sailboat', 4)))+
+  scale_color_manual(values = (pnw_palette('Sunset', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
   ylim(60, 0)+
-  labs(x = 'soil moisture (%)',
+  labs(x = '2021
+       soil moisture (%)',
        y = "depth (cm)",
        color = "", fill = "")+
   scale_x_continuous(position="top")+
@@ -868,6 +870,9 @@ moisturefig_temporal =
   theme_er1()+
   theme(legend.position = "none", axis.title.y = element_blank(), axis.text.y = element_blank(),
         axis.ticks.y = element_blank())
+
+ggsave("formanuscript/moisture_temporal_fig_2021.png", plot = moisturefig_temporal, height = 8, width = 4)
+
 
 
 moisturefig_temporal_hydricnonacidic2021 =
@@ -1031,6 +1036,53 @@ dry_moisture_lines=
 
 ggsave("formanuscript/dry_moisture_lines.tiff", plot = dry_moisture_lines, width = 8, height = 5)
 
+
+temp_lines=
+  final_temp_sal_moist_forfig %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
+  #filter(site == "acidic tundra") %>% 
+  #filter(position == "dry") %>% 
+  mutate(depth_cm = recode(depth_cm, "5" = "0-10", "15" = "10-20", "25" = "20-30")) %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("0-10", "10-20", "20-30")))   %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot()+
+  geom_point(aes(y = temp, x = datetime, color = depth_2, group = depth_2), size = 0.25)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  #ylim(25, 5)+
+  labs(x = "", y = "soil temperature, celsius",
+       color = "soil depth cm")+
+  #scale_fill_manual(values=natparks.pals("Arches", 11))+
+  scale_color_manual(values=(pnw_palette("Lake", 3)))+
+  facet_grid(position~site, scales = "free_x")+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 9, vjust = 0.5, angle = 45),
+        legend.position = "bottom")
+
+ggsave("formanuscript/temp_lines.tiff", plot = temp_lines, width = 6, height = 6)
+
+moisture_lines=
+  final_temp_sal_moist_forfig %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
+  #filter(site == "acidic tundra") %>% 
+  mutate(depth_cm = recode(depth_cm, "5" = "0-10", "15" = "10-20", "25" = "20-30")) %>% 
+  mutate(depth_2 = factor(depth_cm, levels = c("0-10", "10-20", "20-30")))   %>% 
+  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot()+
+  geom_line(aes(y = moisture, x = datetime, color = depth_2, group = depth_2), size = 1)+
+  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  #ylim(25, 5)+
+  labs(x = "", y = "soil moisture, %",
+       color = "soil depth cm")+
+  #scale_fill_manual(values=natparks.pals("Arches", 11))+
+  scale_color_manual(values=(pnw_palette("Lake", 3)))+
+  facet_grid(position~site, scales = "free_x")+
+  theme_er1()+
+  theme(axis.text.x = element_text (size = 9, vjust = 0.5, angle = 45),
+        legend.position = "bottom")
+
+ggsave("formanuscript/moisture_lines.tiff", plot = moisture_lines, width = 6, height = 6)
 
 
 dry_acidic_temp_contour=

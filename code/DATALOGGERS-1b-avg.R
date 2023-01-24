@@ -256,6 +256,13 @@ alldata_cleaned =
                eastmesic_depths_outliers, westdry_depths_outliers,
                eastdry_depths_outliers)
 
+alldata_notcleaned =
+  westhydric_depths %>% 
+  vctrs::vec_c(easthydric_depths, westmesic_depths,
+               eastmesic_depths, westdry_depths,
+               eastdry_depths)
+
+
 
 
  
@@ -293,10 +300,55 @@ alldata_cleaned %>%
   theme_er1()+
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
 
- 
+
+artifact_fig_2021 =
+  alldata_cleaned %>%
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(probe == 3) %>%
+  ggplot(aes(x = as_datetime(Betterdate), y = avg_values_fixed))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  #geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  scale_x_datetime(date_breaks = "2 weeks" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV",
+       x = "Post-cleaning",
+       color = "depth, cm")+
+  facet_grid(position~site)+
+  theme_er1()+
+  theme(legend.position = "top", axis.text.x = element_text (size = 10, vjust = 0.5, angle = 45))
+
+ggsave("output/temporary_fig_cleaned_2021_25.png", plot = artifact_fig_2021, width = 6, height = 7.5)
+
+artifact_fig_2021_uncleaned =
+  alldata_notcleaned %>%
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(probe == 3) %>%
+  ggplot(aes(x = as_datetime(Betterdate), y = avg_values_fixed))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  #geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  scale_x_datetime(date_breaks = "2 weeks" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV",
+       x = "Pre-cleaning",
+       color = "depth, cm")+
+  facet_grid(position~site)+
+  theme_er1()+
+  theme(legend.position = "top", axis.text.x = element_text (size = 10 , vjust = 0.5, angle = 45))
+
+ggsave("output/temporary_fig_uncleaned_2021.png", plot = artifact_fig_2021_uncleaned, width = 6, height = 7.5)
+
+
   
 #write csv
 
-
-write.csv(alldata_cleaned, "processed/all_combine.csv")
+#comment in if running for the first time
+#write.csv(alldata_cleaned, "processed/all_combine.csv")
 
