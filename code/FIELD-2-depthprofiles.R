@@ -164,15 +164,27 @@ ggsave("output/bd_acidic.png", plot = bd_acidic, height = 4.5, width = 8.5)
 
 bd_grouped =
   bd_select %>% 
+  filter(Site != "Transect") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Horizon = factor(Horizon, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2"))) %>% 
+  dplyr::select(c(Area, Site, Horizon, soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3)) %>% 
+  na.omit() %>% 
   mutate(horizon_simplified = recode(Horizon, "O" = "Organic Surface", "O1" = "Organic Surface",
                                      "O2" = "Organic Subsurface", "O3" = "Organic Subsurface", "M" = "Mineral Subsurface",
                                      "M1" = "Mineral Subsurface", "M2" = "Mineral Subsurface")) %>% 
-  group_by(Area, Site, Plot_num, Core_ID, horizon_simplified) %>% 
-  dplyr::summarise(mean_bd = mean(soil_bulk_density_g_cm3),
-                   mean_vwc = mean(volumetric_water_content_cm3_cm3),
-                   mean_depth = mean(real_depth_cm)) %>% 
-  na.omit()
+  group_by(Area, Site, Horizon) %>% 
+  dplyr::summarise(mean_bd = round(mean(soil_bulk_density_g_cm3),2),
+                   sd_bd = round(sd(soil_bulk_density_g_cm3),2),
+                   mean_vwc = round(mean(volumetric_water_content_cm3_cm3),2),
+                   sd_vwc = round(sd(volumetric_water_content_cm3_cm3),2)) %>% 
+  mutate(bd_summary = paste(mean_bd, "\u00b1", sd_bd),
+         vwc_summary = paste(mean_vwc, "\u00b1", sd_vwc)) %>% 
+  dplyr::select(c(Area, Site, Horizon, bd_summary, vwc_summary)) 
+  
 
+bd_grouped %>% knitr::kable()
+
+write.csv(bd_grouped, "output/bd_grouped.csv")
 
 bulkdensity_simplified =
   bd_grouped %>% 
