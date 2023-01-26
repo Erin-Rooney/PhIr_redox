@@ -869,9 +869,10 @@ moisturefig_temporal =
   facet_grid(position~site, switch = "x")+
   theme_er1()+
   theme(legend.position = "none", axis.title.y = element_blank(), axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
+        axis.ticks.y = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
-ggsave("formanuscript/moisture_temporal_fig_2021.png", plot = moisturefig_temporal, height = 8, width = 4)
+ggsave("formanuscript/moisture_temporal_fig_2021.png", plot = moisturefig_temporal, height = 9, width = 4)
 
 
 
@@ -1005,9 +1006,10 @@ dry_temp_lines=
   #scale_fill_manual(values=natparks.pals("Arches", 11))+
   scale_color_manual(values=(pnw_palette("Lake", 3)))+
   facet_grid(site~position, scales = "free_x")+
-  theme_minimal()+
+  theme_er1()+
   theme(axis.text.x = element_text (size = 9),
-        legend.position = "bottom")
+        legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 ggsave("formanuscript/dry_temp_lines.tiff", plot = dry_temp_lines, width = 8, height = 5)
 
@@ -1057,7 +1059,8 @@ temp_lines=
   facet_grid(position~site, scales = "free_x")+
   theme_er1()+
   theme(axis.text.x = element_text (size = 9, vjust = 0.5, angle = 45),
-        legend.position = "bottom")
+        legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 ggsave("formanuscript/temp_lines.tiff", plot = temp_lines, width = 6, height = 6)
 
@@ -1080,7 +1083,8 @@ moisture_lines=
   facet_grid(position~site, scales = "free_x")+
   theme_er1()+
   theme(axis.text.x = element_text (size = 9, vjust = 0.5, angle = 45),
-        legend.position = "bottom")
+        legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 ggsave("formanuscript/moisture_lines.tiff", plot = moisture_lines, width = 6, height = 6)
 

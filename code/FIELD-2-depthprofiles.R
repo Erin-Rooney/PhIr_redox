@@ -54,7 +54,9 @@ horizons_acidic =
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right",
         axis.title.y = element_blank(), axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
+        axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 horizons_nonacidic =
   bd_select %>% 
@@ -72,7 +74,8 @@ horizons_nonacidic =
   facet_grid(Site~., scales="free_x") +
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "none",
-        )
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 horizons_all = horizons_nonacidic + horizons_acidic
 
@@ -94,7 +97,9 @@ horizons_dry_acidic =
   # scale_fill_manual(values = c("#D6AB7D", "#B3895D", "#B3895D", "#734F38", "#553725", "#482919", "#482919"))+
   scale_fill_manual(values = c("#D6AB7D", "#734F38", "#553725", "#482919"))+
   theme_er1()+
-  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right")+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())+
   facet_grid(Site~Area, scales="free_x") +
   guides(fill = guide_legend(reverse = TRUE))
 

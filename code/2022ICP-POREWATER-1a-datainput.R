@@ -11,12 +11,14 @@ source("code/0-packages.R")
 
 raw_ICP = read.csv("raw/2023_LIME_ICPAES_002R_Herndon_0118.csv")
 
+
 processed_ICP = 
   raw_ICP %>% 
   mutate(Area = recode(Area, "West" = "non-acidic tundra",
                        "East" = "acidic tundra")) %>% 
   mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  na.omit() %>% 
   dplyr::select(c(SampleID, Date, Time, Area, Site, Plot, Depth_cm, Al_ug_mL, Ca_ug_mL, Fe_ug_mL, 
            K_ug_mL, Mg_ug_mL, Mn_ug_mL, Na_ug_mL, P_ug_mL)) %>% 
   na.omit() %>% 
@@ -29,18 +31,282 @@ processed_ICP =
   mutate(year = recode(year, "22" = "2022")) %>% 
   mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
   mutate(Al_ug_mL = as.numeric(Al_ug_mL)) %>% 
+  mutate(Ca_ug_mL = as.numeric(Ca_ug_mL)) %>% 
+  mutate(K_ug_mL = as.numeric(K_ug_mL)) %>% 
   mutate(Mn_ug_mL = as.numeric(Mn_ug_mL)) %>% 
+  mutate(Mg_ug_mL = as.numeric(Mg_ug_mL)) %>% 
+  mutate(Na_ug_mL = as.numeric(Na_ug_mL)) %>% 
   mutate(P_ug_mL = as.numeric(P_ug_mL)) %>%
   mutate(Fe_ug_mL = as.numeric(Fe_ug_mL)) %>% 
   pivot_longer(-c(SampleID, date, Time, Area, Site, Plot, day, month, year, Depth_cm), names_to = 'ICP', values_to = 'concentration') 
 
-Fe_2022_fig =
+processed_ICP_grouped =
   processed_ICP %>% 
-  filter(ICP == c("Fe_ug_mL")) %>% 
-  ggplot(aes(x = date, y = Depth_cm, fill = concentration, group = date)) +
+  pivot_wider(names_from = "ICP", values_from = "concentration") %>% 
+  group_by(Area, Site, Depth_cm, date) %>%
+  dplyr::summarise(mean_Al_ug_mL = round(mean(Al_ug_mL),3),
+                   mean_Ca_ug_mL = round(mean(Ca_ug_mL),3),
+                   mean_K_ug_mL = round(mean(K_ug_mL),3),
+                   mean_Mn_ug_mL = round(mean(Mn_ug_mL),3),
+                   mean_Mg_ug_mL = round(mean(Mg_ug_mL),3),
+                   mean_Na_ug_mL = round(mean(Na_ug_mL),3),
+                   mean_P_ug_mL = round(mean(P_ug_mL),3),
+                   mean_Fe_ug_mL = round(mean(Fe_ug_mL),3),
+                   sd_Al_ug_mL = round(sd(Al_ug_mL),3),
+                   sd_Ca_ug_mL = round(sd(Ca_ug_mL),3),
+                   sd_K_ug_mL = round(sd(K_ug_mL),3),
+                   sd_Mn_ug_mL = round(sd(Mn_ug_mL),3),
+                   sd_Mg_ug_mL = round(sd(Mg_ug_mL),3),
+                   sd_Na_ug_mL = round(sd(Na_ug_mL),3),
+                   sd_P_ug_mL = round(sd(P_ug_mL),3),
+                   sd_Fe_ug_mL = round(sd(Fe_ug_mL),3)
+                   ) %>% 
+  separate(date, sep = "-", into =c('year', 'month', 'day')) %>% 
+  mutate(month2 = recode(month, "06" = "June", "07" = "July", "08" = "August", "09" = "September")) %>% 
+  mutate(date_plot = paste(month2, day, year, sep = "-")) %>% 
+  mutate(date_plot = factor(date_plot, levels = c("June-27-2022", "June-29-2022", "July-06-2022",
+                                                  "July-07-2022", "July-11-2022", "July-12-2022",
+                                                  "July-18-2022", "July-19-2022", "July-25-2022",
+                                                  "July-26-2022", "August-07-2022", "August-08-2022",
+                                                  "September-15-2022","September-17-2022", "September-23-2022")))  
+  
+
+
+Fe_2022_fig =
+  processed_ICP_grouped %>% 
+  ggplot(aes(x = date, y = Depth_cm, fill = mean_Fe_ug_mL, group = date)) +
   geom_point(size = 4, shape = c(21))+
   #geom_line(orientation = "y")+
-  scale_fill_gradientn(colors = rev(natparks.pals(name = "Arches")))+
+  scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  labs(fill = "Fe ug/mL",
+       y = "Depth, cm")+
+  scale_y_reverse()+
+  facet_grid(Site ~ Area)+
+  theme_er1()
+
+
+#Fe_2022_fig_hydric =
+  processed_ICP_grouped %>% 
+  filter(Area == "non-acidic tundra") %>% 
+  ggplot(aes(x = mean_Fe_ug_mL, y = Depth_cm, fill = Site, group = Site)) +
+  geom_point(size = 4, shape = c(21), alpha = 0.8)+
+  geom_line(aes(color = Site), orientation = "y", linetype = "longdash")+
+  #scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = (pnw_palette("Shuksan2")))+
+  scale_color_manual(values = (pnw_palette("Shuksan2")))+
+  labs(fill = "Fe ug/mL",
+       y = "Depth, cm")+
+  scale_y_reverse()+
+  facet_grid(Area ~ date)+
+  theme_er1()
+  
+Fe_grouped_fig =  
+  processed_ICP_grouped %>% 
+    #filter(Area == "non-acidic tundra") %>% 
+    ggplot(aes(x = mean_Fe_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
+    geom_point(size = 4, shape = c(21), alpha = 0.8)+
+    geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+    # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+    # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+    scale_fill_manual(values = (pnw_palette("Sunset2", 15)))+
+    scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
+    labs(fill = "Date",
+         color = "Date",
+         y = "Depth, cm",
+         x = "Iron ug/mL")+
+    scale_y_reverse()+
+    facet_grid(Site ~ Area, scales = "free_x")+
+    theme_er1()+
+    theme(legend.position = "none",
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          panel.background = element_blank())
+
+P_grouped_fig =  
+  processed_ICP_grouped %>% 
+    #filter(Area == "non-acidic tundra") %>% 
+    ggplot(aes(x = mean_P_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
+    geom_point(size = 4, shape = c(21), alpha = 0.8)+
+    geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+    # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+    # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+    scale_fill_manual(values = (pnw_palette("Sunset2", 15)))+
+    scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
+    labs(fill = "Date",
+         color = "Date",
+         y = "Depth, cm",
+         x = "Phosphorus ug/mL")+
+    scale_y_reverse()+
+  facet_grid(Site ~ Area, scales = "free_x")+
+  theme_er1()+
+    theme(legend.position = "none",
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          panel.background = element_blank(), axis.text.x = element_text (size = 9))
+
+
+Mn_grouped_fig =  
+  processed_ICP_grouped %>% 
+  #filter(Area == "non-acidic tundra") %>% 
+  ggplot(aes(x = mean_Mn_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
+  geom_point(size = 4, shape = c(21), alpha = 0.8)+
+  geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = (pnw_palette("Sunset2", 15)))+
+  scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
+  labs(fill = "Date",
+       color = "Date",
+       y = "Depth, cm",
+       x = "Manganese ug/mL")+
+  scale_y_reverse()+
+  facet_grid(Site ~ Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+Legend_grouped_fig =  
+  processed_ICP_grouped %>% 
+  #filter(Area == "non-acidic tundra") %>% 
+  ggplot(aes(x = mean_Mn_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
+  geom_point(size = 4, shape = c(21), alpha = 0.8)+
+  geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = (pnw_palette("Sunset2", 15)))+
+  scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
+  labs(fill = "Date",
+       color = "Date",
+       y = "Depth, cm",
+       x = "Manganese ug/mL")+
+  scale_y_reverse()+
+  facet_grid(Site ~ Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+ggsave("output/2022_Mn_fig2.png", plot = Mn_grouped_fig, height = 6, width = 4)
+ggsave("output/2022_Fe_fig2.png", plot = Fe_grouped_fig, height = 6, width = 4)
+ggsave("output/2022_P_fig2.png", plot = P_grouped_fig, height = 6, width = 4)
+ggsave("output/2022_fig2_legend.png", plot = Legend_grouped_fig, height = 10, width = 10)
+
+
+
+Al_grouped_fig =  
+  processed_ICP_grouped %>% 
+  #filter(Area == "non-acidic tundra") %>% 
+  ggplot(aes(x = mean_Al_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
+  geom_point(size = 4, shape = c(21), alpha = 0.8)+
+  geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = (pnw_palette("Sunset2", 15)))+
+  scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
+  labs(fill = "Date",
+       color = "Date",
+       y = "Depth, cm",
+       x = "Aluminum ug/mL")+
+  scale_y_reverse()+
+  facet_grid(Site ~ Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+Ca_grouped_fig =  
+  processed_ICP_grouped %>% 
+  #filter(Area == "non-acidic tundra") %>% 
+  ggplot(aes(x = mean_Ca_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
+  geom_point(size = 4, shape = c(21), alpha = 0.8)+
+  geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = (pnw_palette("Sunset2", 15)))+
+  scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
+  labs(fill = "Date",
+       color = "Date",
+       y = "Depth, cm",
+       x = "Calcium ug/mL")+
+  scale_y_reverse()+
+  facet_grid(Site ~ Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text (size = 9))
+
+
+Mn_grouped_fig =  
+  processed_ICP_grouped %>% 
+  #filter(Area == "non-acidic tundra") %>% 
+  ggplot(aes(x = mean_Mn_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
+  geom_point(size = 4, shape = c(21), alpha = 0.8)+
+  geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = (pnw_palette("Sunset2", 15)))+
+  scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
+  labs(fill = "Date",
+       color = "Date",
+       y = "Depth, cm",
+       x = "Manganese ug/mL")+
+  scale_y_reverse()+
+  facet_grid(Site ~ Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+Legend_grouped_fig =  
+  processed_ICP_grouped %>% 
+  #filter(Area == "non-acidic tundra") %>% 
+  ggplot(aes(x = mean_Mn_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
+  geom_point(size = 4, shape = c(21), alpha = 0.8)+
+  geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = (pnw_palette("Sunset2", 15)))+
+  scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
+  labs(fill = "Date",
+       color = "Date",
+       y = "Depth, cm",
+       x = "Manganese ug/mL")+
+  scale_y_reverse()+
+  facet_grid(Site ~ Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+ggsave("output/2022_Mn_fig2.png", plot = Mn_grouped_fig, height = 6, width = 4)
+ggsave("output/2022_Fe_fig2.png", plot = Fe_grouped_fig, height = 6, width = 4)
+ggsave("output/2022_P_fig2.png", plot = P_grouped_fig, height = 6, width = 4)
+ggsave("output/2022_fig2_legend.png", plot = Legend_grouped_fig, height = 10, width = 10)
+
+
+
+processed_ICP_grouped %>% 
+  filter(Site == "Dry") %>% 
+  ggplot(aes(x = date, y = Depth_cm, fill = mean_Fe_ug_mL, group = date)) +
+  geom_point(size = 4, shape = c(21))+
+  #geom_line(orientation = "y")+
+  scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  labs(fill = "Fe ug/mL",
+       y = "Depth, cm")+
+  scale_y_reverse()+
+  facet_grid(Site ~ Area)+
+  theme_er1()
+
+
+processed_ICP_grouped %>% 
+  filter(Site == "Mesic") %>% 
+  ggplot(aes(x = date, y = Depth_cm, fill = mean_Fe_ug_mL, group = date)) +
+  geom_point(size = 4, shape = c(21))+
+  #geom_line(orientation = "y")+
+  scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   labs(fill = "Fe ug/mL",
        y = "Depth, cm")+
   scale_y_reverse()+

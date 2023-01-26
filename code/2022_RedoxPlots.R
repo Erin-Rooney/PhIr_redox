@@ -216,8 +216,8 @@ redoxfig_depth_sd2022 =
   geom_point(size = 3, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype="longdash")+
   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
-  scale_color_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
-  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   ylim(60, 0)+
   labs(
       x = '2022 
@@ -227,7 +227,8 @@ redoxfig_depth_sd2022 =
   scale_x_continuous(position="top")+
   facet_grid(.~site, switch = "x")+
   theme_er1()+
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 redoxfig_depth_sd2021 =
   grouped_redox_forfigs2021 %>% 
@@ -236,8 +237,8 @@ redoxfig_depth_sd2021 =
   geom_point(size = 3, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype="longdash")+
   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
-  scale_color_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
-  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   # scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   ylim(60, 0)+
@@ -249,7 +250,8 @@ redoxfig_depth_sd2021 =
   scale_x_continuous(position="top")+
   facet_grid(.~site, switch = "x")+
   theme_er1()+
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 redoxfig_depth_sd2021_hydric =
   grouped_redox_forfigs2021 %>% 
@@ -329,7 +331,7 @@ redoxfig_depth_sdall =
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = year, fill = year), group = 'year')+
   geom_point(size = 3, alpha = 0.8, shape = c(21))+
-  geom_line(orientation = "y", show.legend = FALSE)+
+  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
   scale_color_manual(values = c("#0496ff", "#f7717d"))+
   scale_fill_manual(values = c("#0496ff", "#f7717d"))+
@@ -340,9 +342,10 @@ redoxfig_depth_sdall =
   scale_x_continuous(position="top")+
   facet_grid(position~site, switch = "x")+
   theme_er1()+
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
-ggsave("formanuscript/redoxfig_depth_sdall.png", plot = redoxfig_depth_sdall, height = 8, width = 4)
+ggsave("formanuscript/redoxfig_depth_sdall.png", plot = redoxfig_depth_sdall, height = 9, width = 4)
 
 redoxfig_depth_sd_dry =
   grouped_redox_all %>% 
@@ -432,9 +435,11 @@ redox_temporal_fig_2021 =
        color = "", fill = "")+
   scale_x_continuous(position="top")+
   facet_grid(position~site, switch = "x")+
-  theme_er1()
+  theme_er1()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
-ggsave("formanuscript/redox_temporal_fig_2021.png", plot = redox_temporal_fig_2021, height = 8, width = 4)
+ggsave("formanuscript/redox_temporal_fig_2021.png", plot = redox_temporal_fig_2021, height = 9, width = 4)
 
 redox_temporal_fig_2022 =
   grouped_redox_forfigs_temporal2022 %>% 
@@ -453,9 +458,11 @@ redox_temporal_fig_2022 =
        color = "", fill = "")+
   scale_x_continuous(position="top")+
   facet_grid(position~site, switch = "x")+
-  theme_er1()
+  theme_er1()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
-ggsave("formanuscript/redox_temporal_fig_2022.png", plot = redox_temporal_fig_2022, height = 8, width = 4)
+ggsave("formanuscript/redox_temporal_fig_2022.png", plot = redox_temporal_fig_2022, height = 9, width = 4)
 
 redox_temporal_fig_2021_legend =
   grouped_redox_forfigs_temporal2021 %>% 
@@ -601,7 +608,8 @@ allredox_lines_2021_fig =
   guides(color = guide_colorbar(reverse = TRUE), 
          fill = guide_colorbar(reverse = TRUE))+
   theme(axis.text.x = element_text(size = 9, vjust = 0.5, angle = 45),
-        legend.position = "bottom")
+        legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 ggsave("formanuscript/allredox_lines_2021_fig.png", plot = allredox_lines_2021_fig, height = 6, width = 6)
 
@@ -623,7 +631,8 @@ allredox_lines_2022_fig =
   guides(color = guide_colorbar(reverse = TRUE), 
          fill = guide_colorbar(reverse = TRUE))+
   theme(axis.text.x = element_text(size = 9, vjust = 0.5, angle = 45),
-        legend.position = "bottom")
+        legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 ggsave("formanuscript/allredox_lines_2022_fig.png", plot = allredox_lines_2022_fig, height = 6, width = 6)
 
@@ -645,7 +654,8 @@ allredox_contour_2021_fig =
   scale_y_reverse()+
   theme_er1()+
   theme(axis.text.x = element_text(size = 9, vjust = 0.5, angle = 45),
-        legend.position = "bottom")
+        legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 ggsave("formanuscript/allredox_contour_2021_fig.png", plot = allredox_contour_2021_fig, height = 6, width = 6)
 
@@ -665,7 +675,8 @@ allredox_contour_2022_fig =
   scale_y_reverse()+
   theme_er1()+
   theme(axis.text.x = element_text(size = 9, vjust = 0.5, angle = 45),
-        legend.position = "bottom")
+        legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 ggsave("formanuscript/allredox_contour_2022_fig.png", plot = allredox_contour_2022_fig, height = 6, width = 6)
 

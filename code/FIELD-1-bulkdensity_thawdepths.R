@@ -179,13 +179,14 @@ thaw_depths_fig_violin_2021_2022_nonacidic =
        y = "Thaw Depth, cm")+
   #geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
   #scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
-  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   scale_x_date(date_breaks = "1 week", date_labels = "%b-%d-%Y")+
   ylim(90, 0)+
   facet_grid(Site~Year, scales = "free")+
   theme_er1()+
   theme(legend.position = "none", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9),
-        strip.text.y = element_blank())
+        strip.text.y = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 thaw_depths_fig_violin_2021_2022_acidic =
   thawdepths2021_2022 %>%
@@ -198,14 +199,15 @@ thaw_depths_fig_violin_2021_2022_acidic =
        y = "Thaw Depth, cm")+
   #geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
   #scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
-  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   scale_x_date(date_breaks = "1 week", date_labels = "%b-%d-%Y")+
   ylim(90, 0)+
   facet_grid(Site~Year, scales = "free")+
   theme_er1()+
   theme(legend.position = "none", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9),
         axis.title.y = element_blank(), axis.text.y = element_blank(),
-        axis.ticks.y = element_blank())
+        axis.ticks.y = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 
 library(patchwork)
