@@ -377,6 +377,92 @@ processed_ICP_grouped_longer %>%
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
 
+Ca_depth_site_area_lineplot =
+processed_ICP_grouped %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  mutate(depth_area = paste(Depth_cm, Area, "-")) %>% 
+  ggplot(aes(x = date_plot, y = mean_Ca_ug_mL, color = Depth_cm)) +
+  #geom_point(size = 2.5, alpha = 0.8)+
+  geom_line(aes(linetype = Area, group = depth_area), size = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(linetype = "Acidity",
+       color = "Depth, cm",
+       y = "Ca ug/mL",
+       x = " ")+
+  facet_grid(Site ~ ., scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+Fe_depth_site_area_lineplot =
+processed_ICP_grouped %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  mutate(depth_area = paste(Depth_cm, Area, "-")) %>% 
+  ggplot(aes(x = date_plot, y = mean_Fe_ug_mL, color = Depth_cm)) +
+  #geom_point(size = 2.5, alpha = 0.8)+
+  geom_line(aes(linetype = Area, group = depth_area), size = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(linetype = "Acidity",
+       color = "Depth, cm",
+       y = "Fe ug/mL",
+       x = " ")+
+  facet_grid(Site ~ ., scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+Al_depth_site_area_lineplot =
+processed_ICP_grouped %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  mutate(depth_area = paste(Depth_cm, Area, "-")) %>% 
+  ggplot(aes(x = date_plot, y = mean_Al_ug_mL, color = Depth_cm)) +
+  #geom_point(size = 2.5, alpha = 0.8)+
+  geom_line(aes(linetype = Area, group = depth_area), size = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(linetype = "Acidity",
+       color = "Depth, cm",
+       y = "Al ug/mL",
+       x = " ")+
+  facet_grid(Site ~ ., scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+P_depth_site_area_lineplot =
+  processed_ICP_grouped %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  mutate(depth_area = paste(Depth_cm, Area, "-")) %>% 
+  ggplot(aes(x = date_plot, y = mean_P_ug_mL, color = Depth_cm)) +
+  #geom_point(size = 2.5, alpha = 0.8)+
+  geom_line(aes(linetype = Area, group = depth_area), size = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(linetype = "Acidity",
+       color = "Depth, cm",
+       y = "P ug/mL",
+       x = " ")+
+  facet_grid(Site ~ ., scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+library(patchwork)
+
+all_sitedeptharea_lineplot = Ca_depth_site_area_lineplot | Fe_depth_site_area_lineplot | Al_depth_site_area_lineplot | P_depth_site_area_lineplot | plot_layout(guides = "collect")
+
+ggsave("figures_finalized/all_sitedeptharea_lineplot.png", plot = all_sitedeptharea_lineplot, width = 15, height = 6.5)
+
+
+
+  
+
 Ca_P_scatter_fig =
   processed_ICP_grouped_longer %>% 
   mutate(Depth_cm = factor(Depth_cm)) %>% 
