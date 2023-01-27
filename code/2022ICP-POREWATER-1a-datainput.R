@@ -68,9 +68,33 @@ processed_ICP_grouped =
                                                   "July-07-2022", "July-11-2022", "July-12-2022",
                                                   "July-18-2022", "July-19-2022", "July-25-2022",
                                                   "July-26-2022", "August-07-2022", "August-08-2022",
-                                                  "September-15-2022","September-17-2022", "September-23-2022"))) 
+                                                  "September-15-2022","September-17-2022", "September-23-2022"))) %>% 
+  mutate(area_site = paste(Area, Site, sep = "-")) 
   
-  
+processed_ICP_grouped_longer =
+  processed_ICP %>% 
+  pivot_wider(names_from = "ICP", values_from = "concentration") %>% 
+  group_by(Area, Site, Depth_cm, date) %>%
+  dplyr::summarise(mean_Al_ug_mL = round(mean(Al_ug_mL),3),
+                   mean_Ca_ug_mL = round(mean(Ca_ug_mL),3),
+                   mean_K_ug_mL = round(mean(K_ug_mL),3),
+                   mean_Mn_ug_mL = round(mean(Mn_ug_mL),3),
+                   mean_Mg_ug_mL = round(mean(Mg_ug_mL),3),
+                   mean_Na_ug_mL = round(mean(Na_ug_mL),3),
+                   mean_P_ug_mL = round(mean(P_ug_mL),3),
+                   mean_Fe_ug_mL = round(mean(Fe_ug_mL),3)
+  ) %>% 
+  separate(date, sep = "-", into =c('year', 'month', 'day')) %>% 
+  mutate(month2 = recode(month, "06" = "June", "07" = "July", "08" = "August", "09" = "September")) %>% 
+  mutate(date_plot = paste(month2, day, year, sep = "-")) %>% 
+  mutate(date_plot = factor(date_plot, levels = c("June-27-2022", "June-29-2022", "July-06-2022",
+                                                  "July-07-2022", "July-11-2022", "July-12-2022",
+                                                  "July-18-2022", "July-19-2022", "July-25-2022",
+                                                  "July-26-2022", "August-07-2022", "August-08-2022",
+                                                  "September-15-2022","September-17-2022", "September-23-2022"))) %>% 
+  mutate(area_site = paste(Area, Site, sep = "-")) %>% 
+  pivot_longer(-c(Area, Site, day, month, year, Depth_cm, month2, date_plot, area_site, mean_P_ug_mL), names_to = 'ICP', values_to = 'concentration') 
+
 
 
 Fe_2022_fig =
@@ -317,6 +341,300 @@ ggsave("output/2022_Al_fig2.png", plot = Al_grouped_fig, height = 6, width = 4)
 ggsave("output/2022_Ca_fig2.png", plot = Ca_grouped_fig, height = 6, width = 4)
 ggsave("output/2022_fig2_legend.png", plot = Legend_grouped_fig, height = 10, width = 10)
 
+
+
+processed_ICP_grouped_longer %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  filter(ICP == c("mean_Fe_ug_mL")) %>% 
+  ggplot(aes(x = mean_P_ug_mL, y = concentration, color = Depth_cm, shape = Depth_cm)) +
+  geom_point(size = 2.5, alpha = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(shape = "Depth, cm",
+       color = "Depth, cm",
+       y = "Fe ug/mL",
+       x = "P ug/mL")+
+  facet_grid(Site ~ Area, scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+processed_ICP_grouped_longer %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  filter(ICP == c("mean_Ca_ug_mL")) %>% 
+  ggplot(aes(x = mean_P_ug_mL, y = concentration, color = Depth_cm, shape = Depth_cm)) +
+  geom_point(size = 2.5, alpha = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(shape = "Depth, cm",
+       color = "Depth, cm",
+       y = "Ca ug/mL",
+       x = "P ug/mL")+
+  facet_grid(Site ~ Area, scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+Ca_P_scatter_fig =
+  processed_ICP_grouped_longer %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  filter(ICP == c("mean_Ca_ug_mL")) %>% 
+  ggplot(aes(x = mean_P_ug_mL, y = concentration, color = Depth_cm, shape = Depth_cm)) +
+  geom_point(size = 2.5, alpha = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(shape = "Depth, cm",
+       color = "Depth, cm",
+       y = "Ca ug/mL",
+       x = "P ug/mL")+
+  facet_grid(. ~ Area, scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+Fe_P_scatter_fig =
+processed_ICP_grouped_longer %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  filter(ICP == c("mean_Fe_ug_mL")) %>% 
+  ggplot(aes(x = mean_P_ug_mL, y = concentration, color = Depth_cm, shape = Depth_cm)) +
+  geom_point(size = 2.5, alpha = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(shape = "Depth, cm",
+       color = "Depth, cm",
+       y = "Fe ug/mL",
+       x = "P ug/mL")+
+  facet_grid(. ~ Area, scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+Al_P_scatter_fig =
+processed_ICP_grouped_longer %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  filter(ICP == c("mean_Al_ug_mL")) %>% 
+  ggplot(aes(x = mean_P_ug_mL, y = concentration, color = Depth_cm, shape = Depth_cm)) +
+  geom_point(size = 2.5, alpha = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(shape = "Depth, cm",
+       color = "Depth, cm",
+       y = "Al ug/mL",
+       x = "P ug/mL")+
+  facet_grid(. ~ Area, scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+Ca_Fe_Al_P_scatterfig = Ca_P_scatter_fig + Fe_P_scatter_fig + Al_P_scatter_fig + plot_layout(guides = "collect")
+
+ggsave("output/Ca_Fe_Al_P_scatterfig.png", plot = Ca_Fe_Al_P_scatterfig, height = 3.5, width = 15)
+  
+
+Ca_P_scatter_fig =
+  processed_ICP_grouped_longer %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  filter(ICP == c("mean_Ca_ug_mL")) %>% 
+  ggplot(aes(x = mean_P_ug_mL, y = concentration, color = Depth_cm, shape = Depth_cm)) +
+  geom_point(size = 2.5, alpha = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(shape = "Depth, cm",
+       color = "Depth, cm",
+       y = "Ca ug/mL",
+       x = "P ug/mL")+
+  facet_grid(Site ~ ., scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+Fe_P_scatter_fig =
+  processed_ICP_grouped_longer %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  filter(ICP == c("mean_Fe_ug_mL")) %>% 
+  ggplot(aes(x = mean_P_ug_mL, y = concentration, color = Depth_cm, shape = Depth_cm)) +
+  geom_point(size = 2.5, alpha = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(shape = "Depth, cm",
+       color = "Depth, cm",
+       y = "Fe ug/mL",
+       x = "P ug/mL")+
+  facet_grid(Site ~ ., scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+Al_P_scatter_fig =
+  processed_ICP_grouped_longer %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  filter(ICP == c("mean_Al_ug_mL")) %>% 
+  ggplot(aes(x = mean_P_ug_mL, y = concentration, color = Depth_cm, shape = Depth_cm)) +
+  geom_point(size = 2.5, alpha = 0.8)+
+  scale_fill_manual(values = rev((pnw_palette("Anemone", 4))))+
+  scale_color_manual(values = rev((pnw_palette("Anemone", 4))))+
+  labs(shape = "Depth, cm",
+       color = "Depth, cm",
+       y = "Al ug/mL",
+       x = "P ug/mL")+
+  facet_grid(Site ~ ., scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+Ca_Fe_Al_P_scatterfig_bysite = Ca_P_scatter_fig + Fe_P_scatter_fig + Al_P_scatter_fig + plot_layout(guides = "collect")
+
+ggsave("output/Ca_Fe_Al_P_scatterfig_bysite.png", plot = Ca_Fe_Al_P_scatterfig_bysite, height = 10, width = 15)
+
+
+processed_ICP_grouped_longer %>% 
+  mutate(Depth_cm = factor(Depth_cm)) %>% 
+  filter(ICP == c("mean_Fe_ug_mL", "mean_Al_ug_mL", "mean_Ca_ug_mL")) %>% 
+  ggplot(aes(x = mean_P_ug_mL, y = concentration, color = ICP, shape = Depth_cm)) +
+  geom_point(size = 2.5, alpha = 0.8)+
+  #geom_line(aes(color = ICP, group = ICP, fill = ICP), orientation = "X") +
+  # scale_fill_gradientn(colors = (pnw_palette("Bay")))+
+  # scale_color_gradientn(colors = (pnw_palette("Bay")))+
+  scale_fill_manual(values = (pnw_palette("Bay", 4)))+
+  scale_color_manual(values = (pnw_palette("Bay", 4)))+
+  labs(fill = "Element",
+       color = "Element",
+       linetype = "Element",
+       shape = "Depth, cm",
+       y = "concentration, ug/mL",
+       x = "date")+
+  facet_grid(Site ~ Area, scales = "free")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+
+
+line_Fe_fig =
+processed_ICP_grouped %>% 
+  ggplot(aes(x = date_plot, y = mean_Fe_ug_mL, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Area",
+       y = "Iron ug/mL",
+       x = " ")+
+  facet_grid(Depth_cm ~ .) +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+line_Mn_fig =
+  processed_ICP_grouped %>% 
+  ggplot(aes(x = date_plot, y = mean_Mn_ug_mL, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Area",
+       y = "Manganese ug/mL",
+       x = " ")+
+  facet_grid(Depth_cm ~ .) +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+ggsave("output/line_Mn_fig.png", plot = line_Mn_fig, height = 10, width = 6.5)
+
+line_Ca_fig =
+  processed_ICP_grouped %>% 
+  ggplot(aes(x = date_plot, y = mean_Ca_ug_mL, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Area",
+       y = "Calcium ug/mL",
+       x = " ")+
+  facet_grid(Depth_cm ~ .) +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+ggsave("output/line_Ca_fig.png", plot = line_Ca_fig, height = 10, width = 6.5)
+
+line_Al_fig =
+  processed_ICP_grouped %>% 
+  ggplot(aes(x = date_plot, y = mean_Al_ug_mL, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Area",
+       y = "Aluminum ug/mL",
+       x = " ")+
+  facet_grid(Depth_cm ~ .) +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+ggsave("output/line_Al_fig.png", plot = line_Al_fig, height = 10, width = 6.5)
+
+line_P_fig =
+  processed_ICP_grouped %>% 
+  ggplot(aes(x = date_plot, y = mean_P_ug_mL, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Moisture",
+       linetype = "Acidity",
+       y = "Phosphorus ug/mL",
+       x = " ")+
+  facet_grid(Depth_cm ~ .) +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+ggsave("output/line_P_fig.png", plot = line_P_fig, height = 10, width = 6.5)
+
+processed_ICP_grouped_longer %>% 
+  filter(ICP == c("mean_Fe_ug_mL", "mean_Al_ug_mL", "mean_Ca_ug_mL")) %>% 
+  ggplot(aes(x = date_plot, y = concentration, color = ICP)) +
+  geom_line(aes(group = ICP, linetype = Area), size = 0.7, orientation = "x")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(
+        color = "Moisture",
+       linetype = "Acidity",
+       y = "concentration ug/mL",
+       x = " ")+
+  facet_wrap(area_site ~ .) +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
 
 
 processed_ICP_grouped %>% 

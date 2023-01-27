@@ -33,7 +33,8 @@ rhizon_meta_combine_notransect_prefix =
                       "P_ug/mL" = "phosphorus")) %>% 
   mutate(concentration = recode(concentration, "<0.05" = "0.03",
                                 "<0.1" = "0.05")) %>% 
-  mutate(concentration = as.numeric(concentration)) 
+  mutate(concentration = as.numeric(concentration)) %>% 
+  mutate(area_site = paste(Area, Site, sep = "-")) 
 
 aluminumfix_rhizon =
   rhizon_meta_combine_notransect_prefix %>%
@@ -103,7 +104,8 @@ rhizon_meta_combine_notransect_forelements =
   mutate(Area = as.factor(Area)) %>% 
   mutate(month = factor(month, levels = c("june", "july", "august")),
          Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
-  na.omit()
+  na.omit() %>% 
+  mutate(area_site = paste(Area, Site, sep = "-")) 
          
 
 
@@ -226,6 +228,119 @@ cations_fig_legend =
         strip.placement = "outside", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank())+
   NULL
+
+Caline_rhizon_fig =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("calcium")) %>% 
+  # mutate(ICP = recode(ICP, "calcium" = "calcium μg/mL",
+  #                     "iron" = "iron μg/mL",
+  #                     "aluminum" = "aluminum μg/mL",
+  #                     "phosphorus" = "phosphorus μg/mL")) %>%   
+  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Moisture",
+       linetype = "Acidity",
+       y = "Concentration μg/mL",
+       x = " ")+
+  facet_grid(. ~ ICP, scales = "free_y") +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+Feline_rhizon_fig =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("iron")) %>% 
+  # mutate(ICP = recode(ICP, "calcium" = "calcium μg/mL",
+  #                     "iron" = "iron μg/mL",
+  #                     "aluminum" = "aluminum μg/mL",
+  #                     "phosphorus" = "phosphorus μg/mL")) %>%   
+  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Moisture",
+       linetype = "Acidity",
+       y = "Concentration μg/mL",
+       x = " ")+
+  facet_grid(. ~ ICP, scales = "free_y") +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+Alline_rhizon_fig =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("aluminum")) %>% 
+  # mutate(ICP = recode(ICP, "calcium" = "calcium μg/mL",
+  #                     "iron" = "iron μg/mL",
+  #                     "aluminum" = "aluminum μg/mL",
+  #                     "phosphorus" = "phosphorus μg/mL")) %>%   
+  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Moisture",
+       linetype = "Acidity",
+       y = "Concentration μg/mL",
+       x = " ")+
+  facet_grid(. ~ ICP, scales = "free_y") +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+Pline_rhizon_fig =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("phosphorus")) %>% 
+  # mutate(ICP = recode(ICP, "calcium" = "calcium μg/mL",
+  #                     "iron" = "iron μg/mL",
+  #                     "aluminum" = "aluminum μg/mL",
+  #                     "phosphorus" = "phosphorus μg/mL")) %>%   
+  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Moisture",
+       linetype = "Acidity",
+       y = "Concentration μg/mL",
+       x = " ")+
+  facet_grid(. ~ ICP, scales = "free_y") +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+library(patchwork)
+
+all_line_rhizon_fig = Caline_rhizon_fig + Feline_rhizon_fig + Alline_rhizon_fig + Pline_rhizon_fig +  plot_layout(guides = "collect")
+
+ggsave("figures_finalized/all_line_rhizon_fig.png", plot = all_line_rhizon_fig, width = 10, height = 5)
 
 ggsave("figures_finalized/redoxsensitive_fig.png", plot = redoxsensitive_fig, width = 9, height = 9)
 ggsave("figures_finalized/cations_fig.png", plot = cations_fig, width = 9, height = 9)
