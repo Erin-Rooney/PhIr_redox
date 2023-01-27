@@ -53,49 +53,6 @@ write.csv(rhizon_meta_combine_notransect, "processed/rhizon_long_notransect.csv"
 
 ##metadata needed for sipper data
 
-# sipper_data_forplots = 
-#   sipper_data %>% 
-#   mutate(month = factor(month, levels = c("june", "july", "august")),
-#          #Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
-#   mutate(elements = recode(elements, "Al_ug/mL" = "aluminum",
-#                       "Ca_mg/L" = "calcium",
-#                       "Fe_mg/L" = "iron",
-#                       "K_mg/L" = "potassium",
-#                       "Mg_mg/L" = "magnesium",
-#                       "Mn_mg/L" = "manganese",
-#                       "Na_mg/L" = "sodium",
-#                       "P_mg/L" = "phosphorus")))
-# 
-
-East_rhizon_notransect_2021 = 
-  rhizon_meta_combine_notransect %>% 
-  filter(Area == 'East') %>% 
-  ggplot(aes(x = Betterdate, y = as.numeric(concentration), color = Site, shape = Area))+
-  geom_point(size = 2.5, alpha = 0.8)+
-  #geom_line(orientation = "x", group = 'Plot')+
-  labs(x = "Date",
-       y = 'concentration ug/mL')+
-  scale_color_manual(values = rev(PNWColors::pnw_palette("Bay", 3)))+
-  facet_wrap(ICP~., scales = "free")+
-  theme_er1()
-
-West_rhizon_notransect_2021 = 
-  rhizon_meta_combine_notransect %>% 
-  filter(Area == 'West') %>% 
-  ggplot(aes(x = Betterdate, y = as.numeric(concentration), color = Site, shape = Area))+
-  geom_point(size = 2.5, alpha = 0.8)+
-  #geom_line(orientation = "x", group = 'Plot')+
-  labs(x = "Date",
-       y = 'concentration ug/mL')+
-  scale_color_manual(values = rev(PNWColors::pnw_palette("Bay", 3)))+
-  facet_wrap(ICP~., scales = "free")+
-  theme_er1()
-
-ggsave("output/East_rhizon_notransect_2021.tiff", plot = East_rhizon_notransect_2021, height = 5.7, width = 6.7)
-ggsave("output/West_rhizon_notransect_2021.tiff", plot = West_rhizon_notransect_2021, height = 5.7, width = 6.7)
-
-
-
 west_rhizon_month = 
   rhizon_meta_combine_notransect %>% 
   filter(Area == 'West') %>% 
@@ -166,22 +123,6 @@ aluminum_fig =
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
   facet_grid(Area ~ .)
   
-  
-
-# phosphorus_fig = 
-#   rhizon_meta_combine_notransect_forelements %>%
-#   filter(ICP == "phosphorus") %>% 
-#   ggplot(aes(x = Betterdate, y = mean, color = Site, fill = Site)) +
-#   #geom_point(size = 3, alpha = 0.7)+
-#   geom_col(position = 'dodge', width = 0.7)+
-#   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
-#                 position=position_dodge(.9), color = "black")+
-#   labs(y = "phosphorus, ug/mL")+
-#   scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
-#   scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
-#   theme_er1()+
-#   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
-#   facet_grid(Area ~ .)
 
 
 phosphorus_fig = 
@@ -199,30 +140,98 @@ phosphorus_fig =
   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
   facet_grid(Area ~ Site)
 
-east_rhizon_fig = 
+redoxsensitive_fig =
   rhizon_meta_combine_notransect_forelements %>%
-  filter(ICP %in% c("iron", "phosphorus", "manganese") & Area == "East") %>% 
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+    mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("iron", "phosphorus", "manganese", "aluminum")) %>% 
   mutate(ICP = recode(ICP, "phosphorus" = "phosphorus μg/mL",
                       "iron" = "iron μg/mL",
-                      "manganese" = "manganese μg/mL")) %>% 
+                      "manganese" = "manganese μg/mL",
+                      "aluminum" = "aluminum μg/mL")) %>% 
   ggplot(aes(x = Betterdate, y = mean, color = Site, fill = Site)) +
   #geom_point(size = 3, alpha = 0.7)+
-  geom_col(position = 'dodge', width = 0.7, alpha = 0.5)+
+  geom_col(position = position_dodge2(width = 0.9, preserve = "single"), alpha = 0.8, color = "black")+
   geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
                 position=position_dodge(.9), color = "black")+
-  labs(x = "date", y = "",
-       subtitle = "Acidic Tundra")+
-  #scale_x_date(date_labels = "%b-%d")+
-  scale_color_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
-  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  labs(x = " ", y = "", color = "", fill = "")+
+  # scale_x_date(date_labels = "%b-%d")+
+    scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+    scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   # scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
   # scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
   theme_er1()+
   # theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
-  facet_grid(ICP ~ Site, switch = "y", scale = "free_y")+
-  theme(legend.position = "NONE", axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-        strip.placement = "outside")+
+  facet_grid(ICP ~ Area, switch = "y", scale = "free")+
+  theme(legend.position = "none", axis.text.x = element_text(angle = 45, vjust = 0.5, size = 11),
+        strip.placement = "outside", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())+
   NULL
+
+cations_fig =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("calcium", "sodium", "magnesium", "potassium")) %>% 
+  mutate(ICP = recode(ICP, "calcium" = "calcium μg/mL",
+                      "sodium" = "sodium μg/mL",
+                      "magnesium" = "magnesium μg/mL",
+                      "potassium" = "potassium μg/mL")) %>% 
+  ggplot(aes(x = Betterdate, y = mean, fill = Site)) +
+  #geom_point(size = 3, alpha = 0.7)+
+  geom_col(position = position_dodge2(width = 0.9, preserve = "single"), alpha = 0.8, color = "black")+
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                position=position_dodge(.9), color = "black")+
+  labs(x = " ", y = "", color = "", fill = "")+
+  # scale_x_date(date_labels = "%b-%d")+
+  scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  # scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  # scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  theme_er1()+
+  # theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
+  facet_grid(ICP ~ Area, switch = "y", scale = "free")+
+  theme(legend.position = "none", axis.text.x = element_text(angle = 45, vjust = 0.5, size = 11),
+        strip.placement = "outside", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())+
+  NULL
+
+cations_fig_legend =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("calcium", "sodium", "magnesium", "potassium")) %>% 
+  mutate(ICP = recode(ICP, "calcium" = "calcium μg/mL",
+                      "sodium" = "sodium μg/mL",
+                      "magnesium" = "magnesium μg/mL",
+                      "potassium" = "potassium μg/mL")) %>% 
+  ggplot(aes(x = Betterdate, y = mean, fill = Site)) +
+  #geom_point(size = 3, alpha = 0.7)+
+  geom_col(position = position_dodge2(width = 0.9, preserve = "single"), alpha = 0.8, color = "black")+
+  geom_errorbar(aes(ymin=mean-sd, ymax=mean+sd), width=.2,
+                position=position_dodge(0.9), color = "black")+
+  labs(x = " ", y = "", color = "", fill = "")+
+  # scale_x_date(date_labels = "%b-%d")+
+ # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  # scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  # scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
+  theme_er1()+
+  # theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))+
+  facet_grid(ICP ~ Area, switch = "y", scale = "free")+
+  theme(legend.position = "right", axis.text.x = element_text(angle = 45, vjust = 0.5, size = 9),
+        strip.placement = "outside", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())+
+  NULL
+
+ggsave("figures_finalized/redoxsensitive_fig.png", plot = redoxsensitive_fig, width = 9, height = 9)
+ggsave("figures_finalized/cations_fig.png", plot = cations_fig, width = 9, height = 9)
+ggsave("figures_finalized/cations_fig_legend.png", plot = cations_fig_legend, width = 8, height = 9)
+
+
 
 west_rhizon_fig = 
   rhizon_meta_combine_notransect_forelements %>%
