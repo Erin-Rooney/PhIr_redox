@@ -7,7 +7,7 @@ source("code/0-packages.R")
 
 #load data
 
-westhydric_dlname = read.csv("processed/westhydric_dlname2022.csv")
+westhydric_dlname = read.csv("processed/westhydric_dlname2022.csv") 
 easthydric_dlname = read.csv("processed/easthydric_dlname2022.csv")
 westmesic_dlname = read.csv("processed/westmesic_dlname2022.csv")
 eastmesic_dlname = read.csv("processed/eastmesic_dlname2022.csv")
@@ -56,7 +56,6 @@ westhydric_moisture =
   moisture_separate(westhydric_dlname) %>% 
   #dplyr::select(-soiltemperature_Avg) %>% 
   left_join(westhydric_metadata, by = 'redox_NUM_Avg') %>% 
-  dplyr::select(-c(soiltemperature_Avg)) %>% 
   pivot_longer(-c("redox_NUM_Avg", "X", "redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
                names_to = c("type", "depth"), names_sep= "_", values_to = 'avg_values') %>% 
   filter(type != 'redox') %>% 

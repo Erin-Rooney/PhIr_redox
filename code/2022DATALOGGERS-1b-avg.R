@@ -224,17 +224,18 @@ depths_function <- function(dat){
 
 ##now run the depths function on all six dataframes (now site_avg)
 
+#ignore 228 (1/30/2023)
 #to run west hydric, comment out line number 216 (add # at beginning of line)
 
-sensor_depths_westhydric =
-  sensor_depths %>% 
-  filter(datalogger == '6')
-
+# sensor_depths_westhydric =
+#   sensor_depths %>% 
+#   filter(datalogger == '6')
+# 
 
 westhydric_depths = 
   depths_function(westhydric_avg) %>% 
-  mutate(datalogger = recode(datalogger, "4" = "6")) %>% 
-  left_join(sensor_depths_westhydric) %>% 
+  # mutate(datalogger = recode(datalogger, "4" = "6")) %>% 
+  # left_join(sensor_depths_westhydric) %>% 
   na.omit()
 
 #to run the rest of the dataframes, comment in line number 216 (remove #)
@@ -393,5 +394,5 @@ ggsave("output/temporary_fig_uncleaned_2022.png", plot = artifact_fig_2022_uncle
 
 #comment in if running for the first time
 
-#write.csv(alldata_cleaned, "processed/all_combine_2022.csv")
+write.csv(alldata_cleaned, "processed/all_combine_2022.csv")
 

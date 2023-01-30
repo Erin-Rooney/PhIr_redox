@@ -25,8 +25,8 @@ eastdry_dlraw = read.csv("raw/east_dry_2022.csv")
 westhydric_dlname = 
   westhydric_dlraw %>% 
   mutate(site = 'west', position = "hydric") %>% 
-  dplyr::select(!ptemp) %>% 
-  mutate("X" = seq.int(1, by = 1, length.out = 3487)) 
+  #dplyr::select(!ptemp) %>% 
+  mutate("X" = seq.int(1, by = 1, length.out = 4134)) 
 
 
 easthydric_dlname = 

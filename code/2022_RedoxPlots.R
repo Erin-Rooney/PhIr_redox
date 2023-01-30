@@ -580,7 +580,7 @@ ungrouped_redox_forfigs2021_probe =
   
 ungrouped_redox_forfigs2022_probe =
   ungrouped_redox_forfigs2022 %>% 
-  mutate(keep = case_when(site == "non-acidic tundra" & position == "hydric" & probe == 2 ~ "keep",
+  mutate(keep = case_when(site == "non-acidic tundra" & position == "hydric" & probe == 3 ~ "keep",
                           site == "acidic tundra" & position == "hydric" & probe == 3 ~ "keep",
                           site == "non-acidic tundra" & position == "dry" & probe == 2 ~ "keep",
                           site == "acidic tundra" & position == "dry" & probe == 1 ~ "keep",
@@ -637,7 +637,6 @@ allredox_lines_2022_fig =
 ggsave("formanuscript/allredox_lines_2022_fig.png", plot = allredox_lines_2022_fig, height = 6, width = 6)
 
 
-
 allredox_contour_2021_fig =                          
   ungrouped_redox_forfigs2021_probe %>% 
   ggplot()+
@@ -677,6 +676,8 @@ allredox_contour_2022_fig =
   theme(axis.text.x = element_text(size = 9, vjust = 0.5, angle = 45),
         legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank())
+
+
 
 ggsave("formanuscript/allredox_contour_2022_fig.png", plot = allredox_contour_2022_fig, height = 6, width = 6)
 
