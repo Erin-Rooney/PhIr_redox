@@ -1,5 +1,5 @@
 #Raw data input
-#rhizons
+#sipper data
 #E C Rooney
 #1 21 2023
 
@@ -10,6 +10,33 @@ source("code/0-packages.R")
 #load document
 
 raw_ICP = read.csv("raw/2023_LIME_ICPAES_002R_Herndon_0118.csv")
+raw_ICP_diluted = read.csv("raw/2023_LIME_ICPAES_002R_Herndon_0118_diluted.csv")
+
+
+processed_ICP_diluted = 
+  raw_ICP_diluted %>% 
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  # dplyr::select(c(SampleID, Date, Time, Area, Site, Plot, Depth_cm, Al_ug_mL, Ca_ug_mL, Fe_ug_mL, 
+  #                 K_ug_mL, Mg_ug_mL, Mn_ug_mL, Na_ug_mL, P_ug_mL)) %>% 
+  mutate(P_ug_mL = recode(P_ug_mL, "<0.01" = "0.005",
+                          "<0.1" = "0.05")) %>%  #this seems like an error...need to check
+  separate(Date, sep = "-", into =c('day', 'month', 'year')) %>% 
+  mutate(month = recode(month, "Jun" = "06", "Jul" = "07", "Aug" = "08", "Sep" = "09")) %>% 
+  mutate(year = recode(year, "22" = "2022")) %>% 
+  mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
+  mutate(Al_ug_mL = as.numeric(Al_ug_mL)) %>% 
+  mutate(Ca_ug_mL = as.numeric(Ca_ug_mL)) %>% 
+  mutate(K_ug_mL = as.numeric(K_ug_mL)) %>% 
+  mutate(Mn_ug_mL = as.numeric(Mn_ug_mL)) %>% 
+  mutate(Mg_ug_mL = as.numeric(Mg_ug_mL)) %>% 
+  mutate(Na_ug_mL = as.numeric(Na_ug_mL)) %>% 
+  mutate(P_ug_mL = as.numeric(P_ug_mL)) %>%
+  mutate(Fe_ug_mL = as.numeric(Fe_ug_mL)) %>% 
+  pivot_longer(-c(SampleID, date, Time, Area, Site, Plot, day, month, year, Depth_cm), names_to = 'ICP', values_to = 'concentration') %>% 
+  mutate(concentration = concentration * 10)
 
 
 processed_ICP = 
@@ -20,7 +47,7 @@ processed_ICP =
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   na.omit() %>% 
   dplyr::select(c(SampleID, Date, Time, Area, Site, Plot, Depth_cm, Al_ug_mL, Ca_ug_mL, Fe_ug_mL, 
-           K_ug_mL, Mg_ug_mL, Mn_ug_mL, Na_ug_mL, P_ug_mL)) %>% 
+                  K_ug_mL, Mg_ug_mL, Mn_ug_mL, Na_ug_mL, P_ug_mL)) %>% 
   na.omit() %>% 
   mutate(Al_ug_mL = recode(Al_ug_mL, "<0.01" = "0.005")) %>% 
   mutate(Mn_ug_mL = recode(Mn_ug_mL, "<0.005" = '0.003')) %>% 
@@ -38,7 +65,11 @@ processed_ICP =
   mutate(Na_ug_mL = as.numeric(Na_ug_mL)) %>% 
   mutate(P_ug_mL = as.numeric(P_ug_mL)) %>%
   mutate(Fe_ug_mL = as.numeric(Fe_ug_mL)) %>% 
-  pivot_longer(-c(SampleID, date, Time, Area, Site, Plot, day, month, year, Depth_cm), names_to = 'ICP', values_to = 'concentration') 
+  pivot_longer(-c(SampleID, date, Time, Area, Site, Plot, day, month, year, Depth_cm), names_to = 'ICP', values_to = 'concentration') %>% 
+  vctrs::vec_c(processed_ICP_diluted)
+
+
+
 
 processed_ICP_grouped =
   processed_ICP %>% 
@@ -60,7 +91,7 @@ processed_ICP_grouped =
                    sd_Na_ug_mL = round(sd(Na_ug_mL),3),
                    sd_P_ug_mL = round(sd(P_ug_mL),3),
                    sd_Fe_ug_mL = round(sd(Fe_ug_mL),3)
-                   ) %>% 
+  ) %>% 
   separate(date, sep = "-", into =c('year', 'month', 'day')) %>% 
   mutate(month2 = recode(month, "06" = "June", "07" = "July", "08" = "August", "09" = "September")) %>% 
   mutate(date_plot = paste(month2, day, year, sep = "-")) %>% 
@@ -70,7 +101,7 @@ processed_ICP_grouped =
                                                   "July-26-2022", "August-07-2022", "August-08-2022",
                                                   "September-15-2022","September-17-2022", "September-23-2022"))) %>% 
   mutate(area_site = paste(Area, Site, sep = "-")) 
-  
+
 processed_ICP_grouped_longer =
   processed_ICP %>% 
   pivot_wider(names_from = "ICP", values_from = "concentration") %>% 
@@ -96,18 +127,17 @@ processed_ICP_grouped_longer =
   pivot_longer(-c(Area, Site, day, month, year, Depth_cm, month2, date_plot, area_site, mean_P_ug_mL), names_to = 'ICP', values_to = 'concentration') 
 
 
-
-Fe_2022_fig =
-  processed_ICP_grouped %>% 
-  ggplot(aes(x = date, y = Depth_cm, fill = mean_Fe_ug_mL, group = date)) +
-  geom_point(size = 4, shape = c(21))+
-  #geom_line(orientation = "y")+
-  scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
-  labs(fill = "Fe ug/mL",
-       y = "Depth, cm")+
-  scale_y_reverse()+
-  facet_grid(Site ~ Area)+
-  theme_er1()
+# Fe_2022_fig =
+#   processed_ICP_grouped %>% 
+#   ggplot(aes(x = date_plot, y = Depth_cm, fill = mean_Fe_ug_mL, group = date_plot)) +
+#   geom_point(size = 4, shape = c(21))+
+#   #geom_line(orientation = "y")+
+#   scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+#   labs(fill = "Fe ug/mL",
+#        y = "Depth, cm")+
+#   scale_y_reverse()+
+#   facet_grid(Site ~ Area)+
+#   theme_er1()
 
 
 #Fe_2022_fig_hydric =
@@ -130,7 +160,7 @@ Fe_grouped_fig =
     #filter(Area == "non-acidic tundra") %>% 
     ggplot(aes(x = mean_Fe_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
     geom_errorbar(aes(xmin=(mean_Fe_ug_mL - sd_Fe_ug_mL), xmax=(mean_Fe_ug_mL + sd_Fe_ug_mL), color = date_plot))+
-    geom_point(size = 3, shape = c(21), alpha = 0.8)+
+    geom_point(size = 3.5, shape = c(21), alpha = 0.6)+
     geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
     # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
     # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
@@ -138,21 +168,27 @@ Fe_grouped_fig =
     scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
     labs(fill = "Date",
          color = "Date",
-         y = "Depth, cm",
+         y = "",
          x = "Iron ug/mL")+
     scale_y_reverse()+
+    scale_x_continuous(position = 'top') +
     facet_grid(Site ~ Area, scales = "free_x")+
     theme_er1()+
     theme(legend.position = "none",
           panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank())
+          panel.background = element_blank(),
+                strip.placement = "outside",
+          axis.text.y=element_blank(),  #remove y axis labels
+          axis.ticks.y=element_blank(),
+          axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+  #remove y axis ticks
 
 P_grouped_fig =  
   processed_ICP_grouped %>% 
     #filter(Area == "non-acidic tundra") %>% 
     ggplot(aes(x = mean_P_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
     geom_errorbar(aes(xmin=(mean_P_ug_mL - sd_P_ug_mL), xmax=(mean_P_ug_mL + sd_P_ug_mL), color = date_plot))+
-    geom_point(size = 3, shape = c(21), alpha = 0.8)+
+    geom_point(size = 3.5, shape = c(21), alpha = 0.6)+
     geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
     # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
     # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
@@ -162,12 +198,17 @@ P_grouped_fig =
          color = "Date",
          y = "Depth, cm",
          x = "Phosphorus ug/mL")+
-    scale_y_reverse()+
+  scale_y_reverse()+
+  scale_x_continuous(position = 'top') +
   facet_grid(Site ~ Area, scales = "free_x")+
   theme_er1()+
-    theme(legend.position = "none",
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank(), axis.text.x = element_text (size = 9))
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+
 
 
 Mn_grouped_fig =  
@@ -175,7 +216,7 @@ Mn_grouped_fig =
   #filter(Area == "non-acidic tundra") %>% 
   ggplot(aes(x = mean_Mn_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
   geom_errorbar(aes(xmin=(mean_Mn_ug_mL - sd_Mn_ug_mL), xmax=(mean_Mn_ug_mL + sd_Mn_ug_mL), color = date_plot))+
-  geom_point(size = 3, shape = c(21), alpha = 0.8)+
+  geom_point(size = 3.5, shape = c(21), alpha = 0.6)+
   geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
@@ -183,21 +224,27 @@ Mn_grouped_fig =
   scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
   labs(fill = "Date",
        color = "Date",
-       y = "Depth, cm",
+       y = "",
        x = "Manganese ug/mL")+
   scale_y_reverse()+
+  scale_x_continuous(position = 'top') +
   facet_grid(Site ~ Area, scales = "free_x")+
   theme_er1()+
   theme(legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+
 
 
 Legend_grouped_fig =  
   processed_ICP_grouped %>% 
   #filter(Area == "non-acidic tundra") %>% 
   ggplot(aes(x = mean_Mn_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
-  geom_point(size = 3, shape = c(21), alpha = 0.8)+
+  geom_point(size = 3.5, shape = c(21), alpha = 0.6)+
   geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
@@ -205,7 +252,7 @@ Legend_grouped_fig =
   scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
   labs(fill = "Date",
        color = "Date",
-       y = "Depth, cm",
+       y = "",
        x = "Manganese ug/mL")+
   scale_y_reverse()+
   facet_grid(Site ~ Area, scales = "free_x")+
@@ -227,7 +274,7 @@ Al_grouped_fig =
   #filter(Area == "non-acidic tundra") %>% 
   ggplot(aes(x = mean_Al_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
   geom_errorbar(aes(xmin=(mean_Al_ug_mL - sd_Al_ug_mL), xmax=(mean_Al_ug_mL + sd_Al_ug_mL), color = date_plot))+
-  geom_point(size = 3, shape = c(21), alpha = 0.8)+
+  geom_point(size = 3.5, shape = c(21), alpha = 0.6)+
   geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
@@ -235,21 +282,27 @@ Al_grouped_fig =
   scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
   labs(fill = "Date",
        color = "Date",
-       y = "Depth, cm",
+       y = "",
        x = "Aluminum ug/mL")+
   scale_y_reverse()+
+  scale_x_continuous(position = 'top') +
   facet_grid(Site ~ Area, scales = "free_x")+
   theme_er1()+
   theme(legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_blank(),
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
 
 Ca_grouped_fig =  
   processed_ICP_grouped %>% 
   #filter(Area == "non-acidic tundra") %>% 
   ggplot(aes(x = mean_Ca_ug_mL, y = Depth_cm, fill = date_plot, group = date_plot)) +
   geom_errorbar(aes(xmin=(mean_Ca_ug_mL - sd_Ca_ug_mL), xmax=(mean_Ca_ug_mL + sd_Ca_ug_mL), color = date_plot))+
-  geom_point(size = 3, shape = c(21), alpha = 0.8)+
+  geom_point(size = 3.5, shape = c(21), alpha = 0.6)+
   geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
@@ -260,11 +313,16 @@ Ca_grouped_fig =
        y = "Depth, cm",
        x = "Calcium ug/mL")+
   scale_y_reverse()+
+  scale_x_continuous(position = 'top') +
   facet_grid(Site ~ Area, scales = "free_x")+
   theme_er1()+
   theme(legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.text.x = element_text (size = 9))
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+
 
 
 Na_grouped_fig =  
@@ -331,7 +389,8 @@ K_grouped_fig =
   theme_er1()+
   theme(legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+        panel.background = element_blank(),
+        )
 
 
 ggsave("output/2022_Mg_fig2.png", plot = Mg_grouped_fig, height = 6, width = 4)
@@ -341,6 +400,18 @@ ggsave("output/2022_Al_fig2.png", plot = Al_grouped_fig, height = 6, width = 4)
 ggsave("output/2022_Ca_fig2.png", plot = Ca_grouped_fig, height = 6, width = 4)
 ggsave("output/2022_fig2_legend.png", plot = Legend_grouped_fig, height = 10, width = 10)
 
+library(patchwork)
+
+nutrientsfigA = Ca_grouped_fig + Al_grouped_fig + Fe_grouped_fig 
+
+nutrientsfigB = P_grouped_fig + Mn_grouped_fig 
+
+
+nutrient_plot = nutrientsfigA / nutrientsfigB
+
+ggsave("output/2022nutrientsfigA.png", plot = nutrientsfigA, height = 9, width = 11)
+ggsave("output/2022nutrientsfigB.png", plot = nutrientsfigB, height = 10, width = 8)
+ggsave("output/2022nutrient_plot.png", plot = nutrient_plot, height = 10, width = 10)
 
 
 processed_ICP_grouped_longer %>% 
