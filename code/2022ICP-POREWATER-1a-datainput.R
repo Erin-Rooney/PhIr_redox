@@ -66,9 +66,13 @@ processed_ICP =
   mutate(P_ug_mL = as.numeric(P_ug_mL)) %>%
   mutate(Fe_ug_mL = as.numeric(Fe_ug_mL)) %>% 
   pivot_longer(-c(SampleID, date, Time, Area, Site, Plot, day, month, year, Depth_cm), names_to = 'ICP', values_to = 'concentration') %>% 
-  vctrs::vec_c(processed_ICP_diluted)
+  vctrs::vec_c(processed_ICP_diluted) %>% 
+  mutate(month = recode(month, "06" = "June", "07" = "July", "08" = "August", "09" = "September")) 
+  
 
-
+processed_ICP_wider =
+  processed_ICP %>% 
+  pivot_wider(names_from = "ICP", values_from = "concentration") 
 
 
 processed_ICP_grouped =
@@ -101,6 +105,10 @@ processed_ICP_grouped =
                                                   "July-26-2022", "August-07-2022", "August-08-2022",
                                                   "September-15-2022","September-17-2022", "September-23-2022"))) %>% 
   mutate(area_site = paste(Area, Site, sep = "-")) 
+
+write.csv(processed_ICP, "output/processed_ICP_porewater2022Asamples.csv")
+write.csv(processed_ICP_wider, "output/processed_ICP_porewater2022Asamples_wider.csv")
+
 
 processed_ICP_grouped_longer =
   processed_ICP %>% 
@@ -141,19 +149,156 @@ processed_ICP_grouped_longer =
 
 
 #Fe_2022_fig_hydric =
-  processed_ICP_grouped %>% 
-  filter(Area == "non-acidic tundra") %>% 
-  ggplot(aes(x = mean_Fe_ug_mL, y = Depth_cm, fill = Site, group = Site)) +
-  geom_point(size = 4, shape = c(21), alpha = 0.8)+
-  geom_line(aes(color = Site), orientation = "y", linetype = "longdash")+
-  #scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
-  scale_fill_manual(values = (pnw_palette("Shuksan2")))+
-  scale_color_manual(values = (pnw_palette("Shuksan2")))+
-  labs(fill = "Fe ug/mL",
-       y = "Depth, cm")+
+  # processed_ICP_grouped %>% 
+  # filter(Area == "non-acidic tundra") %>% 
+  # ggplot(aes(x = mean_Fe_ug_mL, y = Depth_cm, fill = Site, group = Site)) +
+  # geom_point(size = 4, shape = c(21), alpha = 0.8)+
+  # geom_line(aes(color = Site), orientation = "y", linetype = "longdash")+
+  # #scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_fill_manual(values = (pnw_palette("Shuksan2")))+
+  # scale_color_manual(values = (pnw_palette("Shuksan2")))+
+  # labs(fill = "Fe ug/mL",
+  #      y = "Depth, cm")+
+  # scale_y_reverse()+
+  # facet_grid(Area ~ date)+
+  # theme_er1()
+
+
+Fe_fig =  
+  processed_ICP %>% 
+  filter(ICP == "Fe_ug_mL") %>% 
+  ggplot(aes(x = concentration, y = Depth_cm, fill = month, group = month)) +
+  #geom_errorbar(aes(xmin=(mean_Fe_ug_mL - sd_Fe_ug_mL), xmax=(mean_Fe_ug_mL + sd_Fe_ug_mL), color = date_plot))+
+  geom_point(size = 3.5, shape = c(21), alpha = 0.6)+
+  #geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = (pnw_palette("Sunset", 4)))+
+  scale_color_manual(values = (pnw_palette("Sunset", 4)))+
+  labs(fill = "Month",
+       color = "Month",
+       y = "",
+       x = "Iron ug/mL")+
   scale_y_reverse()+
-  facet_grid(Area ~ date)+
-  theme_er1()
+  scale_x_continuous(position = 'top') +
+  facet_grid(Site ~ Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+#remove y axis ticks
+
+Al_fig =  
+  processed_ICP %>% 
+  filter(ICP == "Al_ug_mL") %>% 
+  ggplot(aes(x = concentration, y = Depth_cm, fill = month, group = month)) +
+  #geom_errorbar(aes(xmin=(mean_Fe_ug_mL - sd_Fe_ug_mL), xmax=(mean_Fe_ug_mL + sd_Fe_ug_mL), color = date_plot))+
+  geom_point(size = 3.5, shape = c(21), alpha = 0.6)+
+  #geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = (pnw_palette("Sunset", 4)))+
+  scale_color_manual(values = (pnw_palette("Sunset", 4)))+
+  labs(fill = "Month",
+       color = "Month",
+       y = "",
+       x = "Aluminum ug/mL")+
+  scale_y_reverse()+
+  scale_x_continuous(position = 'top') +
+  facet_grid(Site ~ Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+#remove y axis ticks
+
+P_fig =  
+  processed_ICP %>% 
+  filter(ICP == "P_ug_mL") %>% 
+  ggplot(aes(x = concentration, y = Depth_cm, fill = month, group = month)) +
+  #geom_errorbar(aes(xmin=(mean_Fe_ug_mL - sd_Fe_ug_mL), xmax=(mean_Fe_ug_mL + sd_Fe_ug_mL), color = date_plot))+
+  geom_point(size = 3.5, shape = c(21), alpha = 0.6)+
+  #geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = (pnw_palette("Sunset", 4)))+
+  scale_color_manual(values = (pnw_palette("Sunset", 4)))+
+  labs(fill = "Month",
+       color = "Month",
+       y = "",
+       x = "Phosphorus ug/mL")+
+  scale_y_reverse()+
+  scale_x_continuous(position = 'top') +
+  facet_grid(Site ~ Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+
+Ca_fig =  
+  processed_ICP %>% 
+  filter(ICP == "Ca_ug_mL") %>% 
+  ggplot(aes(x = concentration, y = Depth_cm, fill = month, group = month)) +
+  #geom_errorbar(aes(xmin=(mean_Fe_ug_mL - sd_Fe_ug_mL), xmax=(mean_Fe_ug_mL + sd_Fe_ug_mL), color = date_plot))+
+  geom_point(size = 3.5, shape = c(21), alpha = 0.6)+
+  #geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = (pnw_palette("Sunset", 4)))+
+  scale_color_manual(values = (pnw_palette("Sunset", 4)))+
+  labs(fill = "Month",
+       color = "Month",
+       y = "",
+       x = "Calcium ug/mL")+
+  scale_y_reverse()+
+  scale_x_continuous(position = 'top') +
+  facet_grid(Site ~ Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+
+
+library(patchwork)
+
+nutrientsfig1 = Ca_fig + Al_fig 
+
+nutrientsfig2 = P_fig + Fe_fig 
+
+
+nutrient_plot = nutrientsfig1 / nutrientsfig2 + plot_layout(guides = "collect")
+
+# ggsave("output/2022nutrientsfigA.png", plot = nutrientsfigA, height = 9, width = 11)
+# ggsave("output/2022nutrientsfigB.png", plot = nutrientsfigB, height = 10, width = 8)
+ggsave("output/2022nutrient_plot.png", plot = nutrient_plot, height = 8, width = 9.5)
+
+#ggsave("formanuscript/Fe_fig.png", plot = Fe_fig, height = 5, width = 6)
+
+
+
+
+
+
+
+
+
+
+
+########
   
 Fe_grouped_fig =  
   processed_ICP_grouped %>% 
@@ -182,6 +327,7 @@ Fe_grouped_fig =
           axis.ticks.y=element_blank(),
           axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
   #remove y axis ticks
+#
 
 P_grouped_fig =  
   processed_ICP_grouped %>% 
@@ -431,6 +577,10 @@ processed_ICP_grouped_longer %>%
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
 
+
+
+##lineplots
+
 processed_ICP_grouped_longer %>% 
   mutate(Depth_cm = factor(Depth_cm)) %>% 
   filter(ICP == c("mean_Ca_ug_mL")) %>% 
@@ -673,6 +823,20 @@ processed_ICP_grouped_longer %>%
   theme(legend.position = "right",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.text.x = element_text(size = 8, hjust=0.8,vjust=0.2,angle = 90))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

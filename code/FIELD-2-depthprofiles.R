@@ -174,9 +174,6 @@ bd_grouped =
   mutate(Horizon = factor(Horizon, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2"))) %>% 
   dplyr::select(c(Area, Site, Horizon, soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3)) %>% 
   na.omit() %>% 
-  mutate(horizon_simplified = recode(Horizon, "O" = "Organic Surface", "O1" = "Organic Surface",
-                                     "O2" = "Organic Subsurface", "O3" = "Organic Subsurface", "M" = "Mineral Subsurface",
-                                     "M1" = "Mineral Subsurface", "M2" = "Mineral Subsurface")) %>% 
   group_by(Area, Site, Horizon) %>% 
   dplyr::summarise(mean_bd = round(mean(soil_bulk_density_g_cm3),2),
                    sd_bd = round(sd(soil_bulk_density_g_cm3),2),
@@ -190,6 +187,25 @@ bd_grouped =
 bd_grouped %>% knitr::kable()
 
 write.csv(bd_grouped, "output/bd_grouped.csv")
+
+bd_forfigs =
+  bd_select %>% 
+  filter(Site != "Transect") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Horizon = factor(Horizon, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2"))) %>% 
+  #dplyr::select(c(Area, Site, Core_ID, Horizon, soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3)) %>% 
+  na.omit() %>% 
+  mutate(horizon_simplified = recode(Horizon, "O" = "Organic Surface", "O1" = "Organic Surface",
+                                     "O2" = "Organic Subsurface", "O3" = "Organic Subsurface", "M" = "Mineral Subsurface",
+                                     "M1" = "Mineral Subsurface", "M2" = "Mineral Subsurface")) %>% 
+  mutate(depth_color = case_when(real_depth_cm >= 21 ~ "c",
+                                 real_depth_cm <= 10 ~ "a",
+                                 TRUE ~ "b")) %>% 
+  separate(Date_collected, sep = "-", into = c("Day", "Month", "Year")) %>% 
+  mutate(Month = recode(Month, "Jun" = "06", "Jul" = "07", "Aug" = "08")) %>% 
+  mutate(Year = recode(Year, "21" = "2021")) %>% 
+  mutate(date2 = as.Date(paste(Year,Month,Day, sep = "-"))) 
+
 
 bulkdensity_simplified =
   bd_grouped %>% 
@@ -209,23 +225,26 @@ bulkdensity_simplified =
   facet_grid(Area~Site) +
   guides(color = guide_legend(reverse = TRUE))
 
-vwc_simplified =
-bd_grouped %>% 
+vwc_fig =
+  bd_forfigs %>% 
   filter(Site != "Transect") %>% 
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   mutate(horizon_simplified = factor(horizon_simplified, levels = c("Mineral Subsurface", "Organic Subsurface", "Organic Surface"))) %>% 
   ggplot()+
   #geom_line(aes(y = mean_depth, x = soil_bulk_density_g_cm3, group = Core_ID))+
-  geom_point(aes(y = mean_depth, x = mean_vwc, color = horizon_simplified, group = Core_ID), size = 3)+
-  scale_y_reverse()+
+  geom_point(aes(y = (volumetric_water_content_cm3_cm3*100), x = date2, color = depth_color), size = 3)+
   labs(fill = "", color = "",
-       y = "depth, cm",
-       x = "Volumetric Water Content (cm3 water/ cm3 soil)")+
-  scale_color_manual(values = c("#D6AB7D", "#8A5A44", "#482919"))+
+       y = "volumetric water content (cm3 water/ cm3 soil)",
+       x = "date")+
+  #scale_color_manual(values = c("#D6AB7D", "#8A5A44", "#482919"))+
+  scale_color_manual(values=(pnw_palette("Lake", 3)))+
+  facet_grid(Site~Area, scales = "free_x") +
   theme_er1()+
-  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
-  facet_grid(Area~Site) +
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())+
   guides(color = guide_legend(reverse = TRUE))
 
 ggsave("output/bd_simplified.png", plot = bulkdensity_simplified, height = 4.5, width = 6)
-ggsave("output/vwc_simplified.png", plot = vwc_simplified, height = 4.5, width = 6)
+ggsave("formanuscript/vwc_fig.png", plot = vwc_fig, height = 5, width = 5)

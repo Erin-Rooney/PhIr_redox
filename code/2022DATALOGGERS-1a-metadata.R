@@ -10,11 +10,11 @@ source("code/0-packages.R")
 
 #Data logger data input
 
-westhydric_dlraw = read.csv("raw/west_hydric_2022.csv")
-easthydric_dlraw = read.csv("raw/east_hydric_2022.csv")
+westhydric_dlraw = read.csv("raw/west_hydric_2022_b.csv")
+easthydric_dlraw = read.csv("raw/east_hydric_2022_b.csv")
 westmesic_dlraw = read.csv("raw/west_mesic_2022.csv") 
-eastmesic_dlraw = read.csv("raw/east_mesic_2022.csv")
-westdry_dlraw = read.csv("raw/west_dry_2022.csv") 
+eastmesic_dlraw = read.csv("raw/east_mesic_2022_b.csv")
+westdry_dlraw = read.csv("raw/west_dry_2022_b.csv") 
 eastdry_dlraw = read.csv("raw/east_dry_2022.csv")
 
 #remove ptemp column, add site, position, and row numbers "X"
@@ -26,14 +26,14 @@ westhydric_dlname =
   westhydric_dlraw %>% 
   mutate(site = 'west', position = "hydric") %>% 
   #dplyr::select(!ptemp) %>% 
-  mutate("X" = seq.int(1, by = 1, length.out = 4134)) 
+  mutate("X" = seq.int(1, by = 1, length.out = 7024)) 
 
 
 easthydric_dlname = 
   easthydric_dlraw %>% 
   mutate(site = 'east', position = "hydric")%>% 
   dplyr::select(!ptemp) %>% 
-  mutate("X" = seq.int(1, by = 1, length.out = 2261))  
+  mutate("X" = seq.int(1, by = 1, length.out = 5127))  
 
 
 westmesic_dlname = 
@@ -47,14 +47,14 @@ eastmesic_dlname =
   eastmesic_dlraw %>% 
   mutate(site = 'east', position = "mesic")%>% 
   dplyr::select(!ptemp) %>% 
-  mutate("X" = seq.int(1, by = 1, length.out = 4322))  
+  mutate("X" = seq.int(1, by = 1, length.out = 7680))  
 
 
 westdry_dlname = 
   westdry_dlraw %>% 
   mutate(site = 'west', position = "dry") %>% 
   dplyr::select(!ptemp) %>% 
-  mutate("X" = seq.int(1, by = 1, length.out = 3487))  
+  mutate("X" = seq.int(1, by = 1, length.out = 5307))  
 
 
 eastdry_dlname = 
