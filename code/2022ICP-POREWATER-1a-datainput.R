@@ -3,6 +3,7 @@
 #E C Rooney
 #1 21 2023
 
+
 #load packages
 
 source("code/0-packages.R")
@@ -11,6 +12,7 @@ source("code/0-packages.R")
 
 raw_ICP = read.csv("raw/2023_LIME_ICPAES_002R_Herndon_0118.csv")
 raw_ICP_diluted = read.csv("raw/2023_LIME_ICPAES_002R_Herndon_0118_diluted.csv")
+combo_redox_withdepths2022 = read.csv("processed/allcombine_2022_frozen.csv")
 
 
 processed_ICP_diluted = 
@@ -163,7 +165,6 @@ processed_ICP_grouped_longer =
   # facet_grid(Area ~ date)+
   # theme_er1()
 
-combo_redox_withdepths2022 = read.csv("processed/allcombine_2022_frozen.csv")
 
 ###
 
@@ -213,20 +214,47 @@ redox_nutrients_leftjoin =
   processed_ICP_forredoxcombo %>% 
   left_join(frozen_group2022) %>% 
   mutate(depth_cm = factor(depth_cm, levels = c("0", "10", "20", "40"))) 
-  
 
-iron_redox_correlation_fig =
+
+redox_nutrients_leftjoin_longer = 
+  processed_ICP_forredoxcombo %>% 
+  left_join(frozen_group2022) %>% 
+  mutate(depth_cm = factor(depth_cm, levels = c("0", "10", "20", "40"))) %>%
+  dplyr::select(-sd_al_ug_m_l, -sd_ca_ug_m_l, -sd_k_ug_m_l, -sd_mn_ug_m_l, 
+                -sd_mg_ug_m_l, -sd_na_ug_m_l, -sd_p_ug_m_l, -sd_fe_ug_m_l) %>% 
+  pivot_longer(-c(site, position, depth_cm, date2, redox_avg_mV, redox_sd), names_to = 'ICP', values_to = 'concentration') %>% 
+  mutate(ICP = recode(ICP, "mean_fe_ug_m_l" = "iron", "mean_p_ug_m_l" = "phosphorus",
+                      "mean_ca_ug_m_l" = "calcium", "mean_al_ug_m_l" = "aluminum"))
+
+redox_nutrients_log_fig =
+redox_nutrients_leftjoin_longer %>% 
+  filter(redox_avg_mV != "NA" & ICP %in% c("aluminum", "calcium", "iron", "phosphorus")) %>% 
+  ggplot() +
+  geom_point(aes(x = redox_avg_mV, y = log(concentration), color = position, shape = site), size = 3, alpha = 0.75)+
+  labs(x = "redox potential, mV",
+       y = "concentration, ug, ml",
+       fill = "element",
+       color = "element")+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  facet_wrap(ICP~., scales = "free_y")+
+  theme_er1()+
+  theme(legend.position = "right")
+
+ggsave("output/redox_nutrients_log_fig.png", plot = redox_nutrients_log_fig, height = 5, width = 8.5)
+
+#iron_redox_correlation_fig =
 redox_nutrients_leftjoin %>% 
   filter(redox_avg_mV != "NA") %>% 
   ggplot() +
-  geom_point(aes(x = redox_avg_mV, y = mean_fe_ug_m_l, color = depth_cm, group = depth_cm), size = 3, alpha = 0.9)+
+  geom_point(aes(x = redox_avg_mV, y = log(mean_fe_ug_m_l), color = position, group = site), size = 3, alpha = 0.9)+
   labs(x = "redox potential, mV",
        y = "Iron, ug/ml",
-       fill = "depth, cm",
-       color = "depth, cm")+
-  scale_color_manual(values=pnw_palette("Lake", 3))+
-  scale_fill_manual(values=pnw_palette("Lake", 3))+
-  facet_grid(position~site)+
+       fill = "site",
+       color = "site")+
+  scale_color_manual(values=pnw_palette("Sailboat", 3))+
+  scale_fill_manual(values=pnw_palette("Sailboat", 3))+
+  facet_grid(.~site)+
   theme_er1()
 
 ggsave("output/iron_redox_correlation_fig.png", plot = iron_redox_correlation_fig, height = 8, width = 4.5)
