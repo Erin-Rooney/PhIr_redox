@@ -248,3 +248,157 @@ vwc_fig =
 
 ggsave("output/bd_simplified.png", plot = bulkdensity_simplified, height = 4.5, width = 6)
 ggsave("formanuscript/vwc_fig.png", plot = vwc_fig, height = 5, width = 5)
+
+
+########correlations
+
+
+###dataloggersmoisture----
+
+final_temp_sal_moist = read.csv("processed/final_temp_salinity_avgs.csv")
+
+library(lubridate)
+
+final_temp_sal_moist_forfig =
+  final_temp_sal_moist %>% 
+  mutate(forsep = TIMESTAMP) %>% 
+  separate(TIMESTAMP, sep = " ", into = c("date2", "time")) %>% 
+  separate(date2, sep = "/", into =c('month', 'day', 'year')) %>% 
+  mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
+  mutate(datetime = ymd_hm(paste(date, time)),
+         date = ymd(date)) %>% 
+  separate(forsep, sep = " ", into = c("date", "time")) %>% 
+  separate(date, sep = "/", into = c("month", "day", "year")) %>% 
+  mutate(date2 = as.Date(paste(year,month,day, sep = "-"))) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  dplyr::rename(depth_cm = depth) %>% 
+  na.omit() %>% 
+  mutate(frozen = case_when(temp < -1 ~ "frozen", TRUE ~ "unfrozen")) %>% 
+  dplyr::select(site, position, depth_cm, moisture, date2) %>% 
+  filter(date2 == c("2021-07-06", "2021-07-07", "2021-07-13", "2021-07-14",
+                    "2021-07-30", "2021-07-31", "2021-08-07")) %>% 
+  mutate(depth_cm = as.numeric(depth_cm)) %>%
+  group_by(site, position, date2, depth_cm) %>%
+  summarise(moisture_avg = mean(moisture),
+            moisture_sd = sd(moisture))
+  
+vwc_forcombo =
+  bd_forfigs %>%
+  janitor::clean_names() %>% 
+  dplyr::rename(position = site, site = area) %>% 
+  dplyr::select(site, position, depth_color, volumetric_water_content_cm3_cm3, date2) %>% 
+  mutate(depth_cm = recode(depth_color, "a" = "5",
+                           "b" = "15",
+                           "c" = "25")) %>% 
+  mutate(depth_cm = as.numeric(depth_cm)) %>% 
+  mutate(position = recode(position, "Dry" = "dry",
+                           "Mesic" = 'mesic',
+                           "Hydric" = 'hydric')) %>%
+  dplyr::select(-depth_color) %>% 
+  group_by(site, position, date2, depth_cm) %>%
+  summarise(vwc_avg = mean(volumetric_water_content_cm3_cm3),
+            vwc_sd = sd(volumetric_water_content_cm3_cm3))
+  
+
+moisture_correlations_summarized = 
+  vwc_forcombo %>% 
+  left_join(final_temp_sal_moist_forfig)
+
+write.csv(moisture_correlations_summarized, 'output/moisture_correlations_summarized.csv')
+
+moisture_correlations %>% 
+  mutate(depth_cm = factor(depth_cm, levels = c("5", "15", "25"))) %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot()+
+  geom_point(aes(x = (volumetric_water_content_cm3_cm3*100), y = moisture, color = depth_cm))+
+  scale_color_manual(values=(pnw_palette("Lake", 3)))+
+  facet_grid(position~site, scales = "free_x") +
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())+
+  guides(color = guide_legend(reverse = TRUE))
+
+library(ggpmisc)
+library(ggpubr)
+
+
+moisturecorrelations_fig =
+moisture_correlations_summarized %>% 
+  mutate(depth_cm = recode(depth_cm, "5" = "0-10", "15" = "10-20", "25" = "20-30")) %>% 
+  mutate(depth_cm = factor(depth_cm, levels = c("0-10", "10-20", "20-30"))) %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(x = (vwc_avg*100), y = moisture_avg))+
+  #geom_smooth(method = "lm", se=FALSE)+
+  # stat_cor(method = "pearson", label.x = 10, label.y = 55)+
+  # stat_poly_line() +
+  # stat_poly_eq(aes(label = after_stat(eq.label))) +
+  # stat_poly_eq(label.y = 0.9) +
+  geom_smooth(method = "lm", color="grey", formula = y ~ 0 + x, se = FALSE)+
+  stat_regline_equation(formula = y ~ 0 + x, label.y = 45, aes(label = ..eq.label..)) +
+  stat_regline_equation(formula = y ~ 0 + x, label.y = 40, aes(label = ..rr.label..))+
+  geom_point(aes(color = depth_cm, fill = depth_cm), size = 3.5, shape = c(21))+
+  ylim(0, 60)+
+  xlim(0, 60)+
+  scale_color_manual(values=(pnw_palette("Lake", 3)))+
+  scale_fill_manual(values=(pnw_palette("Lake", 3)))+
+  labs(x = bquote('measured volumetric water content'~(cm^3/cm^3)),
+       y = "datalogger moisture %",
+       fill = "depth, cm", color = "depth, cm")+
+  #facet_grid(position~site, scales = "free_x") +
+  theme_er1()+
+  theme(legend.position = "bottom",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+# moisturecorrelations_fig =
+# moisture_correlations %>% 
+#   mutate(depth_cm = factor(depth_cm, levels = c("5", "15", "25"))) %>% 
+#   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+#   ggplot()+
+#   geom_point(aes(x = (volumetric_water_content_cm3_cm3*100), y = moisture, fill = depth_cm, color = depth_cm), size = 3.5, shape = c(21),
+#              alpha = 0.8)+
+#   labs(x = "measured volumetric water content, cm3/cm3",
+#        y = "datalogger moisture %")+
+#   scale_fill_manual(values=(pnw_palette("Lake", 3)))+
+#   scale_color_manual(values=(pnw_palette("Lake", 3)))+
+#   #facet_grid(position~site, scales = "free_x") +
+#   theme_er1()+
+#   theme(legend.position = "none",
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#         panel.background = element_blank())+
+#   guides(color = guide_legend(reverse = TRUE))
+
+# 
+# moisturecorrelations_fig =
+#   moisture_correlations_summarized %>% 
+#   mutate(depth_cm = recode(depth_cm, "5" = "0-10", "15" = "10-20", "25" = "20-30")) %>% 
+#   mutate(depth_cm = factor(depth_cm, levels = c("0-10", "10-20", "20-30"))) %>%
+#   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+#   #ggscatter(x = , y = , color = depth_cm, fill = depth_cm) size = 3.5, shape = c(21))
+#   ggscatter(x = "vwc_avg", y = "moisture_avg", color = "depth_cm", fill = "depth_cm", size = 3.5,
+#           add = "reg.line",  # Add regressin line
+#           add.params = list(color = "black", fill = "lightgray"), # Customize reg. line
+#           conf.int = TRUE)+ # Add confidence interval
+#   # stat_cor(label.y = 50) +
+#   # stat_regline_equation(label.y = 55)+
+#   stat_regline_equation(label.y = 55, aes(label = ..eq.label..)) +
+#   stat_regline_equation(label.y = 50, aes(label = ..rr.label..))+
+# # Add correlation coefficient
+#   ylim(0, 60)+
+#   #xlim(0, 60)+
+#   scale_color_manual(values=(pnw_palette("Lake", 3)))+
+#   scale_fill_manual(values=(pnw_palette("Lake", 3)))+
+#   labs(x = bquote('measured volumetric water content'~(cm^3/cm^3)),
+#        y = "datalogger moisture %",
+#        fill = "depth, cm", color = "depth, cm")+
+#   #facet_grid(position~site, scales = "free_x") +
+#   theme_er1()+
+#   theme(legend.position = "bottom",
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#         panel.background = element_blank())
+
+
+ggsave("output/moisturecorrelations_fig.png", plot = moisturecorrelations_fig, height = 5.5, width = 5)

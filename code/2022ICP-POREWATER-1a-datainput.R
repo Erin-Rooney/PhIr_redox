@@ -163,6 +163,106 @@ processed_ICP_grouped_longer =
   # facet_grid(Area ~ date)+
   # theme_er1()
 
+combo_redox_withdepths2022 = read.csv("processed/allcombine_2022_frozen.csv")
+
+###
+
+
+frozen_group2022 =
+  combo_redox_withdepths2022 %>% 
+  dplyr::mutate(keep = if_else(site == "non-acidic tundra" & position == "dry" & depth_cm > 21 & Betterdate >= '2022-07-30 00:00', paste0("frozen"),"unfrozen")) %>% 
+  filter(keep == "unfrozen") %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  separate(TIMESTAMP, sep = " ", into = c("date", "time")) %>% 
+  separate(date, sep = "/", into =c('month', 'day', 'year')) %>% 
+  mutate(date2 = as.Date(paste(year, month, day, sep = "-"))) %>% 
+  dplyr::select(site, position, probe, avg_values_fixed, depth_cm, date2) %>% 
+  filter(date2 == c("2022-06-27", "2022-06-29", "2022-07-06", "2022-07-07",
+                   "2022-07-11", "2022-07-12", "2022-07-18", "2022-07-19",
+                   "2022-07-25", "2022-07-26", "2022-08-07", "2022-08-08",
+                   "2022-09-15", "2022-9-17", "2022-09-23")) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  group_by(site, position, date2, depth_cm) %>% 
+  dplyr::summarise(redox_avg_mV = round(mean(avg_values_fixed),2),
+                   redox_sd = round(sd(avg_values_fixed),2)) %>% 
+  mutate(depth_cm = case_when(depth_cm >=40 ~ "40",
+                              depth_cm <= 10 ~ "10",
+                              depth_cm == 0 ~ "0",
+                                  TRUE ~ "20")) %>% 
+  mutate(depth_cm = as.numeric(depth_cm))
+  
+
+processed_ICP_forredoxcombo =
+  processed_ICP_grouped %>% 
+  janitor::clean_names() %>% 
+  dplyr::rename(position = site, site = area) %>% 
+  mutate(date2 = as.Date(paste(year, month, day, sep = "-"))) %>% 
+  dplyr::select(-year, -month, -day, -month2, -date_plot, -area_site) %>% 
+  mutate(depth_cm = as.numeric(depth_cm)) %>% 
+  mutate(position = recode(position, "Dry" = "dry",
+                           "Mesic" = 'mesic',
+                           "Hydric" = 'hydric')) 
+
+
+redox_nutrients_leftjoin = 
+  processed_ICP_forredoxcombo %>% 
+  left_join(frozen_group2022) %>% 
+  mutate(depth_cm = factor(depth_cm, levels = c("0", "10", "20", "40"))) 
+  
+
+iron_redox_correlation_fig =
+redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = redox_avg_mV, y = mean_fe_ug_m_l, color = depth_cm, group = depth_cm), size = 3, alpha = 0.9)+
+  labs(x = "redox potential, mV",
+       y = "Iron, ug/ml",
+       fill = "depth, cm",
+       color = "depth, cm")+
+  scale_color_manual(values=pnw_palette("Lake", 3))+
+  scale_fill_manual(values=pnw_palette("Lake", 3))+
+  facet_grid(position~site)+
+  theme_er1()
+
+ggsave("output/iron_redox_correlation_fig.png", plot = iron_redox_correlation_fig, height = 8, width = 4.5)
+  
+phos_redox_correlation_fig =
+redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = redox_avg_mV, y = mean_p_ug_m_l, color = depth_cm, group = depth_cm), size = 3, alpha = 0.9)+
+  scale_color_manual(values=pnw_palette("Lake", 3))+
+  scale_fill_manual(values=pnw_palette("Lake", 3))+
+  labs(x = "redox potential, mV",
+       y = "Phosphorus, ug/ml",
+       fill = "depth, cm",
+       color = "depth, cm")+
+  facet_grid(position~site)+
+  theme_er1()
+
+ggsave("output/phosphorus_redox_correlation_fig.png", plot = phos_redox_correlation_fig, height = 8, width = 4.5)
+
+mn_redox_correlation_fig =
+redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = redox_avg_mV, y = mean_mn_ug_m_l, color = depth_cm, group = depth_cm), size = 3, alpha = 0.9)+
+  labs(x = "redox potential, mV",
+       y = "Manganese, ug/ml",
+       fill = "depth, cm",
+       color = "depth, cm")+
+  scale_color_manual(values=pnw_palette("Lake", 3))+
+  scale_fill_manual(values=pnw_palette("Lake", 3))+
+  facet_grid(position~site)+
+  theme_er1()
+
+ggsave("output/manganese_redox_correlation_fig.png", plot = mn_redox_correlation_fig, height = 8, width = 4.5)
+
 
 Fe_fig =  
   processed_ICP %>% 
