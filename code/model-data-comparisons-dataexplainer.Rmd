@@ -19,7 +19,7 @@ This is a data explainer that pulls in the necessary data files as well
 as associated cleaning and grouping functions. Functions can be edited
 in the "code/functions_for_modeldatacomparisons_dataexplainer.R" script.
 
-## Known Issues
+### Known Issues
 
 -   There are two types of information associated sample location: the
     moisture conditions and the tundra type. Sometimes the tundra type
@@ -37,7 +37,7 @@ in the "code/functions_for_modeldatacomparisons_dataexplainer.R" script.
     tundra. This issue is the result of my data processing being focused
     on the figures/tables as output.
 
-## Missing Data
+### Missing Data
 
 I will add in the following datasets as we get them
 
@@ -51,7 +51,10 @@ I need to add in the following datasets that we do have
 
 -   pH of porewater
 
-## Source Packages and Functions
+
+## Data Input and Processing
+
+### Source Packages and Functions
 
 ```{r, warning=FALSE,message=FALSE,error=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -60,10 +63,11 @@ source("code/0-packages.R")
 source("code/functions_for_modeldatacomparisons_dataexplainer.R")
 ```
 
-## Sensor Data
+### Sensor Data
 
-Redox data with artifacts and frozen values removed and with hydrogen
-electrode correction
+#### Redox data 
+
+artifacts and frozen values removed and with hydrogen electrode correction
 
 ```{r}
 knitr::opts_chunk$set(echo = TRUE)
@@ -73,15 +77,16 @@ redox_withdepths2021 = read.csv("processed/allcombine_2021_frozen.csv")
 
 ```
 
-Moisture, Temperature, and Salinity data with artifacts and frozen
-values removed and with hydrogen electrode correction
+#### Moisture, Temperature, and Salinity 
+
+data with artifacts and frozen values removed and with hydrogen electrode correction
 
 ```{r}
 temp_sal_moist2021 = read.csv("processed/final_temp_salinity_avgs.csv")
 temp_sal_moist2022 = read.csv("processed/2022final_temp_salinity_avgs.csv")
 ```
 
-Soil properties
+#### Soil properties
 
 ```{r}
 thaw_depths = read.csv("raw/thaw_depth_2021.csv")
@@ -91,7 +96,7 @@ bd_grav = read.csv("raw/PhIr2021_Soil_Inventory_bd.csv")
 bulkdensity_tableoutput = read.csv("output/bd_grouped.csv")
 ```
 
-## Porewater Data
+### Porewater Data
 
 All porewater data below is in a long format. I can include a function
 for pivoting wider if that's helpful.
@@ -104,9 +109,9 @@ porewater_ICP_2021 = read.csv("processed/rhizon_2021.csv")
 
 ```
 
-## Cleaning functions
+### Cleaning functions
 
-Redox cleaning
+#### Redox cleaning
 
 ```{r}
 #remove frozen data
@@ -122,7 +127,7 @@ redox_unfrozen_2022 = redox_2022_groupbytemporal_function(redox_unfrozen_2022)
 
 ```
 
-Moisture, Temperature, Salinity Cleaning
+#### Moisture, Temperature, Salinity Cleaning
 
 ```{r}
 
@@ -137,7 +142,7 @@ moisturetempsal2022_grouped = moisturetempsal_2022_groupfunction(moisturetempsal
 
 ```
 
-Soil properties cleaning
+#### Soil properties cleaning
 
 ```{r}
 

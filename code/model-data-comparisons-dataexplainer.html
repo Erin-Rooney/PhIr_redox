@@ -369,9 +369,8 @@ display: none;
 well as associated cleaning and grouping functions. Functions can be
 edited in the “code/functions_for_modeldatacomparisons_dataexplainer.R”
 script.</p>
-</div>
-<div id="known-issues" class="section level2">
-<h2>Known Issues</h2>
+<div id="known-issues" class="section level3">
+<h3>Known Issues</h3>
 <ul>
 <li><p>There are two types of information associated sample location:
 the moisture conditions and the tundra type. Sometimes the tundra type
@@ -388,8 +387,8 @@ This issue is the result of my data processing being focused on the
 figures/tables as output.</p></li>
 </ul>
 </div>
-<div id="missing-data" class="section level2">
-<h2>Missing Data</h2>
+<div id="missing-data" class="section level3">
+<h3>Missing Data</h3>
 <p>I will add in the following datasets as we get them</p>
 <ul>
 <li><p>Ferrous iron</p></li>
@@ -400,42 +399,56 @@ figures/tables as output.</p></li>
 <ul>
 <li>pH of porewater</li>
 </ul>
-<p>Source Packages</p>
+</div>
+</div>
+<div id="data-input-and-processing" class="section level2">
+<h2>Data Input and Processing</h2>
+<div id="source-packages-and-functions" class="section level3">
+<h3>Source Packages and Functions</h3>
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 
 source(&quot;code/0-packages.R&quot;)
 source(&quot;code/functions_for_modeldatacomparisons_dataexplainer.R&quot;)</code></pre>
 </div>
-<div id="sensor-data" class="section level2">
-<h2>Sensor Data</h2>
-<p>Redox data with artifacts and frozen values removed and with hydrogen
-electrode correction</p>
+<div id="sensor-data" class="section level3">
+<h3>Sensor Data</h3>
+<div id="redox-data" class="section level4">
+<h4>Redox data</h4>
+<p>artifacts and frozen values removed and with hydrogen electrode
+correction</p>
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 
 redox_withdepths2022 = read.csv(&quot;processed/allcombine_2022_frozen.csv&quot;)
 redox_withdepths2021 = read.csv(&quot;processed/allcombine_2021_frozen.csv&quot;)</code></pre>
-<p>Moisture, Temperature, and Salinity data with artifacts and frozen
-values removed and with hydrogen electrode correction</p>
+</div>
+<div id="moisture-temperature-and-salinity" class="section level4">
+<h4>Moisture, Temperature, and Salinity</h4>
+<p>data with artifacts and frozen values removed and with hydrogen
+electrode correction</p>
 <pre class="r"><code>temp_sal_moist2021 = read.csv(&quot;processed/final_temp_salinity_avgs.csv&quot;)
 temp_sal_moist2022 = read.csv(&quot;processed/2022final_temp_salinity_avgs.csv&quot;)</code></pre>
-<p>Soil properties</p>
+</div>
+<div id="soil-properties" class="section level4">
+<h4>Soil properties</h4>
 <pre class="r"><code>thaw_depths = read.csv(&quot;raw/thaw_depth_2021.csv&quot;)
 
 bd_grav = read.csv(&quot;raw/PhIr2021_Soil_Inventory_bd.csv&quot;) 
 
 bulkdensity_tableoutput = read.csv(&quot;output/bd_grouped.csv&quot;)</code></pre>
 </div>
-<div id="porewater-data" class="section level2">
-<h2>Porewater Data</h2>
+</div>
+<div id="porewater-data" class="section level3">
+<h3>Porewater Data</h3>
 <p>All porewater data below is in a long format. I can include a
 function for pivoting wider if that’s helpful.</p>
 <pre class="r"><code>porewater_ICP_2022 = read.csv(&quot;processed/ICP_2022.csv&quot;)
 
 porewater_ICP_2021 = read.csv(&quot;processed/rhizon_2021.csv&quot;)</code></pre>
 </div>
-<div id="cleaning-functions" class="section level2">
-<h2>Cleaning functions</h2>
-<p>Redox cleaning</p>
+<div id="cleaning-functions" class="section level3">
+<h3>Cleaning functions</h3>
+<div id="redox-cleaning" class="section level4">
+<h4>Redox cleaning</h4>
 <pre class="r"><code>#remove frozen data
 redox_unfrozen_2021 = redox2021_remove_frozenpoints_function(redox_withdepths2021)
   
@@ -449,7 +462,9 @@ redox_grouped_2021 = redox_2021_groupbytemporal_function(redox_unfrozen_2021)</c
 <pre class="r"><code>redox_unfrozen_2022 = redox_2022_groupbytemporal_function(redox_unfrozen_2022)</code></pre>
 <pre><code>## `summarise()` has grouped output by &#39;site&#39;, &#39;position&#39;, &#39;depth_cm&#39;. You can
 ## override using the `.groups` argument.</code></pre>
-<p>Moisture, Temperature, Salinity Cleaning</p>
+</div>
+<div id="moisture-temperature-salinity-cleaning" class="section level4">
+<h4>Moisture, Temperature, Salinity Cleaning</h4>
 <pre class="r"><code>#clean up dates, note data as frozen if below -1 C
 moisturetempsal2021_cleaned = moisturetempsal_2021_cleaningfunction(temp_sal_moist2021)
 moisturetempsal2022_cleaned = moisturetempsal_2022_cleaningfunction(temp_sal_moist2022)
@@ -462,12 +477,16 @@ moisturetempsal2021_grouped = moisturetempsal_2021_groupfunction(moisturetempsal
 <pre class="r"><code>moisturetempsal2022_grouped = moisturetempsal_2022_groupfunction(moisturetempsal2022_cleaned)</code></pre>
 <pre><code>## `summarise()` has grouped output by &#39;site&#39;, &#39;position&#39;, &#39;depth_cm&#39;. You can
 ## override using the `.groups` argument.</code></pre>
-<p>Soil properties cleaning</p>
+</div>
+<div id="soil-properties-cleaning" class="section level4">
+<h4>Soil properties cleaning</h4>
 <pre class="r"><code>#clean up data, rename areas for consistency, calculate volumetric moisture, simplify soil material type
 bd_cleaned = soil_properties_cleaningfunction(bd_grav)
 
 #select only necessary columns, simplify date-plot labels, set levels for material/horizons and date-plots
 bd_select = soil_properties_selectfunction(bd_cleaned)</code></pre>
+</div>
+</div>
 </div>
 <div id="data-output" class="section level2">
 <h2>Data Output</h2>
