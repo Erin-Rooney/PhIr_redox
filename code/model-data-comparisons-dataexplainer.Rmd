@@ -123,7 +123,7 @@ redox_unfrozen_2022 = redox2022_remove_frozenpoints_function(redox_withdepths202
   
 redox_grouped_2021 = redox_2021_groupbytemporal_function(redox_unfrozen_2021)
 
-redox_unfrozen_2022 = redox_2022_groupbytemporal_function(redox_unfrozen_2022)
+redox_grouped_2022 = redox_2022_groupbytemporal_function(redox_unfrozen_2022)
 
 ```
 
@@ -160,8 +160,9 @@ I usually analyze the data in the same script where I'm doing data
 processing and cleaning, so these grouped and cleaned datasets do not
 always have corresponding output files (other than the figures and
 tables). I think the best approach is to create a modeling data folder
-with output files from this data explainer. It will take some
-communication (I'll have to let you know if there are any changes to
+with output files from this data explainer (see below code chunk). 
+
+It will take some communication (I'll have to let you know if there are any changes to
 processing code or data files so that you can re-run this markdown
 file). But this file is helpful to me to because it simplifies the
 processing that I'm doing which will be helpful for visitors to my
@@ -169,24 +170,44 @@ repository. So I have a vested interest in keeping it up to date.
 Another option is for me to figure out how to combine markdown file with
 a Drake outline, but I'm not at that stage yet.
 
-I'm leaving the code to write the csv files commented out and just the
-general format in place. Feel free to fill in as needed depending on
-whichever file you want.
 
 ```{r}
 
 #Redox
 
-#write.csv(, "modeling-date-outputfiles/.csv")
-#write.csv(, "modeling-date-outputfiles/.csv")
+write.csv(redox_withdepths2021, "modeling-data-output-files/redox_withdepths2021.csv")
+write.csv(redox_withdepths2022, "modeling-data-output-files/redox_withdepths2022.csv")
 
-#Moisture
+write.csv(redox_unfrozen_2021, "modeling-data-output-files/redox_unfrozen_2021.csv")
+write.csv(redox_unfrozen_2022, "modeling-data-output-files/redox_unfrozen_2022.csv")
 
-#write.csv(, "modeling-date-outputfiles/.csv")
-#write.csv(, "modeling-date-outputfiles/.csv")
+write.csv(redox_grouped_2021, "modeling-data-output-files/redox_grouped_2021.csv")
+write.csv(redox_grouped_2022, "modeling-data-output-files/redox_grouped_2022.csv")
+
+
+
+#Moisture Temperature Salinity
+write.csv(temp_sal_moist2021, "modeling-data-output-files/temp_sal_moist2021.csv")
+write.csv(temp_sal_moist2022, "modeling-data-output-files/temp_sal_moist2022.csv")
+
+write.csv(moisturetempsal2021_cleaned, "modeling-data-output-files/moisturetempsal2021_cleaned.csv")
+write.csv(moisturetempsal2022_cleaned, "modeling-data-output-files/moisturetempsal2022_cleaned.csv")
+
+write.csv(moisturetempsal2021_grouped, "modeling-data-output-files/moisturetempsal2021_grouped.csv")
+write.csv(moisturetempsal2022_grouped, "modeling-data-output-files/moisturetempsal2022_grouped.csv")
+
+
+
+
+#Porewater data
+write.csv(porewater_ICP_2021, "modeling-data-output-files/porewater_ICP_2021.csv")
+write.csv(porewater_ICP_2022, "modeling-data-output-files/porewater_ICP_2022.csv")
+
 
 #Soil Properties
 
-#write.csv(, "modeling-date-outputfiles/.csv")
-#write.csv(, "modeling-date-outputfiles/.csv")
+write.csv(thaw_depths, "modeling-data-output-files/thaw_depths.csv")
+write.csv(bd_grav, "modeling-data-output-files/bd_grav.csv")
+write.csv(bulkdensity_tableoutput, "modeling-data-output-files/bulkdensity_tableoutput.csv")
+
 ```

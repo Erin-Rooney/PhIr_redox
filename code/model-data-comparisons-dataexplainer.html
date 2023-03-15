@@ -459,7 +459,7 @@ redox_unfrozen_2022 = redox2022_remove_frozenpoints_function(redox_withdepths202
 redox_grouped_2021 = redox_2021_groupbytemporal_function(redox_unfrozen_2021)</code></pre>
 <pre><code>## `summarise()` has grouped output by &#39;site&#39;, &#39;position&#39;, &#39;depth_cm&#39;. You can
 ## override using the `.groups` argument.</code></pre>
-<pre class="r"><code>redox_unfrozen_2022 = redox_2022_groupbytemporal_function(redox_unfrozen_2022)</code></pre>
+<pre class="r"><code>redox_grouped_2022 = redox_2022_groupbytemporal_function(redox_unfrozen_2022)</code></pre>
 <pre><code>## `summarise()` has grouped output by &#39;site&#39;, &#39;position&#39;, &#39;depth_cm&#39;. You can
 ## override using the `.groups` argument.</code></pre>
 </div>
@@ -494,31 +494,50 @@ bd_select = soil_properties_selectfunction(bd_cleaned)</code></pre>
 processing and cleaning, so these grouped and cleaned datasets do not
 always have corresponding output files (other than the figures and
 tables). I think the best approach is to create a modeling data folder
-with output files from this data explainer. It will take some
-communication (I’ll have to let you know if there are any changes to
-processing code or data files so that you can re-run this markdown
-file). But this file is helpful to me to because it simplifies the
-processing that I’m doing which will be helpful for visitors to my
-repository. So I have a vested interest in keeping it up to date.
-Another option is for me to figure out how to combine markdown file with
-a Drake outline, but I’m not at that stage yet.</p>
-<p>I’m leaving the code to write the csv files commented out and just
-the general format in place. Feel free to fill in as needed depending on
-whichever file you want.</p>
+with output files from this data explainer (see below code chunk).</p>
+<p>It will take some communication (I’ll have to let you know if there
+are any changes to processing code or data files so that you can re-run
+this markdown file). But this file is helpful to me to because it
+simplifies the processing that I’m doing which will be helpful for
+visitors to my repository. So I have a vested interest in keeping it up
+to date. Another option is for me to figure out how to combine markdown
+file with a Drake outline, but I’m not at that stage yet.</p>
 <pre class="r"><code>#Redox
 
-#write.csv(, &quot;modeling-date-outputfiles/.csv&quot;)
-#write.csv(, &quot;modeling-date-outputfiles/.csv&quot;)
+write.csv(redox_withdepths2021, &quot;modeling-data-output-files/redox_withdepths2021.csv&quot;)
+write.csv(redox_withdepths2022, &quot;modeling-data-output-files/redox_withdepths2022.csv&quot;)
 
-#Moisture
+write.csv(redox_unfrozen_2021, &quot;modeling-data-output-files/redox_unfrozen_2021.csv&quot;)
+write.csv(redox_unfrozen_2022, &quot;modeling-data-output-files/redox_unfrozen_2022.csv&quot;)
 
-#write.csv(, &quot;modeling-date-outputfiles/.csv&quot;)
-#write.csv(, &quot;modeling-date-outputfiles/.csv&quot;)
+write.csv(redox_grouped_2021, &quot;modeling-data-output-files/redox_grouped_2021.csv&quot;)
+write.csv(redox_grouped_2022, &quot;modeling-data-output-files/redox_grouped_2022.csv&quot;)
+
+
+
+#Moisture Temperature Salinity
+write.csv(temp_sal_moist2021, &quot;modeling-data-output-files/temp_sal_moist2021.csv&quot;)
+write.csv(temp_sal_moist2022, &quot;modeling-data-output-files/temp_sal_moist2022.csv&quot;)
+
+write.csv(moisturetempsal2021_cleaned, &quot;modeling-data-output-files/moisturetempsal2021_cleaned.csv&quot;)
+write.csv(moisturetempsal2022_cleaned, &quot;modeling-data-output-files/moisturetempsal2022_cleaned.csv&quot;)
+
+write.csv(moisturetempsal2021_grouped, &quot;modeling-data-output-files/moisturetempsal2021_grouped.csv&quot;)
+write.csv(moisturetempsal2022_grouped, &quot;modeling-data-output-files/moisturetempsal2022_grouped.csv&quot;)
+
+
+
+
+#Porewater data
+write.csv(porewater_ICP_2021, &quot;modeling-data-output-files/porewater_ICP_2021.csv&quot;)
+write.csv(porewater_ICP_2022, &quot;modeling-data-output-files/porewater_ICP_2022.csv&quot;)
+
 
 #Soil Properties
 
-#write.csv(, &quot;modeling-date-outputfiles/.csv&quot;)
-#write.csv(, &quot;modeling-date-outputfiles/.csv&quot;)</code></pre>
+write.csv(thaw_depths, &quot;modeling-data-output-files/thaw_depths.csv&quot;)
+write.csv(bd_grav, &quot;modeling-data-output-files/bd_grav.csv&quot;)
+write.csv(bulkdensity_tableoutput, &quot;modeling-data-output-files/bulkdensity_tableoutput.csv&quot;)</code></pre>
 </div>
 
 
