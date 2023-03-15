@@ -1,0 +1,187 @@
+---
+title: "Model-Data Comparisons"
+author: "Erin C Rooney"
+date: "2023-03-15"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE, results="hide"}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## Welcome
+
+This is a data explainer that pulls in the necessary data files as well
+as associated cleaning and grouping functions. Functions can be edited
+in the "code/functions_for_modeldatacomparisons_dataexplainer.R" script.
+
+## Known Issues
+
+-   There are two types of information associated sample location: the
+    moisture conditions and the tundra type. Sometimes the tundra type
+    (non-acidic or acidic) is referred to as "area" and sometimes it's
+    referred to as "site." Similarly, moisture conditions (dry, mesic,
+    and hydric) are sometimes called "site" and sometimes called
+    "position".
+
+-   There are issues with capitalization. If dataframes aren't
+    combining, it's a good chance that the issue is "Dry" and "dry"
+    being unable to merge.
+
+-   Sometimes tundra types are referred to as "west" and "east". West
+    corresponds to non-acidic tundra and east corresponds to acidic
+    tundra. This issue is the result of my data processing being focused
+    on the figures/tables as output.
+
+## Missing Data
+
+I will add in the following datasets as we get them
+
+-   Ferrous iron
+
+-   Soil texture
+
+-   rhizon ICP data for 2022
+
+I need to add in the following datasets that we do have
+
+-   pH of porewater
+
+Source Packages
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE)
+
+source("code/0-packages.R")
+source("code/functions_for_modeldatacomparisons_dataexplainer.R")
+```
+
+## Sensor Data
+
+Redox data with artifacts and frozen values removed and with hydrogen
+electrode correction
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+
+redox_withdepths2022 = read.csv("processed/allcombine_2022_frozen.csv")
+redox_withdepths2021 = read.csv("processed/allcombine_2021_frozen.csv")
+
+```
+
+Moisture, Temperature, and Salinity data with artifacts and frozen
+values removed and with hydrogen electrode correction
+
+```{r}
+temp_sal_moist2021 = read.csv("processed/final_temp_salinity_avgs.csv")
+temp_sal_moist2022 = read.csv("processed/2022final_temp_salinity_avgs.csv")
+```
+
+Soil properties
+
+```{r}
+thaw_depths = read.csv("raw/thaw_depth_2021.csv")
+
+bd_grav = read.csv("raw/PhIr2021_Soil_Inventory_bd.csv") 
+
+bulkdensity_tableoutput = read.csv("output/bd_grouped.csv")
+```
+
+## Porewater Data
+
+All porewater data below is in a long format. I can include a function
+for pivoting wider if that's helpful.
+
+```{r}
+
+porewater_ICP_2022 = read.csv("processed/ICP_2022.csv")
+
+porewater_ICP_2021 = read.csv("processed/rhizon_2021.csv")
+
+```
+
+## Cleaning functions
+
+Redox cleaning
+
+```{r}
+#remove frozen data
+redox_unfrozen_2021 = redox2021_remove_frozenpoints_function(redox_withdepths2021)
+  
+redox_unfrozen_2022 = redox2022_remove_frozenpoints_function(redox_withdepths2022)
+  
+#group by season
+  
+redox_grouped_2021 = redox_2021_groupbytemporal_function(redox_unfrozen_2021)
+
+redox_unfrozen_2022 = redox_2022_groupbytemporal_function(redox_unfrozen_2022)
+
+```
+
+Moisture, Temperature, Salinity Cleaning
+
+```{r}
+
+#clean up dates, note data as frozen if below -1 C
+moisturetempsal2021_cleaned = moisturetempsal_2021_cleaningfunction(temp_sal_moist2021)
+moisturetempsal2022_cleaned = moisturetempsal_2022_cleaningfunction(temp_sal_moist2022)
+
+#grouped temporal data
+
+moisturetempsal2021_grouped = moisturetempsal_2021_groupfunction(moisturetempsal2021_cleaned)
+moisturetempsal2022_grouped = moisturetempsal_2022_groupfunction(moisturetempsal2022_cleaned)
+
+```
+
+Soil properties cleaning
+
+```{r}
+
+#clean up data, rename areas for consistency, calculate volumetric moisture, simplify soil material type
+bd_cleaned = soil_properties_cleaningfunction(bd_grav)
+
+#select only necessary columns, simplify date-plot labels, set levels for material/horizons and date-plots
+bd_select = soil_properties_selectfunction(bd_cleaned)
+
+```
+
+## Data Output
+
+I usually analyze the data in the same script where I'm doing data
+processing and cleaning, so these grouped and cleaned datasets do not
+always have corresponding output files (other than the figures and
+tables). I think the best approach is to create a modeling data folder
+with output files from this data explainer. It will take some
+communication (I'll have to let you know if there are any changes to
+processing code or data files so that you can re-run this markdown
+file). But this file is helpful to me to because it simplifies the
+processing that I'm doing which will be helpful for visitors to my
+repository. So I have a vested interest in keeping it up to date.
+Another option is for me to figure out how to combine markdown file with
+a Drake outline, but I'm not at that stage yet.
+
+I'm leaving the code to write the csv files commented out and just the
+general format in place. Feel free to fill in as needed depending on
+whichever file you want.
+
+```{r}
+
+#Redox
+
+#write.csv(, "modeling-date-outputfiles/.csv")
+#write.csv(, "modeling-date-outputfiles/.csv")
+
+#Moisture
+
+#write.csv(, "modeling-date-outputfiles/.csv")
+#write.csv(, "modeling-date-outputfiles/.csv")
+
+#Soil Properties
+
+#write.csv(, "modeling-date-outputfiles/.csv")
+#write.csv(, "modeling-date-outputfiles/.csv")
+```
