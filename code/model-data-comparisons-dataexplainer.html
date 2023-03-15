@@ -401,84 +401,19 @@ figures/tables as output.</p></li>
 <li>pH of porewater</li>
 </ul>
 <p>Source Packages</p>
-<pre class="r"><code>knitr::opts_chunk$set(echo = FALSE)
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
 
-source(&quot;code/0-packages.R&quot;)</code></pre>
-<pre><code>## Warning: package &#39;agricolae&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --</code></pre>
-<pre><code>## v ggplot2 3.3.6     v purrr   0.3.4
-## v tibble  3.1.8     v dplyr   1.0.7
-## v tidyr   1.2.0     v stringr 1.4.0
-## v readr   2.1.2     v forcats 0.5.1</code></pre>
-<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## Warning: package &#39;readr&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## Warning: package &#39;forcats&#39; was built under R version 4.0.3</code></pre>
-<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre><code>## Warning: package &#39;PairedData&#39; was built under R version 4.0.3</code></pre>
-<pre><code>## Loading required package: MASS</code></pre>
-<pre><code>## 
-## Attaching package: &#39;MASS&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
-## 
-##     select</code></pre>
-<pre><code>## Loading required package: gld</code></pre>
-<pre><code>## Loading required package: mvtnorm</code></pre>
-<pre><code>## Warning: package &#39;mvtnorm&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## Loading required package: lattice</code></pre>
-<pre><code>## 
-## Attaching package: &#39;PairedData&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:base&#39;:
-## 
-##     summary</code></pre>
-<pre><code>## Warning: package &#39;ggpubr&#39; was built under R version 4.0.3</code></pre>
-<pre><code>## Warning: package &#39;ggthemes&#39; was built under R version 4.0.3</code></pre>
-<pre><code>## Warning: package &#39;drake&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## 
-## Attaching package: &#39;drake&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
-## 
-##     expand, gather</code></pre>
-<pre><code>## Warning: package &#39;PNWColors&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## Warning: package &#39;patchwork&#39; was built under R version 4.0.3</code></pre>
-<pre><code>## 
-## Attaching package: &#39;patchwork&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:MASS&#39;:
-## 
-##     area</code></pre>
-<pre><code>## Warning: package &#39;cowplot&#39; was built under R version 4.0.3</code></pre>
-<pre><code>## 
-## Attaching package: &#39;cowplot&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:patchwork&#39;:
-## 
-##     align_plots</code></pre>
-<pre><code>## The following object is masked from &#39;package:ggthemes&#39;:
-## 
-##     theme_map</code></pre>
-<pre><code>## The following object is masked from &#39;package:ggpubr&#39;:
-## 
-##     get_legend</code></pre>
-<pre><code>## Registered S3 method overwritten by &#39;NatParksPalettes&#39;:
-##   method        from        
-##   print.palette soilpalettes</code></pre>
-<pre><code>## Warning: package &#39;lubridate&#39; was built under R version 4.0.5</code></pre>
-<pre><code>## 
-## Attaching package: &#39;lubridate&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:cowplot&#39;:
-## 
-##     stamp</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     date, intersect, setdiff, union</code></pre>
-<pre class="r"><code>source(&quot;code/functions_for_modeldatacomparisons_dataexplainer.R&quot;)</code></pre>
+source(&quot;code/0-packages.R&quot;)
+source(&quot;code/functions_for_modeldatacomparisons_dataexplainer.R&quot;)</code></pre>
 </div>
 <div id="sensor-data" class="section level2">
 <h2>Sensor Data</h2>
 <p>Redox data with artifacts and frozen values removed and with hydrogen
 electrode correction</p>
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE)
+
+redox_withdepths2022 = read.csv(&quot;processed/allcombine_2022_frozen.csv&quot;)
+redox_withdepths2021 = read.csv(&quot;processed/allcombine_2021_frozen.csv&quot;)</code></pre>
 <p>Moisture, Temperature, and Salinity data with artifacts and frozen
 values removed and with hydrogen electrode correction</p>
 <pre class="r"><code>temp_sal_moist2021 = read.csv(&quot;processed/final_temp_salinity_avgs.csv&quot;)

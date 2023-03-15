@@ -8,7 +8,7 @@ editor_options:
     wrap: 72
 ---
 
-```{r setup, include=FALSE, results="hide"}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 ```
@@ -51,10 +51,10 @@ I need to add in the following datasets that we do have
 
 -   pH of porewater
 
-Source Packages
+## Source Packages and Functions
 
-```{r}
-knitr::opts_chunk$set(echo = FALSE)
+```{r, warning=FALSE,message=FALSE,error=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 
 source("code/0-packages.R")
 source("code/functions_for_modeldatacomparisons_dataexplainer.R")
