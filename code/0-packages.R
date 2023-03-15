@@ -19,6 +19,8 @@ library(patchwork)
 library(cowplot)
 library(NatParksPalettes)
 library(lubridate)
+library(lubridate)
+
 
 # functions 
 theme_er1 <- function() {  # this for all the elements common across plots

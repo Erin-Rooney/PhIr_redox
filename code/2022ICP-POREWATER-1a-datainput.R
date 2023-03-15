@@ -71,6 +71,8 @@ processed_ICP =
   vctrs::vec_c(processed_ICP_diluted) %>% 
   mutate(month = recode(month, "06" = "June", "07" = "July", "08" = "August", "09" = "September")) 
   
+write.csv(processed_ICP, "processed/ICP_2022.csv")
+
 
 processed_ICP_wider =
   processed_ICP %>% 
@@ -230,34 +232,204 @@ redox_nutrients_log_fig =
 redox_nutrients_leftjoin_longer %>% 
   filter(redox_avg_mV != "NA" & ICP %in% c("aluminum", "calcium", "iron", "phosphorus")) %>% 
   ggplot() +
-  geom_point(aes(x = redox_avg_mV, y = log(concentration), color = position, shape = site), size = 3, alpha = 0.75)+
+  geom_point(aes(x = redox_avg_mV, y = concentration, color = position, shape = site), size = 3, alpha = 0.75)+
   labs(x = "redox potential, mV",
        y = "concentration, ug, ml",
        fill = "element",
        color = "element")+
   scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
   scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
-  facet_wrap(ICP~., scales = "free_y")+
+  facet_grid(ICP~position, scales = "free_y")+
   theme_er1()+
   theme(legend.position = "right")
 
-ggsave("output/redox_nutrients_log_fig.png", plot = redox_nutrients_log_fig, height = 5, width = 8.5)
-
-#iron_redox_correlation_fig =
+fe_redox_figfacet =
 redox_nutrients_leftjoin %>% 
   filter(redox_avg_mV != "NA") %>% 
   ggplot() +
-  geom_point(aes(x = redox_avg_mV, y = log(mean_fe_ug_m_l), color = position, group = site), size = 3, alpha = 0.9)+
+  geom_point(aes(x = redox_avg_mV, y = mean_fe_ug_m_l, color = position, shape = site), size = 3, alpha = 0.75)+
   labs(x = "redox potential, mV",
-       y = "Iron, ug/ml",
-       fill = "site",
-       color = "site")+
-  scale_color_manual(values=pnw_palette("Sailboat", 3))+
-  scale_fill_manual(values=pnw_palette("Sailboat", 3))+
-  facet_grid(.~site)+
+       y = "iron ug, ml"
+       )+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  facet_wrap(position~site, scales = "free_y")+
+  theme_er1()+
+  theme(legend.position = "bottom")
+
+mn_redox_figfacet =
+redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = redox_avg_mV, y = mean_mn_ug_m_l, color = position, shape = site), size = 3, alpha = 0.75)+
+  labs(x = "redox potential, mV",
+       y = "manganese ug, ml"
+  )+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  facet_wrap(position~site, scales = "free_y")+
+  theme_er1()+
+  theme(legend.position = "bottom")
+
+p_redox_figfacet =
+  redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = redox_avg_mV, y = mean_p_ug_m_l, color = position, shape = site), size = 3, alpha = 0.75)+
+  labs(x = "redox potential, mV",
+       y = "phosphorus ug, ml"
+  )+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  facet_wrap(position~site, scales = "free_y")+
+  theme_er1()+
+  theme(legend.position = "bottom")
+
+p_date_figfacet =
+  redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = date2, y = mean_p_ug_m_l, color = position, shape = site), size = 3, alpha = 0.75)+
+  labs(x = "redox potential, mV",
+       y = "phosphorus ug, ml"
+  )+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  facet_wrap(position~site, scales = "free_y")+
+  theme_er1()+
+  theme(legend.position = "bottom")
+
+ggsave("output/p_date_figfacet.png", plot = p_date_figfacet, height = 5.5, width = 8)
+ggsave("output/p_redox_figfacet.png", plot = p_redox_figfacet, height = 5.5, width = 8)
+ggsave("output/fe_redox_figfacet.png", plot = fe_redox_figfacet, height = 5.5, width = 8)
+ggsave("output/mn_redox_figfacet.png", plot = mn_redox_figfacet, height = 5.5, width = 8)
+
+
+ggsave("output/redox_nutrients_log_fig.png", plot = redox_nutrients_log_fig, height = 7, width = 10)
+
+#iron_redox_correlation_fig =
+fe_p_correlation_log =
+redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = log(mean_fe_ug_m_l), y = log(mean_p_ug_m_l), color = redox_avg_mV, group = redox_avg_mV), size = 3, alpha = 0.9)+
+  labs(x = "log, iron, ug/ml",
+       y = "log, phosphorus, ug/ml",
+       fill = "redox potential, mV",
+       color = "redox potential, mV")+
+  scale_color_gradientn(colors=pnw_palette("Bay"))+
+  scale_fill_gradientn(colors=pnw_palette("Bay"))+
+  #facet_grid(position~site, scales = "free")+
   theme_er1()
 
-ggsave("output/iron_redox_correlation_fig.png", plot = iron_redox_correlation_fig, height = 8, width = 4.5)
+
+ggsave("output/fe_p_correlation_log.png", plot = fe_p_correlation_log, height = 4.5, width = 5)
+
+fe_p_correlation = 
+redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = mean_fe_ug_m_l, y = mean_p_ug_m_l, color = redox_avg_mV, group = redox_avg_mV), size = 3, alpha = 0.9)+
+  labs(x = "iron, ug/ml",
+       y = "phosphorus, ug/ml",
+       fill = "redox potential, mV",
+       color = "redox potential, mV")+
+  scale_color_gradientn(colors=pnw_palette("Bay"))+
+  scale_fill_gradientn(colors=pnw_palette("Bay"))+
+  facet_grid(position~site, scales = "free")+
+  theme_er1()
+
+ggsave("output/fe_p_correlation.png", plot = fe_p_correlation, height = 7, width = 4.5)
+
+
+ca_p_correlation_log =
+redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = log(mean_ca_ug_m_l), y = log(mean_p_ug_m_l), color = redox_avg_mV, group = redox_avg_mV), size = 3, alpha = 0.9)+
+  labs(x = "log, calcium, ug/ml",
+       y = "log, phosphorus, ug/ml",
+       fill = "redox potential, mV",
+       color = "redox potential, mV")+
+  scale_color_gradientn(colors=pnw_palette("Bay"))+
+  scale_fill_gradientn(colors=pnw_palette("Bay"))+
+  #facet_grid(position~site, scales = "free")+
+  theme_er1()
+
+ggsave("output/ca_p_correlation_log.png", plot = ca_p_correlation_log, height = 4.5, width = 5)
+
+
+ca_p_correlation =
+redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = mean_ca_ug_m_l, y = mean_p_ug_m_l, color = redox_avg_mV, group = redox_avg_mV), size = 3, alpha = 0.9)+
+  labs(x = "calcium, ug/ml",
+       y = "phosphorus, ug/ml",
+       fill = "redox potential, mV",
+       color = "redox potential, mV")+
+  scale_color_gradientn(colors=pnw_palette("Bay"))+
+  scale_fill_gradientn(colors=pnw_palette("Bay"))+
+  facet_grid(position~site, scales = "free")+
+  theme_er1()
+
+ggsave("output/ca_p_correlation.png", plot = ca_p_correlation, height = 7, width = 4.5)
+
+
+logal_p_correlation =
+redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = log(mean_al_ug_m_l), y = mean_p_ug_m_l, color = redox_avg_mV, group = redox_avg_mV), size = 3, alpha = 0.9)+
+  labs(x = "log, aluminum, ug/ml",
+       y = "phosphorus, ug/ml",
+       fill = "redox potential, mV",
+       color = "redox potential, mV")+
+  scale_color_gradientn(colors=pnw_palette("Bay"))+
+  scale_fill_gradientn(colors=pnw_palette("Bay"))+
+  #facet_grid(position~site, scales = "free")+
+  theme_er1()
+
+ggsave("output/logal_p_correlation.png", plot = logal_p_correlation, height = 4.5, width = 5)
+
+
+mn_fe_correlationlog =
+redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = log(mean_mn_ug_m_l), y = log(mean_fe_ug_m_l), color = redox_avg_mV, group = redox_avg_mV), size = 3, alpha = 0.9)+
+  labs(x = "log, manganese, ug/ml",
+       y = "log, iron, ug/ml",
+       fill = "redox potential, mV",
+       color = "redox potential, mV")+
+  scale_color_gradientn(colors=pnw_palette("Bay"))+
+  scale_fill_gradientn(colors=pnw_palette("Bay"))+
+  #facet_grid(position~site, scales = "free")+
+  theme_er1()
+
+ggsave("output/mn_fe_correlationlog.png", plot = mn_fe_correlationlog, height = 4.5, width = 5)
+
+
+mn_fe_correlation =
+redox_nutrients_leftjoin %>% 
+  filter(redox_avg_mV != "NA") %>% 
+  ggplot() +
+  geom_point(aes(x = mean_mn_ug_m_l, y = mean_fe_ug_m_l, color = redox_avg_mV, group = redox_avg_mV), size = 3, alpha = 0.9)+
+  labs(x = "manganese, ug/ml",
+       y = "iron, ug/ml",
+       fill = "redox potential, mV",
+       color = "redox potential, mV")+
+  scale_color_gradientn(colors=pnw_palette("Bay"))+
+  scale_fill_gradientn(colors=pnw_palette("Bay"))+
+  #facet_grid(position~site, scales = "free")+
+  theme_er1()
+
+ggsave("output/mn_fe_correlation.png", plot = mn_fe_correlation, height = 4.5, width = 5)
+
+
+
+
+#ggsave("output/iron_redox_correlation_fig.png", plot = iron_redox_correlation_fig, height = 8, width = 4.5)
   
 phos_redox_correlation_fig =
 redox_nutrients_leftjoin %>% 

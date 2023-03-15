@@ -33,8 +33,42 @@ bd_select =
                               "7-Aug-21" = "Plot-5")) %>% 
   mutate(label = paste0(date_simple, "-", Plot_num))  
   
-  
-  
+
+ncount =
+  bd_select %>% 
+  replace(is.na(.),"not analyzed")  %>% 
+  mutate(data = case_when(grepl("not analyzed", soil_bulk_density_g_cm3) ~ "not analyzed", TRUE ~ "analyzed")) %>% 
+  group_by(Area, Site, Date_collected, Core_ID, data) %>%
+  dplyr::summarise(n = n())
+
+ncount2 =
+  bd_select %>% 
+  replace(is.na(.),"not analyzed")  %>% 
+  mutate(data = case_when(grepl("not analyzed", soil_bulk_density_g_cm3) ~ "not analyzed", TRUE ~ "analyzed")) 
+
+write.csv(ncount2, "output/ncount2.csv")
+
+ncount_bd_vol =
+ncount %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric", "Transect"))) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  mutate(Date_collected = factor(Date_collected, levels = c("6-Jul-21", "7-Jul-21", "13-Jul-21", "14-Jul-21", "24-Jul-21", "30-Jul-21", 
+                                                            "31-Jul-21", "7-Aug-21"))) %>% 
+  ggplot()+
+  geom_col(aes(x = Date_collected, y = n, fill = data))+
+  scale_fill_manual(values = c("#efc3e6", "#b8bedd"))+
+  labs(x = "date collected",
+       y = "number of samples",
+       fill = "bulk density 
+& volumetric water")+
+  facet_grid(Site~Area, scales = "free")+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "top",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+ggsave("output/ncount_bd_vol.png", plot = ncount_bd_vol, height = 7, width = 4.5)
+
   
 horizons_acidic =
   bd_select %>% 
