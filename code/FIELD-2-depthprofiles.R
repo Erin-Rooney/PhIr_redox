@@ -215,7 +215,7 @@ bd_grouped =
                    sd_vwc = round(sd(volumetric_water_content_cm3_cm3),2)) %>% 
   mutate(bd_summary = paste(mean_bd, "\u00b1", sd_bd),
          vwc_summary = paste(mean_vwc, "\u00b1", sd_vwc)) %>% 
-  dplyr::select(c(Area, Site, Horizon, bd_summary, vwc_summary)) 
+  dplyr::select(c(Area, Site, Horizon, bd_summary, vwc_summary, mean_bd, sd_bd, mean_vwc, sd_vwc)) 
   
 
 bd_grouped %>% knitr::kable()

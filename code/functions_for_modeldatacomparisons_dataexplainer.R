@@ -155,8 +155,9 @@ moisturetempsal_2022_groupfunction = function(dat){
 
 #SOIL PROPERTIES-------------
 
-thaw_depths_cleaned =
-  thaw_depths %>% 
+thawdepths_2021_cleaningfunction = function(dat){
+  
+  dat %>% 
   dplyr::select(Date, Area, Site, Plot, Plot_ID, X1, X2, X3, X4, X5, X6, X7, X8, X9, X10,
                 X11, X12, X13, X14, X15) %>% 
   na.omit() %>% 
@@ -167,6 +168,7 @@ thaw_depths_cleaned =
   mutate(Area = recode(Area, "East" = "acidic tundra",
                        "West" = "non-acidic tundra")) %>% 
   mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) 
+}
 
 thawdepths_2022_cleaningfunction = function(dat){
   
@@ -189,26 +191,24 @@ thawdepths_2022_cleaningfunction = function(dat){
 
 
 soil_properties_cleaningfunction = function(dat){
-  
-bd_grav_cleaned = 
-    dat %>% 
+
+  dat %>% 
     mutate(Area = recode(Area, "East" = "acidic tundra",
                          "West" = "non-acidic tundra")) %>% 
     dplyr::mutate(soil_material = case_when(grepl("O",Horizon)~"organic",
                                             grepl("M",Horizon)~"mineral")) %>% 
-    mutate(volumetric_water_content_cm3_cm3 = soil_bulk_density_g_cm3 * grav_water_gh20_per_gdrysoil)   
+    mutate(volumetric_water_content_cm3_cm3 = soil_bulk_density_g_cm3 * grav_water_gh20_per_gdrysoil)   %>% 
+    dplyr::select(Sample_ID, Core_ID, Date_collected, Area, Site, Plot_num, Plot_ID, Horizon, soil_material, Average_Depth_cm, real_depth_cm, soil_bulk_density_g_cm3,
+           grav_moist_perc, grav_water_gh20_per_gdrysoil, volumetric_water_content_cm3_cm3) %>% 
+    rename(Average_thickness_cm = Average_Depth_cm)
   
 }
 
 
 
-soil_properties_selectfunction = function(dat){
-  
-bd_select = 
+soil_properties_groupingfunction = function(dat){
+
     dat %>% 
-    dplyr::select(Sample_ID, Core_ID, Date_collected, Area, Site, Plot_num, Plot_ID, 
-                  Horizon, Depth_1_cm, Depth_2_cm, Depth_3_cm, Depth_4_cm, Average_Depth_cm, real_depth_cm, 
-                  soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3, soil_material) %>% 
     mutate(label = Horizon) %>% 
     mutate(label = factor(label, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2"))) %>% 
     mutate(date_simple = recode(Date_collected, "6-Jul-21" = "Plot-1", "7-Jul-21" = "Plot-1",
@@ -216,9 +216,57 @@ bd_select =
                                 "24-Jul-21" = "Plot-3",
                                 "30-Jul-21" = "Plot-4", "31-Jul-21" = "Plot-4",
                                 "7-Aug-21" = "Plot-5")) %>% 
-    mutate(label = paste0(date_simple, "-", Plot_num))   
-  
+    mutate(label = paste0(date_simple, "-", Plot_num)) %>% 
+    filter(Site != "Transect") %>% 
+    mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+    mutate(Horizon = factor(Horizon, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2"))) %>% 
+    dplyr::select(c(Area, Site, Horizon, soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3)) %>% 
+    na.omit() %>% 
+    group_by(Area, Site, Horizon) %>% 
+    dplyr::summarise(mean_bd = round(mean(soil_bulk_density_g_cm3),2),
+                     sd_bd = round(sd(soil_bulk_density_g_cm3),2),
+                     mean_vwc = round(mean(volumetric_water_content_cm3_cm3),2),
+                     sd_vwc = round(sd(volumetric_water_content_cm3_cm3),2)) %>% 
+    dplyr::select(c(Area, Site, Horizon, mean_bd, sd_bd, mean_vwc, sd_vwc)) 
   
 }
  
 
+#Porewater data processing-------------
+
+rhizon_cleaningfunction = function(dat){
+dat %>% 
+  filter(Site != 'Transect') %>% 
+  mutate(ICP = recode(ICP, "Fe _ug/mL" = "Fe_ug/mL",
+                      "K _ug/mL" = "K_ug/mL")) %>% 
+  mutate(month = factor(month, levels = c("june", "july", "august")),
+         Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(concentration = recode(concentration, "<0.05" = "0.03",
+                                "<0.1" = "0.05")) %>% 
+  mutate(concentration = as.numeric(concentration)) 
+}
+
+sipper_cleaningfunction = function(dat){
+  
+  
+  
+}
+
+
+rhizon_groupingfunction = function(dat){
+  dat %>% 
+    group_by(Area, Site, month, Betterdate, ICP) %>% 
+    dplyr::summarise(mean = mean(concentration),
+                     n = n(), 
+                     sd = sd(concentration)/sqrt(n)) %>% 
+    na.omit() %>% 
+    mutate(combo = paste(Area, "-", Site)) %>% 
+    mutate(Area = as.factor(Area)) %>% 
+    mutate(month = factor(month, levels = c("june", "july", "august")),
+           Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+    na.omit() %>% 
+    mutate(area_site = paste(Area, Site, sep = "-")) 
+  
+  
+  
+}
