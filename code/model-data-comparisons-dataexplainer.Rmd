@@ -117,11 +117,16 @@ Everything must be run sequentially
 
 ```{r}
 #remove frozen data
+
+#avg_values_fixed = redox potential (mV)
+
 redox_unfrozen_2021 = redox2021_remove_frozenpoints_function(redox_withdepths2021)
   
 redox_unfrozen_2022 = redox2022_remove_frozenpoints_function(redox_withdepths2022)
   
 #group by season
+
+#redox_avg_mV = redox potential (mV)
   
 redox_grouped_2021 = redox_2021_groupbytemporal_function(redox_unfrozen_2021)
 

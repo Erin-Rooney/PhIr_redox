@@ -10,15 +10,10 @@
 redox2021_remove_frozenpoints_function = function(dat){
   
 dat %>% 
-    # mutate(keep = case_when(site == "non-acidic tundra" & position == "hydric" & probe == 1 ~ "keep",
-    #                         site == "acidic tundra" & position == "hydric" & probe == 3 ~ "keep",
-    #                         site == "non-acidic tundra" & position == "dry" & probe == 1 ~ "keep",
-    #                         site == "acidic tundra" & position == "dry" & probe == 1 ~ "keep",
-    #                         site == "acidic tundra" & position == "mesic" & probe == 1 ~ "keep",
-    #                         site == "non-acidic tundra" & position == "mesic" & probe == 3 ~ "keep")) %>%
     dplyr::mutate(keep = if_else(site == "non-acidic tundra" & position == "hydric" & depth_cm > 40 & Betterdate <= '2021-08-09 00:00', paste0("frozen"),"unfrozen")) %>% 
     filter(keep == "unfrozen") %>% 
-    mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) 
+    mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+    dplyr::select(TIMESTAMP, site, position, datalogger, probe, sensor, avg_values_fixed, Plot, depth_cm)
   
 }
  
@@ -27,7 +22,9 @@ redox2022_remove_frozenpoints_function = function(dat){
 dat %>% 
   dplyr::mutate(keep = if_else(site == "non-acidic tundra" & position == "dry" & depth_cm > 21 & Betterdate >= '2022-07-30 00:00', paste0("frozen"),"unfrozen")) %>% 
   filter(keep == "unfrozen") %>% 
-  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+    dplyr::select(TIMESTAMP, site, position, datalogger, probe, sensor, avg_values_fixed, Plot, depth_cm)
+  
 }
 
 
