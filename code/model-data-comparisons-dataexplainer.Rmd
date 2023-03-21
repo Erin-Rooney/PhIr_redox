@@ -177,6 +177,30 @@ moisturetempsal2022_cleaned = moisturetempsal_2022_cleaningfunction(temp_sal_moi
 moisturetempsal2021_grouped = moisturetempsal_2021_groupfunction(moisturetempsal2021_cleaned)
 moisturetempsal2022_grouped = moisturetempsal_2022_groupfunction(moisturetempsal2022_cleaned)
 
+ moisturetempsal2021_grouped %>%
+  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
+  geom_point(size = 4, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
+  geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE)+
+  scale_color_manual(values = (pnw_palette('Sunset', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
+  ylim(60, 0)+
+  labs(x = '2021
+       soil moisture (%)',
+       y = "depth (cm)",
+       color = "", fill = "")+
+  scale_x_continuous(position="top")+
+  facet_grid(position~site, switch = "x")+
+  theme_er1()+
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90)) 
+
 ```
 
 #### Soil properties cleaning

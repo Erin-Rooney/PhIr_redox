@@ -131,7 +131,11 @@ moisturetempsal_2021_groupfunction = function(dat){
   group_by(site, position, depth_cm, month) %>% 
   dplyr::summarise(moisture_avg = round(mean(moisture),2),
                    moisture_sd = round(sd(moisture),2),
-                   moisture_se = round(sd(moisture)/sqrt(n()),2))
+                   temp_avg = round(mean(temp),2),
+                   temp_sd = round(sd(temp),2),
+                   salinity_avg = round(mean(salinity),2),
+                   salinity_sd = round(sd(salinity),2)
+                   )
 }
 
 moisturetempsal_2022_groupfunction = function(dat){
@@ -143,7 +147,10 @@ moisturetempsal_2022_groupfunction = function(dat){
   group_by(site, position, depth_cm, month) %>% 
   dplyr::summarise(moisture_avg = round(mean(moisture),2),
                    moisture_sd = round(sd(moisture),2),
-                   moisture_se = round(sd(moisture)/sqrt(n()),2))
+                   temp_avg = round(mean(temp),2),
+                   temp_sd = round(sd(temp),2),
+                   salinity_avg = round(mean(salinity),2),
+                   salinity_sd = round(sd(salinity),2))
 }
 
 #SOIL PROPERTIES-------------
