@@ -47,9 +47,7 @@ dat %>%
                           "9" = "early fall")) %>% 
     group_by(site, position, depth_cm, month) %>% 
     dplyr::summarise(redox_avg_mV = round(mean(avg_values_fixed),2),
-                     redox_sd = round(sd(avg_values_fixed),2),
-                     redox_se = round(sd(avg_values_fixed)/sqrt(n()),2),
-                     redox_sd2 = (redox_sd)/2) %>% 
+                     redox_sd = round(sd(avg_values_fixed),2)) %>% 
     mutate(year = 2022)
   
 }
@@ -71,9 +69,9 @@ dat %>%
                         "9" = "early fall")) %>% 
   group_by(site, position, depth_cm, month) %>% 
   dplyr::summarise(redox_avg_mV = round(mean(avg_values_fixed),2),
-                   redox_sd = round(sd(avg_values_fixed),2),
-                   redox_se = round(sd(avg_values_fixed)/sqrt(n()),2),
-                   redox_sd2 = (redox_sd)/2)
+                   redox_sd = round(sd(avg_values_fixed),2)) %>% 
+    mutate(year = 2021)
+  
 }
 
 

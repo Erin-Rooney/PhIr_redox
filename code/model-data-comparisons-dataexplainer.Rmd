@@ -113,6 +113,8 @@ porewater_ICP_2021 = read.csv("processed/rhizon_2021.csv")
 
 #### Redox cleaning
 
+Everything must be run sequentially 
+
 ```{r}
 #remove frozen data
 redox_unfrozen_2021 = redox2021_remove_frozenpoints_function(redox_withdepths2021)
@@ -124,6 +126,36 @@ redox_unfrozen_2022 = redox2022_remove_frozenpoints_function(redox_withdepths202
 redox_grouped_2021 = redox_2021_groupbytemporal_function(redox_unfrozen_2021)
 
 redox_grouped_2022 = redox_2022_groupbytemporal_function(redox_unfrozen_2022)
+
+# figure test
+
+redox_grouped_2021 %>% 
+  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
+  geom_point(size = 3, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
+  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+  scale_color_manual(values = (pnw_palette('Sunset', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
+  ylim(60, 0)+
+  labs(x = '2021
+       redox potential (mV)',
+       y = "",
+       color = "", fill = "")+
+  scale_x_continuous(position="top")+
+  facet_grid(position~site, switch = "x")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+#remove y axis ticks
+
+# figure test passed. Data is good to go.
 
 ```
 
