@@ -155,6 +155,39 @@ moisturetempsal_2022_groupfunction = function(dat){
 
 #SOIL PROPERTIES-------------
 
+thaw_depths_cleaned =
+  thaw_depths %>% 
+  dplyr::select(Date, Area, Site, Plot, Plot_ID, X1, X2, X3, X4, X5, X6, X7, X8, X9, X10,
+                X11, X12, X13, X14, X15) %>% 
+  na.omit() %>% 
+  pivot_longer(-c(Date, Area, Site, Plot, Plot_ID), names_to = "rep", values_to = "thaw_depth_cm") %>% 
+  separate(Date, sep = "-", into = c("Day", "Month_num", "Year")) %>% 
+  mutate(Month = recode(Month_num, "Jun" = "06", "Jul" = "07", "Aug" = "08")) %>% 
+  mutate(date2 = as.Date(paste(Year,Month,Day, sep = "-"))) %>% 
+  mutate(Area = recode(Area, "East" = "acidic tundra",
+                       "West" = "non-acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) 
+
+thawdepths_2022_cleaningfunction = function(dat){
+  
+  dat %>% 
+    dplyr::select(Date, Area, Site, Plot, Plot_ID, X1, X2, X3, X4, X5, X6, X7, X8, X9, X10,
+                  X11, X12, X13, X14, X15) %>% 
+    na.omit() %>% 
+    pivot_longer(-c(Date, Area, Site, Plot, Plot_ID), names_to = "rep", values_to = "thaw_depth_cm") %>% 
+    separate(Date, sep = "-", into = c("Day", "Month_num", "Year")) %>% 
+    mutate(Year = recode(Year, "22" = "2022")) %>% 
+    mutate(Month = recode(Month_num, "Jun" = "06", "Jul" = "07", "Aug" = "08")) %>% 
+    mutate(date2 = as.Date(paste(Year,Month,Day, sep = "-"))) %>% 
+    mutate(Area = recode(Area, "East" = "acidic tundra",
+                         "West" = "non-acidic tundra")) %>% 
+    mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) 
+  
+}
+
+
+
+
 soil_properties_cleaningfunction = function(dat){
   
 bd_grav_cleaned = 

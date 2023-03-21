@@ -89,7 +89,8 @@ temp_sal_moist2022 = read.csv("processed/2022final_temp_salinity_avgs.csv")
 #### Soil properties
 
 ```{r}
-thaw_depths = read.csv("raw/thaw_depth_2021.csv")
+thaw_depth2021 = read.csv("raw/thaw_depth_2021.csv")
+thaw_depth2022 = read.csv("raw/thaw_depth_2022.csv")
 
 bd_grav = read.csv("raw/PhIr2021_Soil_Inventory_bd.csv") 
 
@@ -212,6 +213,32 @@ bd_cleaned = soil_properties_cleaningfunction(bd_grav)
 
 #select only necessary columns, simplify date-plot labels, set levels for material/horizons and date-plots
 bd_select = soil_properties_selectfunction(bd_cleaned)
+
+
+#thaw depth cleaning
+
+thawdepths_2021_cleaned = thawdepths_2021_cleaningfunction(thaw_depth2021)
+thawdepths_2022_cleaned = thawdepths_2022_cleaningfunction(thaw_depth2022)
+
+
+#thaw depth figure test
+
+thawdepths_2021_cleaned %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  #filter(Area == "non-acidic tundra") %>% 
+  ggplot()+
+  geom_violin(aes(x = as.Date(date2), y = thaw_depth_cm, group = as.Date(date2), fill = Site), alpha = 0.4)+
+  labs(x = " ",
+       y = "Thaw Depth, cm")+
+  #geom_rect(aes(xmin=as_date('2021-06-15'), xmax= as_date('2021-08-09'), ymin=49.5, ymax=50.5), fill = "black")+
+  #scale_fill_gradientn(colors = natparks.pals(name = "Banff"))+
+  scale_fill_manual(values = c("#9a031e", "#40916c", "#118ab2"))+
+  scale_x_date(date_breaks = "1 week", date_labels = "%b-%d-%Y")+
+  ylim(90, 0)+
+  facet_grid(Site~Area)+
+  theme_er1()+
+  theme(legend.position = "none", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
+
 
 ```
 
