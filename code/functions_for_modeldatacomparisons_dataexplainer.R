@@ -246,12 +246,6 @@ dat %>%
   mutate(concentration = as.numeric(concentration)) 
 }
 
-sipper_cleaningfunction = function(dat){
-  
-  
-  
-}
-
 
 rhizon_groupingfunction = function(dat){
   dat %>% 
@@ -269,4 +263,21 @@ rhizon_groupingfunction = function(dat){
   
   
   
+}
+
+sipper_groupingfunction = function(dat){
+  
+ dat %>% 
+    group_by(Area, Site, Depth_cm, date, ICP) %>%
+   dplyr::summarise(mean = round(mean(concentration), 3),
+                    sd = round(sd(concentration),3)) %>% 
+    separate(date, sep = "-", into =c('year', 'month', 'day')) %>% 
+    mutate(month2 = recode(month, "06" = "June", "07" = "July", "08" = "August", "09" = "September")) %>% 
+    mutate(date_plot = paste(month2, day, year, sep = "-")) %>% 
+    mutate(date_plot = factor(date_plot, levels = c("June-27-2022", "June-29-2022", "July-06-2022",
+                                                    "July-07-2022", "July-11-2022", "July-12-2022",
+                                                    "July-18-2022", "July-19-2022", "July-25-2022",
+                                                    "July-26-2022", "August-07-2022", "August-08-2022",
+                                                    "September-15-2022","September-17-2022", "September-23-2022"))) %>% 
+    mutate(area_site = paste(Area, Site, sep = "-")) 
 }

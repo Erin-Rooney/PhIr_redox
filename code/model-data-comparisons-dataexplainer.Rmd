@@ -253,10 +253,12 @@ thawdepths_2021_cleaned %>%
 
 #cleaning
 porewater_ICP_2021_cleaned = rhizon_cleaningfunction(porewater_ICP_2021)
-porewater_ICP_2022_cleaned = sipper_cleaningfunction(porewater_ICP_2022)
+
+#2022 ICP sipper porewater data comes pre-cleaned
 
 #grouping
 porewater_ICP_2021_grouped = rhizon_groupingfunction(porewater_ICP_2021_cleaned)
+porewater_ICP_2022_grouped = sipper_groupingfunction(porewater_ICP_2022)
 
 #rhizon 2021 test figure
 
@@ -286,6 +288,32 @@ porewater_ICP_2021_grouped = rhizon_groupingfunction(porewater_ICP_2021_cleaned)
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank())
 
+# sipper 2022 test figure
+ 
+   porewater_ICP_2022_grouped %>% 
+    filter(ICP == "Fe_ug_mL") %>% 
+    mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+    mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+    ggplot(aes(x = mean, y = Depth_cm, fill = date_plot, group = date_plot)) +
+    geom_errorbar(aes(xmin=(mean - sd), xmax=(mean + sd), color = date_plot))+
+    geom_point(size = 3.5, shape = c(21), alpha = 0.6)+
+    geom_line(aes(color = date_plot), orientation = "y", linetype = "longdash")+
+    # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+    # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+    scale_fill_manual(values = (pnw_palette("Sunset2", 15)))+
+    scale_color_manual(values = (pnw_palette("Sunset2", 15)))+
+    labs(fill = "Date",
+         color = "Date",
+         y = "",
+         x = "Iron ug/mL")+
+    scale_y_reverse()+
+    scale_x_continuous(position = 'top') +
+    facet_grid(Site ~ Area, scales = "free_x")+
+    theme_er1()+
+    theme(legend.position = "none",
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
+                strip.placement = "outside")
 
 ```
 
@@ -337,7 +365,10 @@ write.csv(moisturetempsal2022_grouped, "modeling-data-output-files/moisturetemps
 
 #Porewater data
 write.csv(porewater_ICP_2021, "modeling-data-output-files/porewater_ICP_2021.csv")
-write.csv(porewater_ICP_2022, "modeling-data-output-files/porewater_ICP_2022.csv")
+write.csv(porewater_ICP_2022, "modeling-data-output-files/porewater_ICP_2022.csv") #comes cleaned
+write.csv(porewater_ICP_2021_cleaned, "modeling-data-output-files/porewater_ICP_2021_cleaned.csv")
+write.csv(porewater_ICP_2021_grouped, "modeling-data-output-files/porewater_ICP_2021_grouped.csv")
+write.csv(porewater_ICP_2022_grouped, "modeling-data-output-files/porewater_ICP_2022_grouped.csv")
 
 
 #Soil Properties

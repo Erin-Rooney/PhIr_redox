@@ -622,11 +622,7 @@ Fe_grouped_fig =
     theme(legend.position = "none",
           panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
           panel.background = element_blank(),
-                strip.placement = "outside",
-          axis.text.y=element_blank(),  #remove y axis labels
-          axis.ticks.y=element_blank(),
-          axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
-  #remove y axis ticks
+                strip.placement = "outside")
 #
 
 P_grouped_fig =  
