@@ -53,40 +53,40 @@ write.csv(rhizon_meta_combine_notransect, "processed/rhizon_long_notransect.csv"
 
 
 ##metadata needed for sipper data
-
-west_rhizon_month = 
-  rhizon_meta_combine_notransect %>% 
-  filter(Area == 'West') %>% 
-  ggplot(aes(x = Site, y = as.numeric(concentration), fill = month))+
-  #geom_point(size = 2.5, alpha = 0.8)+
-  geom_boxplot(alpha = 0.3)+
-  #geom_line(orientation = "x", group = 'Plot')+
-  labs(x = "",
-       y = 'concentration ug/mL')+
-  scale_fill_manual(values = natparks.pals(name = "SmokyMtns", 3))+
-  #scale_color_manual(values = natparks.pals(name = "SmokyMtns", 3))+
-  # scale_color_manual(values = rev(PNWColors::pnw_palette("Shuksan2", 2)))+
-  # scale_fill_manual(values = rev(PNWColors::pnw_palette("Shuksan2", 2)))+
-  facet_wrap(ICP~., scales = "free", ncol = 4)+
-  theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
-
-east_rhizon_month = 
-  rhizon_meta_combine_notransect %>% 
-  filter(Area == 'East') %>% 
-  ggplot(aes(x = Site, y = as.numeric(concentration), fill = month))+
-  #geom_point(size = 2.5, alpha = 0.8)+
-  geom_boxplot(alpha = 0.3, width = 0.6)+
-  #geom_line(orientation = "x", group = 'Plot')+
-  labs(x = "",
-       y = 'concentration ug/mL')+
-  scale_fill_manual(values = natparks.pals(name = "SmokyMtns", 3))+
-  #scale_color_manual(values = natparks.pals(name = "SmokyMtns", 3))+
-  # scale_color_manual(values = rev(PNWColors::pnw_palette("Shuksan2", 2)))+
-  # scale_fill_manual(values = rev(PNWColors::pnw_palette("Shuksan2", 2)))+
-  facet_wrap(ICP~., scales = "free", ncol = 4)+
-  theme_er1()+
-  theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+# 
+# west_rhizon_month = 
+#   rhizon_meta_combine_notransect %>% 
+#   filter(Area == 'West') %>% 
+#   ggplot(aes(x = Site, y = as.numeric(concentration), fill = month))+
+#   #geom_point(size = 2.5, alpha = 0.8)+
+#   geom_boxplot(alpha = 0.3)+
+#   #geom_line(orientation = "x", group = 'Plot')+
+#   labs(x = "",
+#        y = 'concentration ug/mL')+
+#   scale_fill_manual(values = natparks.pals(name = "SmokyMtns", 3))+
+#   #scale_color_manual(values = natparks.pals(name = "SmokyMtns", 3))+
+#   # scale_color_manual(values = rev(PNWColors::pnw_palette("Shuksan2", 2)))+
+#   # scale_fill_manual(values = rev(PNWColors::pnw_palette("Shuksan2", 2)))+
+#   facet_wrap(ICP~., scales = "free", ncol = 4)+
+#   theme_er1()+
+#   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
+# 
+# east_rhizon_month = 
+#   rhizon_meta_combine_notransect %>% 
+#   filter(Area == 'East') %>% 
+#   ggplot(aes(x = Site, y = as.numeric(concentration), fill = month))+
+#   #geom_point(size = 2.5, alpha = 0.8)+
+#   geom_boxplot(alpha = 0.3, width = 0.6)+
+#   #geom_line(orientation = "x", group = 'Plot')+
+#   labs(x = "",
+#        y = 'concentration ug/mL')+
+#   scale_fill_manual(values = natparks.pals(name = "SmokyMtns", 3))+
+#   #scale_color_manual(values = natparks.pals(name = "SmokyMtns", 3))+
+#   # scale_color_manual(values = rev(PNWColors::pnw_palette("Shuksan2", 2)))+
+#   # scale_fill_manual(values = rev(PNWColors::pnw_palette("Shuksan2", 2)))+
+#   facet_wrap(ICP~., scales = "free", ncol = 4)+
+#   theme_er1()+
+#   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
 
 ggsave("output/east_2021_rhizonsmonth.tiff", plot = east_rhizon_month, height = 5.75, width = 10)
 ggsave("output/west_2021_rhizonsmonth.tiff", plot = west_rhizon_month, height = 5.75, width = 10)
@@ -349,6 +349,135 @@ ggsave("figures_finalized/all_line_rhizon_fig.png", plot = all_line_rhizon_fig, 
 ggsave("figures_finalized/redoxsensitive_fig.png", plot = redoxsensitive_fig, width = 9, height = 9)
 ggsave("figures_finalized/cations_fig.png", plot = cations_fig, width = 9, height = 9)
 ggsave("figures_finalized/cations_fig_legend.png", plot = cations_fig_legend, width = 8, height = 9)
+
+
+Mnline_rhizon_fig =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("manganese")) %>% 
+  # mutate(ICP = recode(ICP, "calcium" = "calcium μg/mL",
+  #                     "iron" = "iron μg/mL",
+  #                     "aluminum" = "aluminum μg/mL",
+  #                     "phosphorus" = "phosphorus μg/mL")) %>%   
+  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  geom_point(aes(group = area_site, shape = Area), size = 3.5)+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Moisture",
+       linetype = "Acidity",
+       y = "Concentration μg/mL",
+       x = " ")+
+  facet_grid(. ~ ICP, scales = "free_y") +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+Kline_rhizon_fig =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("potassium")) %>% 
+  # mutate(ICP = recode(ICP, "calcium" = "calcium μg/mL",
+  #                     "iron" = "iron μg/mL",
+  #                     "aluminum" = "aluminum μg/mL",
+  #                     "phosphorus" = "phosphorus μg/mL")) %>%   
+  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  geom_point(aes(group = area_site, shape = Area), size = 3.5)+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Moisture",
+       linetype = "Acidity",
+       y = "Concentration μg/mL",
+       x = " ")+
+  facet_grid(. ~ ICP, scales = "free_y") +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+Mgline_rhizon_fig =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("magnesium")) %>% 
+  # mutate(ICP = recode(ICP, "calcium" = "calcium μg/mL",
+  #                     "iron" = "iron μg/mL",
+  #                     "aluminum" = "aluminum μg/mL",
+  #                     "phosphorus" = "phosphorus μg/mL")) %>%   
+  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  geom_point(aes(group = area_site, shape = Area), size = 3.5)+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Moisture",
+       linetype = "Acidity",
+       y = "Concentration μg/mL",
+       x = " ")+
+  facet_grid(. ~ ICP, scales = "free_y") +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+Naline_rhizon_fig =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("sodium")) %>% 
+  # mutate(ICP = recode(ICP, "calcium" = "calcium μg/mL",
+  #                     "iron" = "iron μg/mL",
+  #                     "aluminum" = "aluminum μg/mL",
+  #                     "phosphorus" = "phosphorus μg/mL")) %>%   
+  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
+  geom_point(aes(group = area_site, shape = Area), size = 3.5)+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  labs(color = "Moisture",
+       linetype = "Acidity",
+       y = "Concentration μg/mL",
+       x = " ")+
+  facet_grid(. ~ ICP, scales = "free_y") +
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+library(patchwork)
+
+all_line_rhizon_fig2 = Mnline_rhizon_fig + Kline_rhizon_fig + Mgline_rhizon_fig + Naline_rhizon_fig +  plot_layout(guides = "collect")
+
+ggsave("figures_finalized/all_line_rhizon_fig2.png", plot = all_line_rhizon_fig2, width = 10, height = 5)
+
+
+
+
+
+
+
+
+
+
+
 
 
 

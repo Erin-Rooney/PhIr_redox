@@ -19,6 +19,9 @@ This is a data explainer that pulls in the necessary data files as well
 as associated cleaning and grouping functions. Functions can be edited
 in the "code/functions_for_modeldatacomparisons_dataexplainer.R" script.
 
+View the easy to read published Markdown file
+[here](https://rpubs.com/ecrooney/1019045).
+
 ### Known Issues
 
 -   There are two types of information associated sample location: the
@@ -51,7 +54,6 @@ I need to add in the following datasets that we do have
 
 -   pH of porewater
 
-
 ## Data Input and Processing
 
 ### Source Packages and Functions
@@ -65,9 +67,10 @@ source("code/functions_for_modeldatacomparisons_dataexplainer.R")
 
 ### Sensor Data
 
-#### Redox data 
+#### Redox data
 
-artifacts and frozen values removed and with hydrogen electrode correction
+artifacts and frozen values removed and with hydrogen electrode
+correction
 
 ```{r}
 knitr::opts_chunk$set(echo = TRUE)
@@ -77,9 +80,10 @@ redox_withdepths2021 = read.csv("processed/allcombine_2021_frozen.csv")
 
 ```
 
-#### Moisture, Temperature, and Salinity 
+#### Moisture, Temperature, and Salinity
 
-data with artifacts and frozen values removed and with hydrogen electrode correction
+data with artifacts and frozen values removed and with hydrogen
+electrode correction
 
 ```{r}
 temp_sal_moist2021 = read.csv("processed/final_temp_salinity_avgs.csv")
@@ -114,7 +118,7 @@ porewater_ICP_2021 = read.csv("processed/rhizon_2021.csv")
 
 #### Redox cleaning
 
-Everything must be run sequentially 
+Everything must be run sequentially
 
 ```{r}
 #remove frozen data
@@ -317,23 +321,21 @@ porewater_ICP_2022_grouped = sipper_groupingfunction(porewater_ICP_2022)
 
 ```
 
-
 ## Data Output
 
 I usually analyze the data in the same script where I'm doing data
 processing and cleaning, so these grouped and cleaned datasets do not
 always have corresponding output files (other than the figures and
 tables). I think the best approach is to create a modeling data folder
-with output files from this data explainer (see below code chunk). 
+with output files from this data explainer (see below code chunk).
 
-It will take some communication (I'll have to let you know if there are any changes to
-processing code or data files so that you can re-run this markdown
-file). But this file is helpful to me to because it simplifies the
-processing that I'm doing which will be helpful for visitors to my
+It will take some communication (I'll have to let you know if there are
+any changes to processing code or data files so that you can re-run this
+markdown file). But this file is helpful to me to because it simplifies
+the processing that I'm doing which will be helpful for visitors to my
 repository. So I have a vested interest in keeping it up to date.
 Another option is for me to figure out how to combine markdown file with
 a Drake outline, but I'm not at that stage yet.
-
 
 ```{r}
 

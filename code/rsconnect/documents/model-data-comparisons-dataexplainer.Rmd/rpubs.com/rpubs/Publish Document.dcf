@@ -1,0 +1,11 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/1019045/41e80d5c66204d1a89277bc5a421a7a1
+bundleId: https://api.rpubs.com/api/v1/document/1019045/41e80d5c66204d1a89277bc5a421a7a1
+url: http://rpubs.com/ecrooney/1019045
+when: 1679583068.43281
+lastSyncTime: 1679583068.43281
