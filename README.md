@@ -7,6 +7,8 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 
 ###### July 2022, EC Rooney
 
+Modeling-Data Explainer can be viewed here: <a>http://rpubs.com/ecrooney/1019045</a> 
+
 ##### *Repository organization*
 
 <p>
