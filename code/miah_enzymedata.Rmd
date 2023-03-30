@@ -1,0 +1,514 @@
+---
+title: "Imtiaz Miah's Enzyme Data Processing and Analysis"
+author: "Erin C Rooney"
+date: "2023-03-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Enzyme Data
+
+### All data belongs to PhIr Project/Imtiaz Miah
+
+**step 1: load packages for analysis**
+
+You can remove packages that you don't need, and you may need to load some (which can be done by going to packages, clicking "install" and then typing in the name of the package you need.) You only need to install once, but everytime you restart R, then you need to call the package via the command "library". This can be done by just running line 23 below, which runs your full packages script.
+
+```{r, warning=FALSE,message=FALSE,error=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+source("code/0-packages_im.R")
+
+```
+
+**step 2: load data**
+
+load data from years 2021 and 2022
+
+```{r}
+
+enzymes2022 = read.csv("raw/Miah_enzymes_2022.csv")
+head(enzymes2022)
+
+enzymes2021 = read.csv("raw/Miah_enzymes2021.csv")
+head(enzymes2021)
+
+```
+
+**step 3: data cleaning**
+
+Here we are redoing the date so that it will be more friendly to work with later. We're adding the year so that both 2021 and 2022 datasets can be combined (eventually). We're also setting some factors and ordering variables within columns so that they make sense (dry goes first, then mesic, then hydric, or organic before mineral, etc. )
+
+```{r}
+
+enzymes2022_fixed =
+  enzymes2022 %>% 
+  separate(date, sep = "-", into = c("day", "month", "year")) %>%
+  mutate(day = as.numeric(day)) %>% 
+  mutate(day = (day + 1)) %>% 
+  dplyr::select(-year) %>% 
+  mutate(year = 2022) %>% 
+  mutate(year = factor(year, levels = c("2021", "2022"))) %>% 
+  mutate(soil_layer = factor(soil_layer, levels = c("Organic", "Mineral"))) %>% 
+  separate(sample, sep = " ", into = c("area", "plot")) %>%
+  dplyr::mutate(plotnum = case_when(grepl("1", plot)~"1",
+                                  grepl("2", plot)~"2",
+                                  grepl("3", plot)~"3")) %>% 
+  mutate(site = factor(site, levels = c("Dry", "Mesic", "Hydric")))
+
+head(enzymes2022_fixed)
+
+enzymes2021_fixed =
+  enzymes2021 %>% 
+  separate(date, sep = "-", into = c("day", "month", "year")) %>%
+  mutate(day = as.numeric(day)) %>% 
+  mutate(day = (day + 1)) %>% 
+  dplyr::select(-year) %>% 
+  mutate(year = 2021) %>% 
+  mutate(year = factor(year, levels = c("2021", "2022"))) %>% 
+  mutate(soil_layer = factor(soil_layer, levels = c("Organic", "Mineral"))) %>% 
+  separate(sample, sep = " ", into = c("area", "plot")) %>%
+  dplyr::mutate(plotnum = case_when(grepl("1", plot)~"1",
+                                    grepl("2", plot)~"2",
+                                    grepl("3", plot)~"3")) %>% 
+  mutate(site = factor(site, levels = c("Dry", "Mesic", "Hydric"))) 
+  #filter(month == "Aug")
+
+head(enzymes2021_fixed)
+
+```
+
+**step 4: data organization**
+
+Here we're just exploring different ways to organize the data, such as:
+
+-   Making the data longer (all enzyme types in one column with enzyme activity in a second column)
+
+-   Making the data wider (each enzyme type and associated activity has two columns, so more columns total)
+
+```{r}
+
+enzymes2022_fixed_longer =
+  enzymes2022_fixed %>% 
+  pivot_longer(-c(day, month, year, plot, plotnum, site, area, soil_layer, dry_wet), 
+               names_to = "enzyme_type", values_to = "enzyme_activity")
+
+head(enzymes2022_fixed_longer)
+  
+enzymes2021_fixed_longer =
+  enzymes2021_fixed %>% 
+  pivot_longer(-c(day, month, year, plot, plotnum, site, area, soil_layer, dry_wet), 
+               names_to = "enzyme_type", values_to = "enzyme_activity")
+
+head(enzymes2021_fixed_longer)
+
+```
+
+Now we're combining the dataframes from 2021 and 2022 together
+
+```{r}
+all_enzymes_longer = 
+  enzymes2022_fixed_longer %>% 
+  vctrs::vec_c(enzymes2021_fixed_longer) %>% 
+  group_by(year, day, site, area, plot, soil_layer, enzyme_type) %>% 
+  dplyr::mutate(n = n()) 
+
+head(all_enzymes_longer)
+
+```
+
+And we can make the combined dataframes back into a wider format
+
+```{r}
+
+all_enzymes_wider = 
+  enzymes2022_fixed_longer %>% 
+  vctrs::vec_c(enzymes2021_fixed_longer) %>% 
+  group_by(year, day, site, area, plot, soil_layer, enzyme_type) %>% 
+  pivot_wider(names_from = 'enzyme_type', values_from = "enzyme_activity")
+
+head(all_enzymes_wider)
+  
+```
+
+When we were working on figures together, we makes some specialized dataframes that we need for figures, so I'll include these below as well.
+
+```{r}
+
+all_enzymes_wider_2021 = 
+  enzymes2021_fixed_longer %>% 
+  group_by(year, day, site, area, plot, soil_layer, enzyme_type) %>% 
+  pivot_wider(names_from = 'enzyme_type', values_from = "enzyme_activity") %>% 
+  mutate(month = recode(month, "Aug" = "August", "Jul" = "July")) %>% 
+  #dplyr::mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
+  mutate(date = paste(month, day, sep = " ")) %>% 
+  mutate(date = factor(date, levels = c("July 2", "July 5", "July 20", 
+                                        "July 23", "August 3", "August 6"))) %>% 
+  filter(soil_layer == "Organic")
+
+head(all_enzymes_wider_2021)
+
+all_enzymes_notwider_2021 = 
+  enzymes2021_fixed_longer %>% 
+  #group_by(year, day, site, area, plot, soil_layer, enzyme_type) %>% 
+  #pivot_wider(names_from = 'enzyme_type', values_from = "enzyme_activity") %>% 
+  mutate(month = recode(month, "Aug" = "August", "Jul" = "July")) %>% 
+  #dplyr::mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
+  mutate(date = paste(month, day, sep = " ")) %>% 
+  mutate(date = factor(date, levels = c("July 2", "July 5", "July 20", 
+                                        "July 23", "August 3", "August 6"))) %>% 
+  filter(soil_layer == "Organic")
+
+head(all_enzymes_notwider_2021)
+```
+
+**step 5: export cleaned and organized data**
+
+You can pick the file path. Generally, I like to have a common folder organization with code, raw_data, processed_data, and output folders. 
+
+```{r}
+#export csv file
+write.csv(all_enzymes_longer, "output/all_enzymes_longer.csv")
+
+write.csv(all_enzymes_wider, "output/all_enzymes_wider.csv")
+
+```
+
+
+**step 6: data visualization**
+
+Boxplots!
+
+```{r, fig.width = 4, fig.height = 6}
+
+
+all2022_data =
+  all_enzymes_longer %>% 
+  filter(year == 2022) %>% 
+  ggplot(aes(x = site, y = enzyme_activity, fill = area))+
+  geom_boxplot(alpha = 0.6)+
+  labs(y = "enzyme activity, nmol/h/g dry soil",
+       x = "site")+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Bay", 2)))+
+  facet_grid(enzyme_type~year, scales = "free_y")+
+  theme_im()
+
+plot(all2022_data) 
+
+ggsave("output/boxplot_all2022_data.png",  plot = all2022_data, width = 4, height = 6)
+
+
+all2021_data =
+  all_enzymes_longer %>% 
+  filter(year == 2021) %>% 
+  ggplot(aes(x = site, y = enzyme_activity, fill = area))+
+  geom_boxplot(alpha = 0.6)+
+  labs(y = "enzyme activity, nmol/h/g dry soil",
+       x = "site")+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Bay", 2)))+
+  facet_grid(enzyme_type~year, scales = "free_y")+
+  theme_im()
+
+plot(all2021_data) 
+
+ggsave("output/boxplot_all2021_data.png",  plot = all2021_data, width = 4, height = 6)
+
+```
+
+Mineral vs Organic plots
+
+```{r, fig.width = 6, fig.height = 8}
+
+
+boxplot_organic =
+  all_enzymes_longer %>% 
+  filter(soil_layer == "Organic") %>% 
+  ggplot(aes(x = site, y = enzyme_activity, fill = area))+
+  geom_boxplot(alpha = 0.6)+
+  labs(y = "enzyme activity, nmol/h/g dry organic soil",
+       x = "site",
+       subtitle = "organic layer")+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Bay", 2)))+
+  facet_grid(enzyme_type~year, scales = "free_y")+
+  theme_im()
+
+plot(boxplot_organic)
+
+ggsave("output/boxplot_organic.png",  plot = boxplot_organic, width = 6, height = 8)
+
+boxplot_mineral =
+  all_enzymes_longer %>% 
+  filter(soil_layer == "Mineral") %>% 
+  ggplot(aes(x = site, y = enzyme_activity, fill = area))+
+  geom_boxplot(alpha = 0.6)+
+  labs(y = "enzyme activity, nmol/h/g dry mineral soil",
+       x = "site",
+       subtitle = "mineral layer")+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Bay", 2)))+
+  facet_grid(enzyme_type~year, scales = "free_y")+
+  theme_im()
+
+plot(boxplot_mineral)
+
+ggsave("output/boxplot_mineral.png",  plot = boxplot_mineral, width = 6, height = 8)
+
+
+```
+
+```{r, fig.width = 6, fig.height = 10}
+
+boxplot_2021bysoillayer =
+  all_enzymes_longer %>% 
+  filter(year == "2021") %>% 
+  ggplot(aes(x = soil_layer, y = enzyme_activity, fill = area))+
+  geom_boxplot(alpha = 0.6)+
+  labs(y = "enzyme activity, nmol/h/g dry soil",
+       x = "soil layer",
+       subtitle = "2021")+
+  facet_grid(enzyme_type~site, scales = "free_y")+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Bay", 2)))+
+  theme_im()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+plot(boxplot_2021bysoillayer)
+
+ggsave("output/boxplot_2021_soillayers.png",  plot = boxplot_2021bysoillayer, width = 6, height = 10)
+
+
+boxplot_2022bysoillayer =
+all_enzymes_longer %>% 
+  filter(year == "2022") %>% 
+  ggplot(aes(x = soil_layer, y = enzyme_activity, fill = area))+
+  geom_boxplot(alpha = 0.6)+
+  labs(y = "enzyme activity, nmol/h/g dry soil",
+       x = "soil layer",
+       subtitle = "2022")+
+  facet_grid(enzyme_type~site, scales = "free_y")+
+  scale_fill_manual(values = (PNWColors::pnw_palette("Bay", 2)))+
+  theme_im()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+plot(boxplot_2022bysoillayer)
+
+ggsave("output/boxplot_2022_soillayers.png",  plot = boxplot_2022bysoillayer, width = 6, height = 10)
+
+
+```
+
+
+
+Here are some ggplots that we made in late October 2022
+
+```{r, fig.height = 3.5, fig.width = 5}
+
+all_enzymes_wider_2021_fig_east_nag =
+  all_enzymes_wider_2021 %>% 
+  filter(area == "East") %>% 
+    mutate(area = recode(area, "East" = "East Area, Acidic Tundra")) %>% 
+  ggplot()+
+  geom_boxplot(aes(x = date, y = NAG, fill = site, color = site), alpha = 0.6)+
+  labs(y = "NAG activity, nmol/h/g dry soil",
+       x = " ")+
+  scale_fill_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  scale_color_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+ # scale_x_date(date_labels = "%b-%d")+
+  facet_grid(.~area)+
+  theme_im()+
+  theme(legend.position = "right")
+
+plot(all_enzymes_wider_2021_fig_east_nag)
+
+ggsave("output/2021_fig_east_nag.png", plot =  all_enzymes_wider_2021_fig_east_nag, height = 3.5, width = 5)
+
+
+
+all_enzymes_wider_2021_fig_east_bg =
+  all_enzymes_wider_2021 %>% 
+  filter(area == "East") %>% 
+  mutate(area = recode(area, "East" = "East Area, Acidic Tundra")) %>% 
+  ggplot()+
+  geom_boxplot(aes(x = date, y = BG, fill = site, color = site), alpha = 0.6)+
+  labs(y = "BG activity, nmol/h/g dry soil",
+       x = " ")+
+  scale_fill_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  scale_color_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  # scale_x_date(date_labels = "%b-%d")+
+  facet_grid(.~area)+
+  theme_im()+
+  theme(legend.position = "right")
+
+plot(all_enzymes_wider_2021_fig_east_bg)
+
+
+ggsave("output/2021_fig_east_bg.png", plot =  all_enzymes_wider_2021_fig_east_bg, height = 3.5, width = 5)
+
+all_enzymes_wider_2021_fig_east_phos =
+  all_enzymes_wider_2021 %>% 
+  filter(area == "East") %>% 
+  mutate(area = recode(area, "East" = "East Area, Acidic Tundra")) %>% 
+  ggplot()+
+  geom_boxplot(aes(x = date, y = PHOS, fill = site, color = site), alpha = 0.6)+
+  labs(y = "PHOS activity, nmol/h/g dry soil",
+       x = " ")+
+  scale_fill_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  scale_color_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  # scale_x_date(date_labels = "%b-%d")+
+  facet_grid(.~area)+
+  theme_im()+
+  theme(legend.position = "right")
+
+plot(all_enzymes_wider_2021_fig_east_phos)
+
+ggsave("output/2021_fig_east_phos.png", plot =  all_enzymes_wider_2021_fig_east_phos, height = 3.5, width = 5)
+
+all_enzymes_wider_2021_fig_east_lap =
+  all_enzymes_wider_2021 %>% 
+  filter(area == "East") %>% 
+  mutate(area = recode(area, "East" = "East Area, Acidic Tundra")) %>% 
+  ggplot()+
+  geom_boxplot(aes(x = date, y = LAP, fill = site, color = site), alpha = 0.6)+
+  labs(y = "LAP activity, nmol/h/g dry soil",
+       x = " ")+
+  scale_fill_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  scale_color_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  # scale_x_date(date_labels = "%b-%d")+
+  facet_grid(.~area)+
+  theme_im()+
+  theme(legend.position = "right")
+
+plot(all_enzymes_wider_2021_fig_east_lap)
+
+ggsave("output/2021_fig_east_lap.png", plot =  all_enzymes_wider_2021_fig_east_lap, height = 3.5, width = 5)
+
+
+
+
+all_enzymes_wider_2021_fig_west_nag =
+  all_enzymes_wider_2021 %>% 
+  filter(area == "West") %>% 
+  mutate(area = recode(area, "West" = "West Area, Non-Acidic Tundra")) %>% 
+  ggplot()+
+  geom_boxplot(aes(x = date, y = NAG, fill = site, color = site), alpha = 0.6)+
+  labs(y = "NAG activity, nmol/h/g dry soil",
+       x = " ")+
+  scale_fill_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  scale_color_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  # scale_x_date(date_labels = "%b-%d")+
+  facet_grid(.~area)+
+  theme_im()+
+  theme(legend.position = "right")
+
+plot(all_enzymes_wider_2021_fig_west_nag)
+
+ggsave("output/2021_fig_west_nag.png", plot =  all_enzymes_wider_2021_fig_west_nag, height = 3.5, width = 5)
+
+all_enzymes_wider_2021_fig_west_bg =
+  all_enzymes_wider_2021 %>% 
+  filter(area == "West") %>% 
+  mutate(area = recode(area, "West" = "West Area, Non-Acidic Tundra")) %>% 
+  ggplot()+
+  geom_boxplot(aes(x = date, y = BG, fill = site, color = site), alpha = 0.6)+
+  labs(y = "BG activity, nmol/h/g dry soil",
+       x = " ")+
+  scale_fill_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  scale_color_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  # scale_x_date(date_labels = "%b-%d")+
+  facet_grid(.~area)+
+  theme_im()+
+  theme(legend.position = "right")
+
+plot(all_enzymes_wider_2021_fig_west_bg)
+
+ggsave("output/2021_fig_west_bg.png", plot =  all_enzymes_wider_2021_fig_west_bg, height = 3.5, width = 5)
+
+all_enzymes_wider_2021_fig_west_phos =
+  all_enzymes_wider_2021 %>% 
+  filter(area == "West") %>% 
+  mutate(area = recode(area, "West" = "West Area, Non-Acidic Tundra")) %>% 
+  ggplot()+
+  geom_boxplot(aes(x = date, y = PHOS, fill = site, color = site), alpha = 0.6)+
+  labs(y = "PHOS activity, nmol/h/g dry soil",
+       x = " ")+
+  scale_fill_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  scale_color_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  # scale_x_date(date_labels = "%b-%d")+
+  facet_grid(.~area)+
+  theme_im()+
+  theme(legend.position = "right")
+
+plot(all_enzymes_wider_2021_fig_west_phos)
+
+ggsave("output/2021_fig_west_phos.png", plot =  all_enzymes_wider_2021_fig_west_phos, height = 3.5, width = 5)
+
+all_enzymes_wider_2021_fig_west_lap =
+  all_enzymes_wider_2021 %>% 
+  filter(area == "West") %>% 
+  mutate(area = recode(area, "West" = "West Area, Non-Acidic Tundra")) %>% 
+  ggplot()+
+  geom_boxplot(aes(x = date, y = LAP, fill = site, color = site), alpha = 0.6)+
+  labs(y = "LAP activity, nmol/h/g dry soil",
+       x = " ")+
+  scale_fill_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  scale_color_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  # scale_x_date(date_labels = "%b-%d")+
+  facet_grid(.~area)+
+  theme_im()+
+  theme(legend.position = "right")
+
+plot(all_enzymes_wider_2021_fig_west_lap)
+
+ggsave("output/2021_fig_west_lap.png", plot =  all_enzymes_wider_2021_fig_west_lap, height = 3.5, width = 5)
+
+
+```
+
+```{r, fig.height = 5.5, fig.width = 8}
+
+
+allenzymes_east_fig =
+all_enzymes_notwider_2021 %>% 
+  filter(area == "East") %>% 
+  mutate(area = recode(area, "East" = "East Area, Acidic Tundra")) %>% 
+  ggplot()+
+  geom_boxplot(aes(x = date, y = enzyme_activity, fill = site, color = site), alpha = 0.6)+
+  labs(y = "nmol/h/g dry soil",
+       x = " ",
+       subtitle = "East Area, Acidic Tundra")+
+  scale_fill_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  scale_color_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  # scale_x_date(date_labels = "%b-%d")+
+  facet_wrap(enzyme_type~., scale = "free_y")+
+  theme_im()+
+  theme(legend.position = "right")
+
+plot(allenzymes_east_fig)
+
+ggsave("output/allenzymes_east_fig2021.png", plot =  allenzymes_east_fig, height = 5.5, width = 8)
+
+allenzymes_west_fig =
+  all_enzymes_notwider_2021 %>% 
+  filter(area == "West") %>% 
+  #mutate(area = recode(area, "East" = "East Area, Acidic Tundra")) %>% 
+  ggplot()+
+  geom_boxplot(aes(x = date, y = enzyme_activity, fill = site, color = site), alpha = 0.6)+
+  labs(y = "nmol/h/g dry soil",
+       x = " ",
+       subtitle = "West Area, Non-Acidic Tundra")+
+  scale_fill_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  scale_color_manual(values = rev((PNWColors::pnw_palette("Bay", 3))))+
+  # scale_x_date(date_labels = "%b-%d")+
+  facet_wrap(enzyme_type~., scale = "free_y")+
+  theme_im()+
+  theme(legend.position = "right")
+
+plot(allenzymes_west_fig)
+
+ggsave("output/allenzymes_west_fig2021.png", plot =  allenzymes_west_fig, height = 5.5, width = 8)
+
+
+
+```
+

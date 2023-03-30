@@ -19,7 +19,6 @@ library(patchwork)
 library(cowplot)
 library(NatParksPalettes)
 library(lubridate)
-library(lubridate)
 
 
 # functions 
