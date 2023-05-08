@@ -17,6 +17,7 @@ metadata_fordata =
   dplyr::select(c(SampleID, Date, Time, Area, Site, Plot, Plot_ID, Depth_cm, 
                   Solution_pH, Solution_SC, Solution_temp
                   )) %>% 
+  mutate(PhIr_SampleID = SampleID) %>% 
   separate(SampleID, sep = "-", into = c("projectinfo", "samplename"))
 
 
@@ -91,7 +92,7 @@ alldata_noblanks =
                    TN_mean_mgL = round(mean(TN_mgL),3)) %>% 
   left_join(metadata_fordata, by = "samplename") %>% 
   filter(Area != 'Blank' & Site != "Blank") %>% 
-  group_by(Area, Site, Depth_cm, Date) %>% 
+  group_by(PhIr_SampleID, Area, Site, Depth_cm, Date) %>% 
   dplyr::summarise(NPOC_sitemean_mgL = round(mean(NPOC_mean_mgL),3),
                    NPOC_se = sd(NPOC_mean_mgL)/sqrt(n()),
                    TN_sitemean_mgL = round(mean(TN_mean_mgL),3),
