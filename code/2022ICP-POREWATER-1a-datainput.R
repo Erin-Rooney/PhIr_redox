@@ -228,6 +228,121 @@ redox_nutrients_leftjoin_longer =
   mutate(ICP = recode(ICP, "mean_fe_ug_m_l" = "iron", "mean_p_ug_m_l" = "phosphorus",
                       "mean_ca_ug_m_l" = "calcium", "mean_al_ug_m_l" = "aluminum"))
 
+
+######micromodel concentration prep
+
+
+#####MANUSCRIPT FIGURES----------------
+
+P_concentration_fig =
+  processed_ICP %>% 
+  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
+  filter(ICP == "P_ug_mL") %>% 
+  ggplot() +
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 1, linetype = "dotted")+
+  labs(x = "Phosphorus concentration, μg/ml",
+       y = "depth, cm",
+       color = "month, 2022"
+  )+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_y_reverse()+
+  facet_grid(Site~Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right")
+
+
+ggsave("output/P_concentration_fig.png", plot = P_concentration_fig, height = 5.5, width = 6.5)
+
+Fe_concentration_fig =
+processed_ICP %>% 
+  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
+  # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
+  filter(ICP == "Fe_ug_mL") %>% 
+  ggplot() +
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 1, linetype = "dotted")+
+  labs(x = "Iron concentration, μg/ml",
+       y = "depth, cm",
+       color = "month, 2022"
+  )+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_y_reverse()+
+  facet_grid(Site~Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right")
+
+ggsave("output/Fe_concentration_fig.png", plot = Fe_concentration_fig, height = 5.5, width = 6.5)
+
+
+Mn_concentration_fig =
+  processed_ICP %>% 
+  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
+  # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
+  filter(ICP == "Mn_ug_mL") %>% 
+  ggplot() +
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 1, linetype = "dotted")+
+  labs(x = "Manganese concentration, μg/ml",
+       y = "depth, cm",
+       color = "month, 2022"
+  )+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+
+  scale_y_reverse()+
+  facet_grid(Site~Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right")
+
+ggsave("output/Mn_concentration_fig.png", plot = Mn_concentration_fig, height = 5.5, width = 6.5)
+
+Ca_concentration_fig =
+  processed_ICP %>% 
+  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
+  # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
+  filter(ICP == "Ca_ug_mL") %>% 
+  ggplot() +
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 1, linetype = "dotted")+
+  labs(x = "Calcium concentration, μg/ml",
+       y = "depth, cm",
+       color = "month, 2022"
+  )+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  
+  scale_y_reverse()+
+  facet_grid(Site~Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right")
+
+ggsave("output/Ca_concentration_fig.png", plot = Ca_concentration_fig, height = 5.5, width = 6.5)
+
+
+library(patchwork)
+
+nutrientsfig1 = Ca_concentration_fig + Mn_concentration_fig 
+
+nutrientsfig2 = P_concentration_fig + Fe_concentration_fig 
+
+
+nutrient_plot = nutrientsfig1 / nutrientsfig2 + plot_layout(guides = "collect")
+
+# ggsave("output/2022nutrientsfigA.png", plot = nutrientsfigA, height = 9, width = 11)
+# ggsave("output/2022nutrientsfigB.png", plot = nutrientsfigB, height = 10, width = 8)
+ggsave("output/2022nutrient_plot.png", plot = nutrient_plot, height = 12, width = 9.5)
+
+
+
+###########
+
+
+
 redox_nutrients_log_fig =
 redox_nutrients_leftjoin_longer %>% 
   filter(redox_avg_mV != "NA" & ICP %in% c("aluminum", "calcium", "iron", "phosphorus")) %>% 

@@ -86,10 +86,10 @@ grouped_redox_forfigs_temporal2022 =
   mutate(forsep = TIMESTAMP) %>% 
   separate(forsep, sep = " ", into = c("date", "time")) %>% 
   separate(date, sep = "/", into = c("month", "day", "year")) %>% 
-  mutate(month = recode(month,  "6" = "early summer", 
-                        "7" = "mid summer", 
-                        "8" = "late summer",
-                        "9" = "early fall")) %>% 
+  mutate(month = recode(month,  "6" = "June", 
+                        "7" = "July", 
+                        "8" = "August",
+                        "9" = "September")) %>% 
   group_by(site, position, depth_cm, month) %>% 
   dplyr::summarise(redox_avg_mV = round(mean(avg_values_fixed),2),
                    redox_sd = round(sd(avg_values_fixed),2),
@@ -107,10 +107,10 @@ grouped_redox_forfigs_temporal2021 =
   mutate(forsep = TIMESTAMP) %>% 
   separate(forsep, sep = " ", into = c("date", "time")) %>% 
   separate(date, sep = "/", into = c("month", "day", "year")) %>% 
-  mutate(month = recode(month,  "6" = "early summer", 
-                        "7" = "mid summer", 
-                        "8" = "late summer",
-                        "9" = "early fall")) %>% 
+  mutate(month = recode(month,  "6" = "June", 
+                        "7" = "July", 
+                        "8" = "August",
+                        "9" = "September")) %>% 
   group_by(site, position, depth_cm, month) %>% 
   dplyr::summarise(redox_avg_mV = round(mean(avg_values_fixed),2),
                    redox_sd = round(sd(avg_values_fixed),2),
@@ -434,14 +434,16 @@ ggsave("formanuscript/redoxfig_depth_sdall.png", plot = redoxfig_depth_sdall, he
 
 redox_temporal_fig_2021 =
   grouped_redox_forfigs_temporal2021 %>% 
-  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
+  mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
   geom_point(size = 3, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
-  scale_color_manual(values = (pnw_palette('Sunset', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
+  # scale_color_manual(values = (pnw_palette('Sunset', 4)))+
+  # scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
   ylim(60, 0)+
   labs(x = '2021
        redox potential (mV)',
@@ -463,14 +465,16 @@ ggsave("formanuscript/redox_temporal_fig_2021.png", plot = redox_temporal_fig_20
 
 redox_temporal_fig_2022 =
   grouped_redox_forfigs_temporal2022 %>% 
-  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
+  mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
   geom_point(size = 3, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
-  scale_color_manual(values = (pnw_palette('Sunset', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
+  # scale_color_manual(values = (pnw_palette('Sunset', 4)))+
+  # scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
   ylim(60, 0)+
   labs(x = '2022
        redox potential (mV)',

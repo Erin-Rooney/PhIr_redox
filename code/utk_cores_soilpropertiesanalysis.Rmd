@@ -23,20 +23,31 @@ source("code/0-packages.R")
 data
 
 ```{r}
-bd_grav_data = read.csv("raw/PhIr2021_Soil_Inventory_bd.csv") 
+bd_grav_data = read.csv("processed/PhIr2021_Soil_InventoryUTKCores_foranalysis.csv") 
+
+samples_utk = read.csv("raw/UG_PhIr_2021_airdrysoilsamples.csv")
+
 ```
 
 clean data by replacing East/West with acidic tundra and non-acidic tundra. Whenever the Horizon column has an "O", the soil_material column will mark it as organic. Same for "M" and mineral. Calculate vwc from gravimetric and bulk density data.
 
 ```{r}
+# bd_grav_cleaned =
+#   bd_grav_data %>% 
+#   #dplyr::select(-c(X)) %>% 
+#   # mutate(Area = recode(Area, "East" = "acidic tundra",
+#   #                      "West" = "non-acidic tundra")) %>% 
+#   # dplyr::mutate(soil_material = case_when(grepl("O",Horizon)~"organic",
+#   #                                         grepl("M",Horizon)~"mineral")) %>% 
+#   mutate(volumetric_water_content_cm3_cm3 = soil_bulk_density_g_cm3 * grav_water_gh20_per_gdrysoil) 
+
 bd_grav_cleaned =
-  bd_grav_data %>% 
-  #dplyr::select(-c(X)) %>% 
-  mutate(Area = recode(Area, "East" = "acidic tundra",
-                       "West" = "non-acidic tundra")) %>% 
-  dplyr::mutate(soil_material = case_when(grepl("O",Horizon)~"organic",
-                                          grepl("M",Horizon)~"mineral")) %>% 
-  mutate(volumetric_water_content_cm3_cm3 = soil_bulk_density_g_cm3 * grav_water_gh20_per_gdrysoil) 
+  bd_grav_data 
+
+samples_utk_forcombining = 
+  samples_utk %>% 
+  mutate(driedsample_readyforshipping = "yes")
+
 
 ```
 
@@ -46,10 +57,12 @@ reduce data columns, create levels for Horizon data (now the label column).
 
 bd_select = 
   bd_grav_cleaned %>% 
-  dplyr::select(Sample_ID, Core_ID, Date_collected, Area, Site, Plot_num, Plot_ID, 
-                Horizon, Depth_1_cm, Depth_2_cm, Depth_3_cm, Depth_4_cm, Average_Depth_cm, real_depth_cm, 
-                soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3, soil_material) %>% 
-  mutate(label = Horizon) %>% 
+    dplyr::mutate(soil_material = case_when(grepl("O",horizon)~"organic",
+                                      grepl("M",horizon)~"mineral")) %>% 
+  dplyr::select(Sample_ID, core_id, date_collected, area, site, plot, plot_id, 
+                horizon, depth_1_cm, depth_2_cm, depth_3_cm, depth_4_cm, average_depth_cm, real_depth_cm, 
+                soil_bulk_density_g_cm_3, volumetric_water_content_cm3_cm3, soil_material) %>% 
+  mutate(label = horizon) %>% 
   mutate(label = factor(label, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2")))  
  
 ```
@@ -60,7 +73,18 @@ Differentiate data that has been analyzed for vwc/bulk density and data that has
 sample_status =
   bd_select %>% 
   replace(is.na(.),"not analyzed")  %>% 
-  mutate(data = case_when(grepl("not analyzed", soil_bulk_density_g_cm3) ~ "not analyzed", TRUE ~ "analyzed")) 
+  mutate(data = case_when(grepl("not analyzed", soil_bulk_density_g_cm_3) ~ "not analyzed", TRUE ~ "analyzed")) %>% 
+    mutate(site = factor(site, levels = c("Dry", "Mesic", "Hydric", "Transect"))) %>% 
+  mutate(area = recode(area, "East" = "acidic tundra",
+                  "West" = "non-acidic tundra")) %>% 
+  mutate(area = factor(area, levels = c("non-acidic tundra", "acidic tundra")))
+
+sample_status_readytogosamples =
+  bd_select %>% 
+  rename(sampleID = Sample_ID) %>% 
+  left_join(samples_utk_forcombining) 
+
+write.csv(sample_status_readytogosamples, "processed/2021_soilinventory_driedsamples.csv")
 
 ```
 
@@ -70,18 +94,35 @@ sample_status =
 
 sample_status %>% 
   filter(data %in% "analyzed" & real_depth_cm != "not analyzed") %>% 
-  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric", "Transect"))) %>% 
-  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   mutate(real_depth_cm = as.numeric(real_depth_cm)) %>% 
-  mutate(Date_collected = factor(Date_collected, levels = c("6-Jul-21", "7-Jul-21", "13-Jul-21", "14-Jul-21", "24-Jul-21", "30-Jul-21", 
+  mutate(date_collected = factor(date_collected, levels = c("6-Jul-21", "7-Jul-21", "13-Jul-21", "14-Jul-21", "24-Jul-21", "30-Jul-21", 
                                                             "31-Jul-21", "7-Aug-21"))) %>% 
   ggplot()+
-  geom_point(aes(x = Date_collected, y = real_depth_cm, fill = data), shape = c(21), size = 3, alpha = 0.5)+
+  geom_point(aes(x = date_collected, y = real_depth_cm, fill = data), shape = c(21), size = 3, alpha = 0.5)+
   scale_fill_manual(values = c("#efc3e6"))+
   labs(x = "date collected",
        y = "depth",
        fill = "bulk density & volumetric water")+
-  facet_grid(Site~Area, scales = "free")+
+  facet_grid(site~area, scales = "free")+
+  scale_y_reverse()+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "top",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+sample_status_readytogosamples %>% 
+  filter(driedsample_readyforshipping %in% "yes") %>% 
+  mutate(real_depth_cm = as.numeric(real_depth_cm)) %>% 
+  mutate(date_collected = factor(date_collected, levels = c("6-Jul-21", "7-Jul-21", "13-Jul-21", "14-Jul-21", "24-Jul-21", "30-Jul-21", 
+                                                            "31-Jul-21", "7-Aug-21"))) %>% 
+  ggplot()+
+  geom_point(aes(x = date_collected, y = real_depth_cm, fill = driedsample_readyforshipping), shape = c(21), size = 3, alpha = 0.5)+
+  scale_fill_manual(values = c("#f4acb7"))+
+  labs(x = "date collected",
+       y = "depth",
+       fill = "dried samples at UTK")+
+  facet_grid(site~area, scales = "free")+
   scale_y_reverse()+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "top",
@@ -94,18 +135,37 @@ sample_status %>%
 ```{r, fig.height = 8, fig.width = 5}
 sample_status %>% 
   filter(data %in% "not analyzed" & real_depth_cm != "not analyzed") %>% 
-  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric", "Transect"))) %>% 
-  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  mutate(site = factor(site, levels = c("Dry", "Mesic", "Hydric", "Transect"))) %>% 
+  mutate(area = factor(area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   mutate(real_depth_cm = as.numeric(real_depth_cm)) %>% 
-  mutate(Date_collected = factor(Date_collected, levels = c("6-Jul-21", "7-Jul-21", "13-Jul-21", "14-Jul-21", "24-Jul-21", "30-Jul-21", 
+  mutate(date_collected = factor(date_collected, levels = c("6-Jul-21", "7-Jul-21", "13-Jul-21", "14-Jul-21", "24-Jul-21", "30-Jul-21", 
                                                             "31-Jul-21", "7-Aug-21"))) %>% 
   ggplot()+
-  geom_point(aes(x = Date_collected, y = real_depth_cm, fill = data), shape = c(21), size = 3, alpha = 0.5)+
+  geom_point(aes(x = date_collected, y = real_depth_cm, fill = data), shape = c(21), size = 3, alpha = 0.5)+
   scale_fill_manual(values = c("#b8bedd"))+
   labs(x = "date collected",
        y = "depth",
        fill = "bulk density & volumetric water")+
-  facet_grid(Site~Area, scales = "free")+
+  facet_grid(site~area, scales = "free")+
+  scale_y_reverse()+
+  theme_er1()+
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "top",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+
+sample_status_readytogosamples %>% 
+  filter(driedsample_readyforshipping %in% NA) %>% 
+  mutate(real_depth_cm = as.numeric(real_depth_cm)) %>% 
+  mutate(date_collected = factor(date_collected, levels = c("6-Jul-21", "7-Jul-21", "13-Jul-21", "14-Jul-21", "24-Jul-21", "30-Jul-21", 
+                                                            "31-Jul-21", "7-Aug-21"))) %>% 
+  ggplot()+
+  geom_point(aes(x = date_collected, y = real_depth_cm, fill = driedsample_readyforshipping), shape = c(21), size = 3, alpha = 0.5)+
+  scale_fill_manual(values = c("#d3d3d3"))+
+  labs(x = "date collected",
+       y = "depth",
+       fill = "dried samples at UTK")+
+  facet_grid(site~area, scales = "free")+
   scale_y_reverse()+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "top",
@@ -126,6 +186,14 @@ ncount =
 print(ncount)
 
 
+ncount_driedsamplesatUTK =
+  sample_status_readytogosamples %>% 
+  group_by(driedsample_readyforshipping) %>%
+  dplyr::summarise(n = n())
+
+print(ncount_driedsamplesatUTK)
+
+
 ```
 
 Analyzed vs not analyzed by date
@@ -137,6 +205,15 @@ ncount_bydate =
   dplyr::summarise(n = n())
 
 print(ncount_bydate)
+
+ncount_bydate_driedsamplesatUTK =
+  sample_status_readytogosamples %>% 
+  group_by(Date_collected, driedsample_readyforshipping) %>%
+  dplyr::summarise(n = n())
+
+print(ncount_bydate_driedsamplesatUTK)
+
+
 ```
 
 By site
@@ -148,6 +225,13 @@ ncount_bysite =
   dplyr::summarise(n = n())
 
 print(ncount_bysite)
+
+ncount_bysite_driedsamplesatUTK =
+  sample_status_readytogosamples %>% 
+  group_by(Area, Site, driedsample_readyforshipping) %>%
+  dplyr::summarise(n = n())
+
+print(ncount_bysite_driedsamplesatUTK)
 ```
 
 By soil material
@@ -159,6 +243,14 @@ ncount_bymaterial =
   dplyr::summarise(n = n())
 
 print(ncount_bymaterial)
+
+
+ncount_bymaterial_driedsamplesatUTK =
+  sample_status_readytogosamples %>% 
+  group_by(soil_material, driedsample_readyforshipping) %>%
+  dplyr::summarise(n = n())
+
+print(ncount_bymaterial_driedsamplesatUTK)
 ```
 
 By Horizon
@@ -170,5 +262,12 @@ ncount_byhorizon =
   dplyr::summarise(n = n())
 
 print(ncount_byhorizon)
+
+ncount_byhorizon_driedsamplesatUTK =
+  sample_status_readytogosamples %>% 
+  group_by(Horizon, driedsample_readyforshipping) %>%
+  dplyr::summarise(n = n())
+
+print(ncount_byhorizon_driedsamplesatUTK)
 ```
 

@@ -50,9 +50,49 @@ moisture_separate <- function(dat){
     force()
 }
 
+
+moisture_separate_std <- function(dat){
+  dat %>% 
+    dplyr::rename('soilmoisture_NUM_Std' = 'X.1') %>%
+    # dplyr::select(c('X') & 
+    dplyr::select(starts_with('soilmoisture'),
+                  starts_with('soiltemperature'),
+                  starts_with("soilsalinity")) %>% 
+    dplyr::select(ends_with('Std')) %>% 
+    dplyr::rename(redox_NUM_Std = soilmoisture_NUM_Std,
+                  moisture_5 = soilmoisture5cm_Std,
+                  moisture_15 = soilmoisture15cm_Std,
+                  moisture_25 = soilmoisture25cm_Std,
+                  temp_5 = soiltemperature5cm_Std,
+                  temp_15 = soiltemperature15cm_Std,
+                  temp_25 = soiltemperature25cm_Std,
+                  salinity_5 = soilsalinity5cm_Std,
+                  salinity_15 = soilsalinity15cm_Std,
+                  salinity_25 = soilsalinity25cm_Std
+    ) %>%
+    force()
+}
+
 # run all 6 data frames
 
 
+# run all 6 data frames
+
+
+
+westhydric_moisture_std = 
+  moisture_separate_std(westhydric_dlname) %>% 
+  #dplyr::select(-soiltemperature_Avg) %>% 
+  left_join(westhydric_metadata, by = 'redox_NUM_Std') %>% 
+  pivot_longer(-c("redox_NUM_Std", "X", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = c("type", "depth"), names_sep= "_", values_to = 'std_values') %>% 
+  filter(type != 'redox') %>% 
+  pivot_wider(names_from = "type", values_from = "std_values") %>% 
+  # group_by(RECORD, TIMESTAMP, depth) %>%
+  # dplyr::mutate(n = n()) %>%
+  # ungroup() %>%
+  dplyr::select(-c(redox_NUM_Std, X)) %>% 
+  force()
 
 westhydric_moisture = 
   moisture_separate(westhydric_dlname) %>% 
@@ -69,6 +109,7 @@ westhydric_moisture =
   force()
 
 
+
 westmesic_moisture = 
   moisture_separate(westmesic_dlname) %>% 
   dplyr::select(-soiltemperature_Avg) %>% 
@@ -78,6 +119,21 @@ westmesic_moisture =
   filter(type != 'redox') %>% 
   pivot_wider(names_from = "type", values_from = "avg_values") %>% 
   dplyr::select(-c(redox_NUM_Avg, X)) %>% 
+  force()%>% 
+  filter(RECORD != c(236))
+
+westmesic_moisture_std = 
+  moisture_separate_std(westmesic_dlname) %>% 
+  #dplyr::select(-soiltemperature_Avg) %>% 
+  left_join(westmesic_metadata, by = 'redox_NUM_Std') %>% 
+  pivot_longer(-c("redox_NUM_Std", "X", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = c("type", "depth"), names_sep= "_", values_to = 'std_values') %>% 
+  filter(type != 'redox') %>% 
+  pivot_wider(names_from = "type", values_from = "std_values") %>% 
+  # group_by(RECORD, TIMESTAMP, depth) %>%
+  # dplyr::mutate(n = n()) %>%
+  # ungroup() %>%
+  dplyr::select(-c(redox_NUM_Std, X)) %>% 
   force()
 
 westdry_moisture = 
@@ -89,6 +145,20 @@ westdry_moisture =
   filter(type != 'redox') %>% 
   pivot_wider(names_from = "type", values_from = "avg_values") %>% 
   dplyr::select(-c(redox_NUM_Avg, X)) %>% 
+  force() 
+
+westdry_moisture_std = 
+  moisture_separate_std(westdry_dlname) %>% 
+  #dplyr::select(-soiltemperature_Avg) %>% 
+  left_join(westdry_metadata, by = 'redox_NUM_Std') %>% 
+  pivot_longer(-c("redox_NUM_Std", "X", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = c("type", "depth"), names_sep= "_", values_to = 'std_values') %>% 
+  filter(type != 'redox') %>% 
+  pivot_wider(names_from = "type", values_from = "std_values") %>% 
+  # group_by(RECORD, TIMESTAMP, depth) %>%
+  # dplyr::mutate(n = n()) %>%
+  # ungroup() %>%
+  dplyr::select(-c(redox_NUM_Std, X)) %>% 
   force()
 
 easthydric_moisture = 
@@ -100,6 +170,21 @@ easthydric_moisture =
   filter(type != 'redox') %>% 
   pivot_wider(names_from = "type", values_from = "avg_values") %>% 
   dplyr::select(-c(redox_NUM_Avg, X)) %>% 
+  force() %>% 
+  filter(RECORD != c(1367, 1937, 1353))
+
+easthydric_moisture_std = 
+  moisture_separate_std(easthydric_dlname) %>% 
+  #dplyr::select(-soiltemperature_Avg) %>% 
+  left_join(easthydric_metadata, by = 'redox_NUM_Std') %>% 
+  pivot_longer(-c("redox_NUM_Std", "X", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = c("type", "depth"), names_sep= "_", values_to = 'std_values') %>% 
+  filter(type != 'redox') %>% 
+  pivot_wider(names_from = "type", values_from = "std_values") %>% 
+  # group_by(RECORD, TIMESTAMP, depth) %>%
+  # dplyr::mutate(n = n()) %>%
+  # ungroup() %>%
+  dplyr::select(-c(redox_NUM_Std, X)) %>% 
   force()
 
 eastmesic_moisture = 
@@ -111,7 +196,22 @@ eastmesic_moisture =
   filter(type != 'redox') %>% 
   pivot_wider(names_from = "type", values_from = "avg_values")%>% 
   dplyr::select(-c(redox_NUM_Avg, X)) %>% 
-  force() 
+  force() %>% 
+  filter(RECORD != c(402))
+
+eastmesic_moisture_std = 
+  moisture_separate_std(eastmesic_dlname) %>% 
+  #dplyr::select(-soiltemperature_Avg) %>% 
+  left_join(eastmesic_metadata, by = 'redox_NUM_Std') %>% 
+  pivot_longer(-c("redox_NUM_Std", "X", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = c("type", "depth"), names_sep= "_", values_to = 'std_values') %>% 
+  filter(type != 'redox') %>% 
+  pivot_wider(names_from = "type", values_from = "std_values") %>% 
+  # group_by(RECORD, TIMESTAMP, depth) %>%
+  # dplyr::mutate(n = n()) %>%
+  # ungroup() %>%
+  dplyr::select(-c(redox_NUM_Std, X)) %>% 
+  force()
 
 eastdry_moisture = 
   moisture_separate(eastdry_dlname) %>%
@@ -122,8 +222,22 @@ eastdry_moisture =
   filter(type != 'redox') %>% 
   pivot_wider(names_from = "type", values_from = "avg_values")%>% 
   dplyr::select(-c(redox_NUM_Avg, X)) %>% 
-  force()
+  force()%>% 
+  filter(RECORD != c(7016, 3131, 6837))
 
+eastdry_moisture_std = 
+  moisture_separate_std(eastdry_dlname) %>% 
+  #dplyr::select(-soiltemperature_Avg) %>% 
+  left_join(eastdry_metadata, by = 'redox_NUM_Std') %>% 
+  pivot_longer(-c("redox_NUM_Std", "X", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = c("type", "depth"), names_sep= "_", values_to = 'std_values') %>% 
+  filter(type != 'redox') %>% 
+  pivot_wider(names_from = "type", values_from = "std_values") %>% 
+  # group_by(RECORD, TIMESTAMP, depth) %>%
+  # dplyr::mutate(n = n()) %>%
+  # ungroup() %>%
+  dplyr::select(-c(redox_NUM_Std, X)) %>% 
+  force()
 
 #####
 
@@ -324,7 +438,6 @@ moisture_combine_nodupes =
 #write.csv(moisture_combine, "processed/moisture_temp_salinity_avgs_combine.csv")
 # 
 write.csv(moisture_combine, "processed/moisture_temp_salinity_avgs_combine.csv")
-write.csv(all_combine_depthbins, "processed/all_combine_depthbins.csv")
 
 write.csv(moisture_combine_nodupes, "processed/final_temp_salinity_avgs.csv")
 

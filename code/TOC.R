@@ -213,3 +213,23 @@ all_data_fixdate %>%
 ggsave("output/NPOC_2022.png", plot = NPOC_fig, height = 5.5, width = 9.5)
 ggsave("output/TN_2022.png", plot = TN_fig, height = 5.5, width = 9.5)
 
+
+##for micromodel concentrations
+
+micromodel_concentrationplanning_fig =
+all_data_fixdate %>% 
+  filter(Area == "acidic tundra" & Site == "Hydric") %>% 
+  ggplot()+
+  geom_point(aes(x = NPOC_sitemean_mgL, y = Depth_cm, color = Month2), size = 3, alpha = 0.6)+
+  labs(y = "depth, cm",
+       x = "NPOC, mg/L",
+       color = "Month, 2022")+
+  #scale_color_gradientn(colors = (PNWColors::pnw_palette("Bay")))+
+  #scale_x_date(date_breaks = "2 weeks", date_labels = "%b-%d")+
+  scale_color_manual(values = c("#f94144", "#f8961e", "#43aa8b", "#577590"))+
+  scale_y_reverse()+
+  facet_grid(Site~Area)+
+  theme_er1()+
+  theme(legend.position = "right", axis.text.x = element_text(size = 10))
+
+ggsave("output/NPOC_2022_formicromodelplanning.png", plot = micromodel_concentrationplanning_fig, height = 5.5, width = 6.5)

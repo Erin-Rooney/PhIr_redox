@@ -1,0 +1,460 @@
+---
+title: "2022 Standard Deviation of Redox Data 2022"
+author: "Erin C Rooney"
+date: "2023-06-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+load packages
+```{r}
+source("code/0-packages.R")
+source("code/functions-for-std-dev-redox-data.R")
+
+```
+
+
+load metadata and data from each site. 
+eventually we will combine everything, but we're keeping it separate for now.
+```{r}
+
+westhydric_dlname = read.csv("processed/westhydric_dlname2022.csv")
+easthydric_dlname = read.csv("processed/easthydric_dlname2022.csv")
+westmesic_dlname = read.csv("processed/westmesic_dlname2022.csv")
+eastmesic_dlname = read.csv("processed/eastmesic_dlname2022.csv")
+westdry_dlname = read.csv("processed/westdry_dlname2022.csv")
+eastdry_dlname = read.csv("processed/eastdry_dlname2022.csv")
+
+westhydric_metadata = read.csv("processed/westhydric_metadata2022.csv")
+easthydric_metadata = read.csv("processed/easthydric_metadata2022.csv")
+westmesic_metadata = read.csv("processed/westmesic_metadata2022.csv")
+eastmesic_metadata = read.csv("processed/eastmesic_metadata2022.csv")
+westdry_metadata = read.csv("processed/westdry_metadata2022.csv")
+eastdry_metadata = read.csv("processed/eastdry_metadata2022.csv")
+
+```
+
+run the function on all 6 dataframes (for each site)
+after running the function, we will pivot_longer so that the data is in two columns
+data label including depth and probe
+then we will "fix" the redox values by adding 197
+then we will filter the data so that only fixed average values between -600 and 1000 are kept
+```{r}
+
+westhydric_avg = 
+  avg_separate(westhydric_dlname) %>% 
+  left_join(westhydric_metadata, by = 'redox_NUM_Avg') %>% 
+  pivot_longer(-c("redox_NUM_Avg", "X", "redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
+  filter(avg_values != 'NAN') %>% 
+  mutate(avg_values = as.numeric(avg_values)) %>% 
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  mutate(datalogger = "6")%>% 
+  separate(redox_avg, sep = "_Av", into = c("redox_depth", "avg_delete")) %>% 
+  dplyr::select(-avg_delete)
+
+westmesic_avg = 
+  avg_separate(westmesic_dlname) %>% 
+  left_join(westmesic_metadata, by = 'redox_NUM_Avg') %>% 
+  pivot_longer(-c("redox_NUM_Avg", "X", "redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
+  filter(avg_values != 'NAN') %>% 
+  mutate(avg_values = as.numeric(avg_values)) %>% 
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  mutate(datalogger = "2")%>% 
+  separate(redox_avg, sep = "_Av", into = c("redox_depth", "avg_delete")) %>% 
+  dplyr::select(-avg_delete)
+
+westdry_avg = 
+  avg_separate(westdry_dlname) %>% 
+  left_join(westdry_metadata, by = 'redox_NUM_Avg') %>% 
+  pivot_longer(-c("redox_NUM_Avg", "X", "redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
+  filter(avg_values != 'NAN') %>% 
+  mutate(avg_values = as.numeric(avg_values)) %>% 
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  mutate(datalogger = "4")%>% 
+  separate(redox_avg, sep = "_Av", into = c("redox_depth", "avg_delete")) %>% 
+  dplyr::select(-avg_delete)
+
+easthydric_avg = 
+  avg_separate(easthydric_dlname) %>% 
+  left_join(easthydric_metadata, by = 'redox_NUM_Avg') %>% 
+  mutate(redox_5_1.1_fromtip_Avg = as.character(redox_5_1.1_fromtip_Avg),
+         redox_5_1.2_fromtip_Avg = as.character(redox_5_1.2_fromtip_Avg),
+         redox_5_1.3_fromtip_Avg = as.character(redox_5_1.3_fromtip_Avg),
+         redox_5_1.4_fromtip_Avg = as.character(redox_5_1.4_fromtip_Avg),
+         redox_5_1.5_fromtip_Avg = as.character(redox_5_1.5_fromtip_Avg),
+         redox_5_1.6_fromtip_Avg = as.character(redox_5_1.6_fromtip_Avg),
+         redox_5_1.7_fromtip_Avg = as.character(redox_5_1.7_fromtip_Avg),
+         redox_5_1.8_fromtip_Avg = as.character(redox_5_1.8_fromtip_Avg),
+         redox_1A_Avg = as.character(redox_1A_Avg)) %>%  
+  pivot_longer(-c("redox_NUM_Avg", "X", "redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
+  filter(avg_values != 'NAN') %>% 
+  mutate(avg_values = as.numeric(avg_values)) %>%  
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  mutate(datalogger = "5")%>% 
+  separate(redox_avg, sep = "_Av", into = c("redox_depth", "avg_delete")) %>% 
+  dplyr::select(-avg_delete)
+
+eastmesic_avg = 
+  avg_separate(eastmesic_dlname) %>% 
+  left_join(eastmesic_metadata, by = 'redox_NUM_Avg') %>% 
+  pivot_longer(-c("redox_NUM_Avg", "X", "redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
+  filter(avg_values != 'NAN') %>% 
+  mutate(avg_values = as.numeric(avg_values)) %>% 
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  mutate(datalogger = "1")%>% 
+  separate(redox_avg, sep = "_Av", into = c("redox_depth", "avg_delete")) %>% 
+  dplyr::select(-avg_delete)
+
+eastdry_avg = 
+  avg_separate(eastdry_dlname) %>% 
+  left_join(eastdry_metadata, by = 'redox_NUM_Avg') %>% 
+  mutate(redox_3_1.1_fromtip_Avg = as.character(redox_3_1.1_fromtip_Avg),
+         redox_3_1.2_fromtip_Avg = as.character(redox_3_1.2_fromtip_Avg),
+         redox_3_1.3_fromtip_Avg = as.character(redox_3_1.3_fromtip_Avg),
+         redox_3_1.4_fromtip_Avg = as.character(redox_3_1.4_fromtip_Avg),
+         redox_3_3.1_fromtip_Avg = as.character(redox_3_3.1_fromtip_Avg),
+         redox_3_3.2_fromtip_Avg = as.character(redox_3_3.2_fromtip_Avg),
+         redox_3_3.3_fromtip_Avg = as.character(redox_3_3.3_fromtip_Avg),
+         redox_3_3.4_fromtip_Avg = as.character(redox_3_3.4_fromtip_Avg)
+         ) %>% 
+  pivot_longer(-c("redox_NUM_Avg", "X", "redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = "redox_avg", values_to = "avg_values") %>% 
+  #add 197 to all redox potentials to report data relative to the standard hydrogen electrode
+  filter(avg_values != 'NAN') %>% 
+  mutate(avg_values = as.numeric(avg_values)) %>% 
+  dplyr::mutate(avg_values_fixed = avg_values + 197) %>% 
+  mutate(datalogger = "3")%>% 
+  separate(redox_avg, sep = "_Av", into = c("redox_depth", "avg_delete")) %>% 
+  dplyr::select(-avg_delete)
+
+```
+
+
+```{r}
+
+westhydric_std = 
+  std_separate(westhydric_dlname) %>% 
+  left_join(westhydric_metadata, by = 'redox_NUM_Std') %>% 
+  pivot_longer(-c("redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = "redox_std", values_to = "std_values") %>% 
+  filter(redox_std != c("X", "redox_NUM_Avg"))%>% 
+  separate(redox_std, sep = "_St", into = c("redox_depth", "std_delete")) %>% 
+  dplyr::select(-std_delete)
+
+westmesic_std = 
+  std_separate(westmesic_dlname) %>% 
+  left_join(westmesic_metadata, by = 'redox_NUM_Std') %>% 
+  pivot_longer(-c("redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = "redox_std", values_to = "std_values") %>% 
+  filter(redox_std != c("X", "redox_NUM_Avg"))%>% 
+  separate(redox_std, sep = "_St", into = c("redox_depth", "std_delete")) %>% 
+  dplyr::select(-std_delete)
+
+westdry_std = 
+  std_separate(westdry_dlname) %>% 
+  left_join(westdry_metadata, by = 'redox_NUM_Std') %>% 
+  dplyr::select(-c(redox_NUM_Avg, X)) %>% 
+  pivot_longer(-c("redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = "redox_std", values_to = "std_values") %>% 
+  filter(redox_std != c("NAN"))%>% 
+  separate(redox_std, sep = "_St", into = c("redox_depth", "std_delete")) %>% 
+  dplyr::select(-std_delete)
+
+easthydric_std = 
+  std_separate(easthydric_dlname) %>% 
+  left_join(easthydric_metadata, by = 'redox_NUM_Std') %>% 
+ dplyr::select(-c(redox_NUM_Avg, X)) %>% 
+  dplyr::mutate(redox_5_1.1_fromtip_Std = as.character(redox_5_1.1_fromtip_Std),
+         redox_5_1.2_fromtip_Std = as.character(redox_5_1.2_fromtip_Std),
+         redox_5_1.3_fromtip_Std = as.character(redox_5_1.3_fromtip_Std),
+         redox_5_1.4_fromtip_Std = as.character(redox_5_1.4_fromtip_Std),
+         redox_5_1.5_fromtip_Std = as.character(redox_5_1.5_fromtip_Std),
+         redox_5_1.6_fromtip_Std = as.character(redox_5_1.6_fromtip_Std),
+         redox_5_1.7_fromtip_Std = as.character(redox_5_1.7_fromtip_Std),
+         redox_5_1.8_fromtip_Std = as.character(redox_5_1.8_fromtip_Std),
+          redox_1A_Std = as.character(redox_1A_Std)) %>%  
+pivot_longer(-c("redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"), names_to = "redox_std", values_to = "std_values") %>% 
+    filter(redox_std != c("NAN"))%>% 
+  separate(redox_std, sep = "_St", into = c("redox_depth", "std_delete")) %>% 
+  dplyr::select(-std_delete)
+
+
+eastmesic_std = 
+  std_separate(eastmesic_dlname) %>% 
+  left_join(eastmesic_metadata, by = 'redox_NUM_Std') %>% 
+   dplyr::select(-c(redox_NUM_Avg, X)) %>% 
+  pivot_longer(-c("redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = "redox_std", values_to = "std_values") %>% 
+  filter(redox_std != c("X", "redox_NUM_Avg"))%>% 
+  separate(redox_std, sep = "_St", into = c("redox_depth", "std_delete")) %>% 
+  dplyr::select(-std_delete)
+
+eastdry_std = 
+  std_separate(eastdry_dlname) %>% 
+  left_join(eastdry_metadata, by = 'redox_NUM_Std') %>% 
+   dplyr::select(-c(redox_NUM_Avg, X)) %>% 
+    mutate(redox_3_1.1_fromtip_Std = as.character(redox_3_1.1_fromtip_Std),
+         redox_3_1.2_fromtip_Std = as.character(redox_3_1.2_fromtip_Std),
+         redox_3_1.3_fromtip_Std = as.character(redox_3_1.3_fromtip_Std),
+         redox_3_1.4_fromtip_Std = as.character(redox_3_1.4_fromtip_Std),
+         redox_3_3.1_fromtip_Std = as.character(redox_3_3.1_fromtip_Std),
+         redox_3_3.2_fromtip_Std = as.character(redox_3_3.2_fromtip_Std),
+         redox_3_3.3_fromtip_Std = as.character(redox_3_3.3_fromtip_Std),
+         redox_3_3.4_fromtip_Std = as.character(redox_3_3.4_fromtip_Std)
+         ) %>% 
+  pivot_longer(-c("redox_NUM_Std", "TIMESTAMP", "RECORD", "site", "position", "Betterdate"),
+               names_to = "redox_std", values_to = "std_values") %>% 
+    filter(redox_std != c("NAN"))%>% 
+  separate(redox_std, sep = "_St", into = c("redox_depth", "std_delete")) %>% 
+  dplyr::select(-std_delete)
+
+
+
+```
+
+
+```{r}
+westhydric_merge =
+  westhydric_avg %>% 
+  left_join(westhydric_std)%>% 
+  dplyr::select(-c(redox_NUM_Std)) %>% 
+    filter(avg_values_fixed < 1000) %>%
+  filter(avg_values_fixed > -600)  %>% 
+     filter(std_values < 5) %>% 
+    dplyr::select(-c(std_values)) 
+
+westmesic_merge =
+  westmesic_avg %>% 
+  left_join(westmesic_std)%>% 
+    dplyr::select(-c(redox_NUM_Std)) %>% 
+    filter(avg_values_fixed < 1000) %>%
+  filter(avg_values_fixed > -600)  %>% 
+     filter(std_values < 5) %>% 
+    dplyr::select(-c(std_values)) 
+
+
+westdry_merge =
+  westdry_avg %>% 
+  left_join(westdry_std)%>% 
+  dplyr::select(-c(redox_NUM_Std)) %>% 
+    filter(avg_values_fixed < 1000) %>%
+  filter(avg_values_fixed > -600)  %>% 
+     filter(std_values < 5) %>% 
+    dplyr::select(-c(std_values)) 
+
+
+easthydric_merge =
+  easthydric_avg %>% 
+  left_join(easthydric_std)%>% 
+  dplyr::select(-c(redox_NUM_Std)) %>% 
+    filter(avg_values_fixed < 1000) %>%
+  filter(avg_values_fixed > -600)  %>% 
+     filter(std_values < 5) %>% 
+    dplyr::select(-c(std_values)) 
+
+
+eastmesic_merge =
+  eastmesic_avg %>% 
+  left_join(eastmesic_std)%>% 
+  dplyr::select(-c(redox_NUM_Std)) %>% 
+    filter(avg_values_fixed < 1000) %>%
+  filter(avg_values_fixed > -600)  %>% 
+     filter(std_values < 5) %>% 
+    dplyr::select(-c(std_values)) 
+
+
+eastdry_merge =
+  eastdry_avg %>% 
+  left_join(eastdry_std)%>% 
+  dplyr::select(-c(redox_NUM_Std)) %>% 
+    filter(avg_values_fixed < 1000) %>%
+  filter(avg_values_fixed > -600)  %>% 
+     filter(std_values < 5) %>% 
+    dplyr::select(-c(std_values)) 
+
+
+```
+
+
+
+```
+
+sensor names/depths
+
+```{r}
+sensor_depths_prename = read.csv("raw/2022_Sensor_depths.csv") 
+
+sensor_depths = 
+  sensor_depths_prename %>% 
+  dplyr::rename(position = Site,
+                site = Area) %>% 
+  mutate(site = recode(site, "West" = "west",
+                       "East" = "east")) %>% 
+  mutate(position = recode(position, "Hydric" = "hydric",
+                           "Mesic" = "mesic",
+                           "Dry" = "dry"),
+         Sensor = recode(Sensor, "redox_5-2-3_fromtip_Avg" = "redox_5_2-3_fromtip_Avg")) %>% 
+  dplyr::select(-c(X2021_depth_cm, Change_from_2021_cm)) %>% 
+  rename("depth_cm" = 'X2022_depth_cm') %>% 
+  mutate(Sensor = str_remove(Sensor, "Redox_")) %>% 
+  mutate(Sensor = str_remove(Sensor, "redox_")) %>% 
+  mutate(Sensor = str_remove(Sensor, "_fromtip_Avg")) %>% 
+  separate(Sensor, sep = "_", into = c("datalogger", "probe_sensor")) %>% 
+  separate(probe_sensor, sep = "-", into = c("probe", "sensor")) %>% 
+  mutate(sensor = as.numeric(sensor)) %>% 
+  mutate(depth_cm = str_replace(depth_cm, "n.a.", "NA")) %>%
+  mutate(depth_cm = as.numeric(depth_cm)) %>% 
+  na.omit() 
+  
+  
+```
+
+```{r}
+
+
+westhydric_depths = 
+   depths_function(westhydric_merge)%>% 
+   na.omit()
+
+ 
+ easthydric_depths = 
+   depths_function(easthydric_merge) %>% 
+   na.omit()
+ 
+ westmesic_depths = 
+   depths_function(westmesic_merge)%>% 
+   na.omit()
+ 
+ eastmesic_depths = 
+   depths_function(eastmesic_merge)%>% 
+   na.omit()
+ 
+ westdry_depths = 
+   depths_function(westdry_merge)%>% 
+   na.omit()
+ 
+ eastdry_depths = 
+   depths_function(eastdry_merge) %>% 
+   na.omit()
+
+```
+
+Lag/lead cleaning
+
+```{r}
+westhydric_depths_outliers = 
+   datacleaning_function(westhydric_depths) 
+
+easthydric_depths_outliers = 
+   datacleaning_function(easthydric_depths) 
+
+westmesic_depths_outliers = 
+  datacleaning_function(westmesic_depths)  
+
+eastmesic_depths_outliers = 
+  datacleaning_function(eastmesic_depths)  
+
+westdry_depths_outliers = 
+  datacleaning_function(westdry_depths) 
+  
+eastdry_depths_outliers = 
+  datacleaning_function(eastdry_depths) 
+ 
+```
+
+
+filter std dev 
+```{r}
+alldata_cleaned =
+  westhydric_depths_outliers %>% 
+  vctrs::vec_c(easthydric_depths_outliers, westmesic_depths_outliers,
+               eastmesic_depths_outliers, westdry_depths_outliers,
+               eastdry_depths_outliers)
+
+alldata_notcleaned =
+  westhydric_depths %>% 
+  vctrs::vec_c(easthydric_depths, westmesic_depths,
+               eastmesic_depths, westdry_depths,
+               eastdry_depths)
+
+```
+
+
+
+Output
+```{r}
+
+write.csv(alldata_cleaned, "processed/2022all_combine_temporary.csv")
+
+
+
+```
+
+
+plot
+```{r}
+
+  alldata_cleaned %>%
+  # mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  # mutate(site = recode(site, "east" = "acidic tundra",
+  #                      "west" = "non-acidic tundra")) %>% 
+  # mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  #filter(probe == 3) %>%
+  ggplot(aes(x = as_datetime(Betterdate), y = avg_values_fixed))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  #geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  scale_x_datetime(date_breaks = "2 weeks" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV",
+       x = "Post-cleaning",
+       color = "depth, cm")+
+  facet_grid(position~site)+
+  theme_er1()+
+  theme(legend.position = "top", axis.text.x = element_text (size = 10, vjust = 0.5, angle = 45))
+
+ggsave("output/artifact_westhydric_fig_2022_std5.png", plot = artifact_westhydric_fig_2022_std5, height = 10, width = 10)
+```
+
+
+
+
+
+```{r}
+
+artifact_westhydric_fig_2022 =
+  westhydric_depths_outliers %>%
+  # mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  # mutate(site = recode(site, "east" = "acidic tundra",
+  #                      "west" = "non-acidic tundra")) %>% 
+  # mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(probe == 3) %>%
+  ggplot(aes(x = as_datetime(Betterdate), y = avg_values_fixed))+
+  geom_point(aes(color = depth_cm), alpha = 0.5)+
+  #geom_line(aes(group = depth_cm, color = depth_cm, orientation = "x"))+
+  scale_color_gradientn(colors = natparks.pals(name = "KingsCanyon", 8))+
+  scale_x_datetime(date_breaks = "2 weeks" , date_labels = "%Y-%m-%d")+
+  #scale_x_discrete(breaks = seq(-1,31,2))+
+  labs(y = "redox potential, mV",
+       x = "Pre-cleaning",
+       color = "depth, cm")+
+  #facet_grid(position~site)+
+  theme_er1()+
+  theme(legend.position = "top", axis.text.x = element_text (size = 10, vjust = 0.5, angle = 45))
+
+ggsave("output/artifact_westhydric_fig_2022.png", plot = artifact_westhydric_fig_2021, height = 10, width = 10)
+```
+

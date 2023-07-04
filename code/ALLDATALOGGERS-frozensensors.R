@@ -11,8 +11,8 @@ source("code/0-packages.R")
 
 #load data
 
-combo_redox_withdepths_2022 = read.csv("processed/all_combine_2022.csv")
-combo_redox_withdepths_2021 = read.csv("processed/all_combine.csv")
+combo_redox_withdepths_2022 = read.csv("processed/2022all_combine_temporary.csv")
+combo_redox_withdepths_2021 = read.csv("processed/all_combine_temporary.csv")
 
 #
 

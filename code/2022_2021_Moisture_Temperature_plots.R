@@ -28,10 +28,10 @@ final_temp_sal_moist_forfig =
          date = ymd(date)) %>% 
   separate(forsep, sep = " ", into = c("date", "time")) %>% 
   separate(date, sep = "/", into = c("month", "day", "year")) %>% 
-  mutate(month = recode(month,  "6" = "early summer", 
-                        "7" = "mid summer", 
-                        "8" = "late summer",
-                        "9" = "early fall")) %>% 
+  mutate(month = recode(month,  "6" = "June", 
+                        "7" = "July", 
+                        "8" = "August",
+                        "9" = "September")) %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
@@ -109,7 +109,7 @@ grouped_moisture_forfigs_temporal2022 =
 
 moisturefig_temporal =
   grouped_moisture_forfigs_temporal %>% 
-  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
+  mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = moisture_avg, color = position, fill = position), group = 'position')+
   geom_point(size = 3, alpha = 0.4, shape = c(21))+
@@ -129,14 +129,16 @@ ggsave("formanuscript/moisture_temporal_fig.tiff", plot = moisturefig_temporal, 
 
 moisturefig_temporal =
   grouped_moisture_forfigs_temporal %>%
-  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
+  mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
   geom_point(size = 4, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
   geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE)+
-  scale_color_manual(values = (pnw_palette('Sunset', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
+  # scale_color_manual(values = (pnw_palette('Sunset', 4)))+
+  # scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
   ylim(60, 0)+
   labs(x = '2021
        soil moisture (%)',
@@ -157,14 +159,17 @@ ggsave("formanuscript/moisture_temporal_fig_2021.png", plot = moisturefig_tempor
 
 moisturefig_temporal2022 =
   grouped_moisture_forfigs_temporal2022 %>% 
+  filter(moisture_avg > 5) %>% 
   mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
   geom_point(size = 4, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
   geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE)+
-  scale_color_manual(values = (pnw_palette('Sunset', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
+  # scale_color_manual(values = (pnw_palette('Sunset', 4)))+
+  # scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
   ylim(60, 0)+
   labs(x = '2022
        soil moisture (%)',
