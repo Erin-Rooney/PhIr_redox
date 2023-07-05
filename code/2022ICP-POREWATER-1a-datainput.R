@@ -251,7 +251,13 @@ P_concentration_fig =
   scale_y_reverse()+
   facet_grid(Site~Area, scales = "free_x")+
   theme_er1()+
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+      panel.background = element_blank(),
+      strip.placement = "outside",
+      axis.text.y=element_blank(),  #remove y axis labels
+      axis.ticks.y=element_blank(),
+      axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90)) 
 
 
 ggsave("output/P_concentration_fig.png", plot = P_concentration_fig, height = 5.5, width = 6.5)
@@ -274,7 +280,14 @@ processed_ICP %>%
   scale_y_reverse()+
   facet_grid(Site~Area, scales = "free_x")+
   theme_er1()+
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90)) 
+
 
 ggsave("output/Fe_concentration_fig.png", plot = Fe_concentration_fig, height = 5.5, width = 6.5)
 
@@ -297,7 +310,13 @@ Mn_concentration_fig =
   scale_y_reverse()+
   facet_grid(Site~Area, scales = "free_x")+
   theme_er1()+
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90)) 
 
 ggsave("output/Mn_concentration_fig.png", plot = Mn_concentration_fig, height = 5.5, width = 6.5)
 
@@ -319,7 +338,13 @@ Ca_concentration_fig =
   scale_y_reverse()+
   facet_grid(Site~Area, scales = "free_x")+
   theme_er1()+
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90)) 
 
 ggsave("output/Ca_concentration_fig.png", plot = Ca_concentration_fig, height = 5.5, width = 6.5)
 
