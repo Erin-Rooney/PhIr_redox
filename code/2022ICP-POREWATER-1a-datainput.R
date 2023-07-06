@@ -240,8 +240,8 @@ P_concentration_fig =
   mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
   filter(ICP == "P_ug_mL") %>% 
   ggplot() +
-  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2, alpha = 0.75)+
-  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 1, linetype = "dotted")+
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
   labs(x = "Phosphorus concentration, μg/ml",
        y = "depth, cm",
        color = "month, 2022"
@@ -255,9 +255,10 @@ P_concentration_fig =
       panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
       panel.background = element_blank(),
       strip.placement = "outside",
-      axis.text.y=element_blank(),  #remove y axis labels
-      axis.ticks.y=element_blank(),
-      axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90)) 
+      strip.text.y = element_blank(),
+      #axis.text.y=element_blank(),  #remove y axis labels
+      #axis.ticks.y=element_blank(),
+      axis.text.x = element_text(size = 9, hjust=0.8,vjust=0.2,angle = 90)) 
 
 
 ggsave("output/P_concentration_fig.png", plot = P_concentration_fig, height = 5.5, width = 6.5)
@@ -269,10 +270,10 @@ processed_ICP %>%
   # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
   filter(ICP == "Fe_ug_mL") %>% 
   ggplot() +
-  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2, alpha = 0.75)+
-  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 1, linetype = "dotted")+
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
   labs(x = "Iron concentration, μg/ml",
-       y = "depth, cm",
+       y = " ",
        color = "month, 2022"
   )+
   scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
@@ -286,7 +287,7 @@ processed_ICP %>%
         strip.placement = "outside",
         axis.text.y=element_blank(),  #remove y axis labels
         axis.ticks.y=element_blank(),
-        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90)) 
+        axis.text.x = element_text(size = 9, hjust=0.8,vjust=0.2,angle = 90)) 
 
 
 ggsave("output/Fe_concentration_fig.png", plot = Fe_concentration_fig, height = 5.5, width = 6.5)
@@ -299,10 +300,10 @@ Mn_concentration_fig =
   # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
   filter(ICP == "Mn_ug_mL") %>% 
   ggplot() +
-  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2, alpha = 0.75)+
-  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 1, linetype = "dotted")+
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
   labs(x = "Manganese concentration, μg/ml",
-       y = "depth, cm",
+       y = " ",
        color = "month, 2022"
   )+
   scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
@@ -316,7 +317,7 @@ Mn_concentration_fig =
         strip.placement = "outside",
         axis.text.y=element_blank(),  #remove y axis labels
         axis.ticks.y=element_blank(),
-        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90)) 
+        axis.text.x = element_text(size = 9, hjust=0.8,vjust=0.2,angle = 90)) 
 
 ggsave("output/Mn_concentration_fig.png", plot = Mn_concentration_fig, height = 5.5, width = 6.5)
 
@@ -327,8 +328,8 @@ Ca_concentration_fig =
   # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
   filter(ICP == "Ca_ug_mL") %>% 
   ggplot() +
-  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2, alpha = 0.75)+
-  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 1, linetype = "dotted")+
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
   labs(x = "Calcium concentration, μg/ml",
        y = "depth, cm",
        color = "month, 2022"
@@ -342,9 +343,10 @@ Ca_concentration_fig =
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         strip.placement = "outside",
-        axis.text.y=element_blank(),  #remove y axis labels
-        axis.ticks.y=element_blank(),
-        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90)) 
+        strip.text.y = element_blank(),
+       # axis.text.y=element_blank(),  #remove y axis labels
+       # axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 9, hjust=0.8,vjust=0.2,angle = 90)) 
 
 ggsave("output/Ca_concentration_fig.png", plot = Ca_concentration_fig, height = 5.5, width = 6.5)
 
