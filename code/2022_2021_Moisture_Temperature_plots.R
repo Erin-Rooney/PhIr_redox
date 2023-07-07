@@ -63,27 +63,6 @@ final_temp_sal_moist_forfig2022 =
 
 
 
-# daily_redox_wred =
-# daily_redox_forfigs %>% 
-#   filter(date < "2021-07-15" & date > "2021-06-01") %>% 
-#     ggplot(aes(x = date, y = depth_cm))+
-#     geom_point(aes(color = depth_avg))+
-#     geom_point(data = final_temp_sal_moist_forfig %>% filter(temp < 1 & date < "2021-07-05" & date > "2021-06-01"),
-#              size = 2, color = "Red"
-#              )+
-#     labs(y = "depth, cm", colors = "redox potential, mV")+
-#     scale_x_date(date_breaks = "1 day" , date_labels = "%Y-%m-%d")+
-#   scale_y_reverse()+
-#     scale_color_gradientn(colors = (PNWColors::pnw_palette("Anemone")))+
-#     theme_er1()+
-#     theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
-#     facet_grid(position~site) 
-# 
-# ggsave("output/daily_redox_wred.png", plot = daily_redox_wred, width = 8, height = 5.5)
-#   
-# coeff <- 7.5
-
-
 grouped_moisture_forfigs_temporal = 
   final_temp_sal_moist_forfig %>% 
   filter(moisture > 1) %>% 
@@ -189,34 +168,6 @@ moisturefig_temporal2022 =
 
 ggsave("formanuscript/moisture_temporal_fig_2022.png", plot = moisturefig_temporal2022, height = 7, width = 3.8)
 
-
-
-moisturefig_temporal_hydricnonacidic2021 =
-  grouped_moisture_forfigs_temporal %>% 
-  mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
-  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  filter(site == "non-acidic tundra" & position == "hydric") %>% 
-  ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
-  geom_point(size = 4, alpha = 0.8, shape = c(21))+
-  geom_line(orientation = "y", show.legend = FALSE)+
-  geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE)+
-  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
-  ylim(60, 0)+
-  labs(x = 'soil moisture (%)',
-       y = "depth (cm)",
-       color = "", fill = "")+
-  scale_x_continuous(position="top", limits = c(0, 60))+
-  facet_grid(position~site, switch = "x")+
-  theme_er1()+
-  # theme(legend.position = "none", axis.title.y = element_blank(), axis.text.y = element_blank(),
-  #        axis.ticks.y = element_blank())+
-  theme(legend.position = "none")+
-  NULL
-
-ggsave("formanuscript/moisturefig_temporal_hydricnonacidic2021.png", plot = moisturefig_temporal_hydricnonacidic2021, height = 5, width = 3)
-
-
 allsoilmoisture_fig =
   final_temp_sal_moist_forfig %>% 
   mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
@@ -251,17 +202,23 @@ temp_lines=
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot()+
   geom_point(aes(y = temp, x = datetime, color = depth_2, group = depth_2), size = 0.25)+
-  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  scale_x_datetime(date_breaks = "2 week", date_labels = "%b-%d")+
   #ylim(25, 5)+
   labs(x = "2021", y = "soil temperature, celsius",
        color = "soil depth cm")+
   #scale_fill_manual(values=natparks.pals("Arches", 11))+
   scale_color_manual(values=(pnw_palette("Lake", 3)))+
+  guides(colour = guide_legend(override.aes = list(size=6)))+
   facet_grid(position~site, scales = "free_x")+
   theme_er1()+
-  theme(axis.text.x = element_text (size = 9, vjust = 0.5, angle = 45),
-        legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+  theme(axis.text.x = element_text(size = 12, vjust = 0.5, angle = 45),
+        axis.text.y = element_text(size = 12),
+        legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        strip.text.y = element_blank(),
+        strip.text.x = element_text(size = 16))
 
 ggsave("formanuscript/temp_lines.tiff", plot = temp_lines, width = 6, height = 6)
 
@@ -276,19 +233,32 @@ temp_lines2022=
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot()+
   geom_point(aes(y = temp, x = datetime, color = depth_2, group = depth_2), size = 0.25)+
-  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  scale_x_datetime(date_breaks = "2 week", date_labels = "%b-%d")+
   #ylim(25, 5)+
-  labs(x = "2022", y = "soil temperature, celsius",
+  labs(x = "2022", y = " ",
        color = "soil depth cm")+
   #scale_fill_manual(values=natparks.pals("Arches", 11))+
   scale_color_manual(values=(pnw_palette("Lake", 3)))+
+  guides(colour = guide_legend(override.aes = list(size=6)))+
   facet_grid(position~site, scales = "free_x")+
   theme_er1()+
-  theme(axis.text.x = element_text (size = 9, vjust = 0.5, angle = 45),
-        legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+  theme(axis.text.x = element_text(size = 12, vjust = 0.5, angle = 45),
+        legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.title.x = element_text(size = 16),
+        strip.text.x = element_text(size = 16),
+        strip.text.y = element_text(size = 16))
 
 ggsave("formanuscript/temp_lines2022.tiff", plot = temp_lines2022, width = 6, height = 6)
+
+library(patchwork)
+
+temp_linesAll = temp_lines + plot_spacer() + temp_lines2022 + plot_layout(guides = "collect", widths = c(6, 0.25 , 6)) & theme(legend.position = 'bottom')
+
+ggsave("output/temp_linesAll.png", plot = temp_linesAll, height = 7, width = 13)
+
 
 
 moisture_lines=
@@ -302,17 +272,23 @@ moisture_lines=
   ggplot()+
   # geom_line(aes(y = moisture, x = datetime, color = depth_2, group = depth_2), size = 1)+
   geom_point(aes(y = moisture, x = datetime, color = depth_2, group = depth_2), size = 0.5)+
-  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  scale_x_datetime(date_breaks = "2 week", date_labels = "%b-%d")+
   #ylim(25, 5)+
   labs(x = "2021", y = "soil moisture, %",
        color = "soil depth cm")+
   #scale_fill_manual(values=natparks.pals("Arches", 11))+
   scale_color_manual(values=(pnw_palette("Lake", 3)))+
+  guides(colour = guide_legend(override.aes = list(size=6)))+
   facet_grid(position~site, scales = "free_x")+
   theme_er1()+
-  theme(axis.text.x = element_text (size = 9, vjust = 0.5, angle = 45),
-        legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+  theme(axis.text.x = element_text(size = 12, vjust = 0.5, angle = 45),
+        axis.text.y = element_text(size = 12),
+        legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        strip.text.y = element_blank(),
+        strip.text.x = element_text(size = 16))
 
 ggsave("formanuscript/moisture_lines.png", plot = moisture_lines, width = 6, height = 6)
 
@@ -326,21 +302,29 @@ moisture_lines2022=
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot()+
   geom_line(aes(y = moisture, x = datetime, color = depth_2, group = depth_2), size = 1)+
-  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
+  scale_x_datetime(date_breaks = "2 week", date_labels = "%b-%d")+
   #ylim(25, 5)+
-  labs(x = "2022", y = "soil moisture, %",
+  labs(x = "2022", y = " ",
        color = "soil depth cm")+
   #scale_fill_manual(values=natparks.pals("Arches", 11))+
   scale_color_manual(values=(pnw_palette("Lake", 3)))+
+  guides(colour = guide_legend(override.aes = list(size=6)))+
   facet_grid(position~site, scales = "free_x")+
   theme_er1()+
-  theme(axis.text.x = element_text (size = 9, vjust = 0.5, angle = 45),
-        legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+  theme(axis.text.x = element_text(size = 12, vjust = 0.5, angle = 45),
+        legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.title.x = element_text(size = 16),
+        strip.text.x = element_text(size = 16),
+        strip.text.y = element_text(size = 16))
 
 ggsave("formanuscript/moisture_lines2022.tiff", plot = moisture_lines2022, width = 6, height = 6)
 
+moisture_linesAll = moisture_lines + plot_spacer() + moisture_lines2022 + plot_layout(guides = "collect", widths = c(6, 0.25 , 6)) & theme(legend.position = 'bottom')
 
+ggsave("output/moisture_linesAll.png", plot = moisture_linesAll, height = 7, width = 13)
 
 
 
