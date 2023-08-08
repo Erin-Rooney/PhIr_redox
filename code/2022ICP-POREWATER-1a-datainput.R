@@ -368,6 +368,142 @@ ggsave("output/2022nutrient_plot.png", plot = nutrient_plot, height = 12, width 
 
 ###########
 
+#SUPPLEMENTAL MANUSCRIPT FIGURE
+
+Al_concentration_fig =
+  processed_ICP %>% 
+  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
+  filter(ICP == "Al_ug_mL") %>% 
+  ggplot() +
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
+  labs(x = "Aluminum concentration, μg/ml",
+       y = "depth, cm",
+       color = "month, 2022"
+  )+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_y_reverse()+
+  facet_grid(Site~Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_blank(),
+        #axis.text.y=element_blank(),  #remove y axis labels
+        #axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 9, hjust=0.8,vjust=0.2,angle = 90)) 
+
+
+ggsave("output/Al_concentration_fig.png", plot = Al_concentration_fig, height = 5.5, width = 6.5)
+
+Mg_concentration_fig =
+  processed_ICP %>% 
+  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
+  # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
+  filter(ICP == "Mg_ug_mL") %>% 
+  ggplot() +
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
+  labs(x = "Magnesium concentration, μg/ml",
+       y = " ",
+       color = "month, 2022"
+  )+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_y_reverse()+
+  facet_grid(Site~Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 9, hjust=0.8,vjust=0.2,angle = 90)) 
+
+
+ggsave("output/Mg_concentration_fig.png", plot = Mg_concentration_fig, height = 5.5, width = 6.5)
+
+
+Na_concentration_fig =
+  processed_ICP %>% 
+  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
+  # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
+  filter(ICP == "Na_ug_mL") %>% 
+  ggplot() +
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
+  labs(x = "Sodium concentration, μg/ml",
+       y = " ",
+       color = "month, 2022"
+  )+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  
+  scale_y_reverse()+
+  facet_grid(Site~Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 9, hjust=0.8,vjust=0.2,angle = 90)) 
+
+ggsave("output/Na_concentration_fig.png", plot = Na_concentration_fig, height = 5.5, width = 6.5)
+
+K_concentration_fig =
+  processed_ICP %>% 
+  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
+  # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
+  filter(ICP == "K_ug_mL") %>% 
+  ggplot() +
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
+  labs(x = "Potassium concentration, μg/ml",
+       y = "depth, cm",
+       color = "month, 2022"
+  )+
+  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  
+  scale_y_reverse()+
+  facet_grid(Site~Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_blank(),
+        # axis.text.y=element_blank(),  #remove y axis labels
+        # axis.ticks.y=element_blank(),
+        axis.text.x = element_text(size = 9, hjust=0.8,vjust=0.2,angle = 90)) 
+
+ggsave("output/K_concentration_fig.png", plot = K_concentration_fig, height = 5.5, width = 6.5)
+
+
+library(patchwork)
+
+nutrientsfig1 = Al_concentration_fig + Na_concentration_fig 
+
+nutrientsfig2 = K_concentration_fig + Mg_concentration_fig 
+
+
+nutrient_plot = nutrientsfig1 / nutrientsfig2 + plot_layout(guides = "collect")
+
+# ggsave("output/2022nutrientsfigA.png", plot = nutrientsfigA, height = 9, width = 11)
+# ggsave("output/2022nutrientsfigB.png", plot = nutrientsfigB, height = 10, width = 8)
+ggsave("output/2022nutrient_plot2.png", plot = nutrient_plot, height = 12, width = 9.5)
+
+##################
+
+
+
 
 
 redox_nutrients_log_fig =

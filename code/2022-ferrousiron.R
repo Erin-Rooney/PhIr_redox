@@ -119,7 +119,7 @@ fe2_fig =
 library(patchwork)
 
 
-fe_plot = ratio_fig + fe2_fig + plot_layout(guides = "collect") & theme(legend.position = 'bottom')
+fe_plot = fe2_fig + ratio_fig + plot_layout(guides = "collect") & theme(legend.position = 'bottom')
 
 # ggsave("output/2022nutrientsfigA.png", plot = nutrientsfigA, height = 9, width = 11)
 # ggsave("output/2022nutrientsfigB.png", plot = nutrientsfigB, height = 10, width = 8)

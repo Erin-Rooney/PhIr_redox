@@ -133,6 +133,38 @@ moisturefig_temporal =
         strip.text.y = element_blank(),
         axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
 
+moisturefig_temporal_nonacidic_hydric =
+  grouped_moisture_forfigs_temporal %>%
+  filter(site == "non-acidic tundra" & position == "hydric") %>%
+  mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
+  geom_point(size = 4, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
+  geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE,
+                width=1.5,
+                size=0.5)+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
+  # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  ylim(60, 0)+
+  labs(x = '
+       soil moisture (%)',
+       y = "depth (cm)",
+       color = "", fill = "")+
+  scale_x_continuous(position="top")+
+  facet_grid(position~site, switch = "x")+
+  theme_er1()+
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_blank())
+        #axis.text.x = element_text(size = 12, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+
+  
+ggsave("formanuscript/moisturefig_temporal_nonacidic_hydric.png", plot = moisturefig_temporal_nonacidic_hydric, height = 5.5, width = 2.25)
 
 ggsave("formanuscript/moisture_temporal_fig_2021.png", plot = moisturefig_temporal, height = 7, width = 3.8)
 
@@ -145,10 +177,10 @@ moisturefig_temporal2022 =
   geom_point(size = 4, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
   geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE)+
-  # scale_color_manual(values = (pnw_palette('Sunset', 4)))+
-  # scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
-  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
+  # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
   ylim(60, 0)+
   labs(x = '2022
        soil moisture (%)',
