@@ -139,8 +139,8 @@ moisturefig_temporal_nonacidic_hydric =
   mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
-  geom_point(size = 4, alpha = 0.8, shape = c(21))+
-  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
+  geom_point(size = 3.75, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash", alpha = 0.3)+
   geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE,
                 width=1.5,
                 size=0.5)+
@@ -160,11 +160,11 @@ moisturefig_temporal_nonacidic_hydric =
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         strip.placement = "outside",
-        strip.text.y = element_blank())
+        strip.text.y = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
         #axis.text.x = element_text(size = 12, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
 
   
-ggsave("formanuscript/moisturefig_temporal_nonacidic_hydric.png", plot = moisturefig_temporal_nonacidic_hydric, height = 5.5, width = 2.25)
+ggsave("formanuscript/moisturefig_temporal_nonacidic_hydric.png", plot = moisturefig_temporal_nonacidic_hydric, height = 4.5, width = 2.25)
 
 ggsave("formanuscript/moisture_temporal_fig_2021.png", plot = moisturefig_temporal, height = 7, width = 3.8)
 

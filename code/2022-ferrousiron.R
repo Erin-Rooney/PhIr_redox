@@ -34,7 +34,8 @@ Fe2_dat %>%
        y = "depth, cm",
        color = "month, 2022"
   )+
-  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
   # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
   scale_y_reverse()+
   facet_grid(site~area, scales = "free_x")+
@@ -56,7 +57,8 @@ Fe2_dat %>%
        y = "depth, cm",
        color = "month, 2022"
   )+
-  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
   # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
   scale_y_reverse()+
   facet_grid(site~area, scales = "free_x")+
@@ -72,26 +74,28 @@ Fe2_dat %>%
 
 ratio_fig =
 Fe2_dat %>% 
+  filter(site == "Hydric") %>% 
   ggplot() +
-  geom_point(aes(x = Fe2totalratio, y = depth_cm, color = month2), size = 2.5, alpha = 0.75)+
-  geom_line(aes(x = Fe2totalratio, y = depth_cm, color = month2, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
+  geom_point(aes(x = Fe2totalratio, y = depth_cm, color = month2), size = 3.75, alpha = 0.75)+
+  geom_line(aes(x = Fe2totalratio, y = depth_cm, color = month2, group = grouping), orientation = "y", size = 0.75, alpha =0.3, linetype = "dashed")+
   labs(x = "Ferrous Iron to Total Iron Ratio",
-       y = "",
+       y = "Depth, cm",
        color = "month, 2022"
   )+
-  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
   # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
-  scale_y_reverse()+
-  facet_grid(site~area, scales = "free_x")+
+  scale_y_reverse(breaks = c(0, 20, 40))+
+  facet_grid(site~area)+
   theme_er1()+
-  theme(legend.position = "bottom",
+  theme(legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(),
-        strip.placement = "outside",
-        #strip.text.y = element_blank(),
-        axis.text.y=element_blank(),  #remove y axis labels
-        axis.ticks.y=element_blank(),
-        axis.text.x = element_text(size = 9, hjust=0.8,vjust=0.2,angle = 90)) 
+        strip.placement = "outside", panel.border = element_rect(color="gray",size=0.25, fill = NA))
+        #strip.text.y = element_blank()) 
+
+ggsave("output/fe_ratio_plot.png", plot = ratio_fig, height = 3, width = 5)
+
 
 fe2_fig =
   Fe2_dat %>% 

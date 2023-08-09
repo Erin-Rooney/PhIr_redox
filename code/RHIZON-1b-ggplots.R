@@ -105,8 +105,14 @@ rhizon_meta_combine_notransect_forelements =
   mutate(month = factor(month, levels = c("june", "july", "august")),
          Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   na.omit() %>% 
-  mutate(area_site = paste(Area, Site, sep = "-")) 
-         
+  mutate(area_site = paste(Area, Site, sep = "-"))
+  # separate(Betterdate, sep = "-", into =c('year', 'month_num', 'day')) %>%
+  # mutate(date2 = as.Date(paste0(month_num, "-", day, "-", year))) 
+  # # mutate(date2 = factor(date2, levels = c("june-24", "june-28", "july-06", "july-07",
+  # #                                         "july-14", "july-24", "july-30", "july-31", "august-07",
+  # #                                         "august-10"))) 
+  # 
+  #        
 
 
 
@@ -159,8 +165,10 @@ redoxsensitive_fig =
                 position=position_dodge(.9), color = "black")+
   labs(x = " ", y = "", color = "", fill = "")+
   # scale_x_date(date_labels = "%b-%d")+
-    scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
-    scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+    # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+    # scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
   # scale_color_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
   # scale_fill_manual(values = rev(natparks.pals(name = "Banff", 3.5)))+
   theme_er1()+
@@ -239,22 +247,27 @@ Caline_rhizon_fig =
   #                     "iron" = "iron μg/mL",
   #                     "aluminum" = "aluminum μg/mL",
   #                     "phosphorus" = "phosphorus μg/mL")) %>%   
-  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
-  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
-  geom_point(aes(group = area_site, shape = Area), size = 3.5)+
+  ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.75, alpha = 0.3, orientation = "x")+
+  geom_point(aes(group = area_site, shape = Area), size = 4.5, alpha = 0.75)+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
-  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
-  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  # scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
   labs(color = "Moisture",
        linetype = "Acidity",
        y = "Concentration μg/mL",
        x = " ")+
+  scale_x_date(date_labels = "%b-%d")+
   facet_grid(. ~ ICP, scales = "free_y") +
   theme_er1()+
-  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "none",
+  theme(
+    #axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), 
+    legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
 
 Feline_rhizon_fig =
@@ -267,22 +280,23 @@ Feline_rhizon_fig =
   #                     "iron" = "iron μg/mL",
   #                     "aluminum" = "aluminum μg/mL",
   #                     "phosphorus" = "phosphorus μg/mL")) %>%   
-  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
-  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
-  geom_point(aes(group = area_site, shape = Area), size = 3.5)+
+  ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.75, alpha = 0.3,  orientation = "x")+
+  geom_point(aes(group = area_site, shape = Area), size = 4.5, alpha = 0.75)+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
-  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
-  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
   labs(color = "Moisture",
        linetype = "Acidity",
-       y = "Concentration μg/mL",
+       y = " ",
        x = " ")+
+  scale_x_date(date_labels = "%b-%d")+
   facet_grid(. ~ ICP, scales = "free_y") +
   theme_er1()+
-  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "none",
+  theme(legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
 
 Alline_rhizon_fig =
@@ -295,22 +309,23 @@ Alline_rhizon_fig =
   #                     "iron" = "iron μg/mL",
   #                     "aluminum" = "aluminum μg/mL",
   #                     "phosphorus" = "phosphorus μg/mL")) %>%   
-  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
-  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
-  geom_point(aes(group = area_site, shape = Area), size = 3.5)+
+  ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.75, alpha = 0.3, orientation = "x")+
+  geom_point(aes(group = area_site, shape = Area), size = 4.5, alpha = 0.75)+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
-  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
-  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
   labs(color = "Moisture",
        linetype = "Acidity",
        y = "Concentration μg/mL",
        x = " ")+
+  scale_x_date(date_labels = "%b-%d")+
   facet_grid(. ~ ICP, scales = "free_y") +
   theme_er1()+
-  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "none",
+  theme(legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
 
 Pline_rhizon_fig =
@@ -323,22 +338,27 @@ Pline_rhizon_fig =
   #                     "iron" = "iron μg/mL",
   #                     "aluminum" = "aluminum μg/mL",
   #                     "phosphorus" = "phosphorus μg/mL")) %>%   
-  ggplot(aes(x = Betterdate, y = mean, color = Site)) +
-  geom_line(aes(group = area_site, linetype = Area), size = 0.7, orientation = "x")+
-  geom_point(aes(group = area_site, shape = Area), size = 3.5)+
+  ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
+  geom_line(aes(group = area_site, linetype = Area), size = 0.75, alpha = 0.3, orientation = "x")+
+  geom_point(aes(group = area_site, shape = Area), size = 4.5, alpha = 0.75)+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
-  scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
-  scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
-  labs(color = "Moisture",
-       linetype = "Acidity",
-       y = "Concentration μg/mL",
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  labs(color = " ",
+       linetype = " ",
+       shape = " ",
+       y = " ",
        x = " ")+
+  scale_x_date(date_labels = "%b-%d")+
   facet_grid(. ~ ICP, scales = "free_y") +
   theme_er1()+
-  theme(axis.text.x = element_text(size = 8, hjust=0.25,vjust=0.2,angle = 45), legend.position = "right",
+  guides(color = guide_legend(nrow=3, byrow = TRUE),
+         shape = guide_legend(nrow=2, byrow = TRUE),
+         linetype = guide_legend(nrow=2, byrow = TRUE))+
+  theme(legend.position = "bottom",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
 library(patchwork)
 

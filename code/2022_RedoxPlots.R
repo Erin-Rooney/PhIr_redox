@@ -248,11 +248,11 @@ redoxfig_depth_sd2021 =
   grouped_redox_forfigs2021 %>% 
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = position, fill = position), group = 'position')+
-  geom_point(size = 3, alpha = 0.8, shape = c(21))+
-  geom_line(orientation = "y", show.legend = FALSE, linetype="longdash")+
+  geom_point(size = 3.5, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, linetype="longdash", alpha = 0.3)+
   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
-  scale_color_manual(values = c("#bc4749", "#40916c", "#0582ca"))+
-  scale_fill_manual(values = c("#bc4749", "#40916c", "#0582ca"))+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
   # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   # scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   ylim(60, 0)+
@@ -265,11 +265,11 @@ redoxfig_depth_sd2021 =
   facet_grid(.~site, switch = "x")+
   theme_er1()+
   theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 # 
 
 
-ggsave("formanuscript/redoxfig_depth_sd2021.png", plot = redoxfig_depth_sd2021, height = 6, width = 4.5)
+ggsave("formanuscript/redoxfig_depth_sd2021.png", plot = redoxfig_depth_sd2021, height = 4.85, width = 4)
 ggsave("formanuscript/redoxfig_depth_sd2022.png", plot = redoxfig_depth_sd2022, height = 6, width = 4)
 # ggsave("formanuscript/redoxfig_depth_sd2021hydric.png", plot = redoxfig_depth_sd2021_hydric, height = 6, width = 4)
 # ggsave("formanuscript/redoxfig_depth_sd2022hydric.png", plot = redoxfig_depth_sd2022_hydric, height = 6, width = 4)
@@ -343,7 +343,7 @@ redox_temporal_fig_2021_non_hydric =
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
   geom_point(size = 4, alpha = 0.8, shape = c(21))+
-  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
+  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash", alpha = 0.3)+
   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
@@ -362,11 +362,48 @@ redox potential (mV)',
         panel.background = element_blank(),
         strip.placement = "outside",
         axis.text.y=element_blank(),  #remove y axis labels
-        axis.ticks.y=element_blank())
+        axis.ticks.y=element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
        # axis.text.x = element_text(hjust=0,angle = 90))  #remove y axis ticks
 #remove y axis ticks
 
-ggsave("formanuscript/redox_temporal_fig_2021_non_hydric.png", plot = redox_temporal_fig_2021_non_hydric, height = 5.5, width = 2.5)
+ggsave("formanuscript/redox_temporal_fig_2021_non_hydric.png", plot = redox_temporal_fig_2021_non_hydric, height = 4.5, width = 2.25)
+
+
+redox_temporal_legend =
+  grouped_redox_forfigs_temporal2021 %>% 
+  filter(site == "non-acidic tundra" & position == "hydric") %>% 
+  mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
+  geom_point(size = 4, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
+  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
+  # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  ylim(60, 0)+
+  labs(x = ' 
+redox potential (mV)',
+       y = "",
+       color = "", fill = "")+
+  scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
+  facet_grid(position~site, switch = "x")+
+  theme_er1()+
+  guides(fill=guide_legend(nrow=2,byrow=TRUE), color = guide_legend(nrow=2, byrow=TRUE))+
+  theme(legend.position = "bottom",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(), panel.border = element_rect(color="white",size=0.5, fill = NA))
+# axis.text.x = element_text(hjust=0,angle = 90))  #remove y axis ticks
+#remove y axis ticks
+
+
+
+ggsave("formanuscript/redox_temporal_legend.png", plot = redox_temporal_legend, height = 4.5, width = 2.25)
+
 
 redox_temporal_fig_2022 =
   grouped_redox_forfigs_temporal2022 %>% 
