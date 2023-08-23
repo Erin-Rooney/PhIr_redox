@@ -149,11 +149,12 @@ moisturefig_temporal_nonacidic_hydric =
   # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
   # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
   ylim(60, 0)+
-  labs(x = '
-       soil moisture (%)',
+  labs(x = 'Hydric
+       soil moisture (%)
+       ',
        y = "depth (cm)",
        color = "", fill = "")+
-  scale_x_continuous(position="top")+
+  scale_x_continuous(position="top", breaks = c(0, 20, 40, 60), n.breaks=4, limits = c(0, 60))+
   facet_grid(position~site, switch = "x")+
   theme_er1()+
   theme(legend.position = "none",
@@ -164,7 +165,7 @@ moisturefig_temporal_nonacidic_hydric =
         #axis.text.x = element_text(size = 12, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
 
   
-ggsave("formanuscript/moisturefig_temporal_nonacidic_hydric.png", plot = moisturefig_temporal_nonacidic_hydric, height = 4.5, width = 2.25)
+ggsave("formanuscript/moisturefig_temporal_nonacidic_hydric.png", plot = moisturefig_temporal_nonacidic_hydric, height = 4.5, width = 2.1)
 
 ggsave("formanuscript/moisture_temporal_fig_2021.png", plot = moisturefig_temporal, height = 7, width = 3.8)
 

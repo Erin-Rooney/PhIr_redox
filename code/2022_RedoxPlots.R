@@ -261,7 +261,7 @@ redoxfig_depth_sd2021 =
        redox potential (mV)',
        y = "depth (cm)",
        color = "", fill = "")+
-  scale_x_continuous(position="top")+
+  scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
   facet_grid(.~site, switch = "x")+
   theme_er1()+
   theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -269,6 +269,33 @@ redoxfig_depth_sd2021 =
 # 
 
 
+redoxfig_depth_sd2021_nonacidic =
+  grouped_redox_forfigs2021 %>% 
+  filter(site == "non-acidic tundra") %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = position, fill = position), group = 'position')+
+  geom_point(size = 3.5, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, linetype="longdash", alpha = 0.3)+
+  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  # scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  ylim(60, 0)+
+  labs(
+    x = ' 
+redox potential (mV)
+    ',
+    y = "depth (cm)",
+    color = "", fill = "")+
+  scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
+  facet_grid(.~site, switch = "x")+
+  theme_er1()+
+  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+# 
+
+ggsave("formanuscript/redoxfig_depth_sd2021_nonacidic.png", plot = redoxfig_depth_sd2021_nonacidic, height = 4.5, width = 2.25)
 ggsave("formanuscript/redoxfig_depth_sd2021.png", plot = redoxfig_depth_sd2021, height = 4.85, width = 4)
 ggsave("formanuscript/redoxfig_depth_sd2022.png", plot = redoxfig_depth_sd2022, height = 6, width = 4)
 # ggsave("formanuscript/redoxfig_depth_sd2021hydric.png", plot = redoxfig_depth_sd2021_hydric, height = 6, width = 4)
@@ -350,8 +377,9 @@ redox_temporal_fig_2021_non_hydric =
   # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
   # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
   ylim(60, 0)+
-  labs(x = ' 
-redox potential (mV)',
+  labs(x = 'Hydric
+redox potential (mV)
+       ',
        y = "",
        color = "", fill = "")+
   scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+

@@ -115,6 +115,61 @@ horizons_all = horizons_nonacidic + horizons_acidic
 
 ggsave("formanuscript/horizons_all.png", plot = horizons_all, height = 6, width = 10)
 
+####
+
+library(tibble)
+
+gglabel = tribble(
+   ~Area, ~Site, ~x, ~y, ~label,
+  'non-acidic tundra', 'Hydric', 1, 5, 'low density 
+  organic soil',        
+  'non-acidic tundra', 'Hydric', 1, 12, 'high density 
+  organic soil')  
+
+horizons_nonacidic_hydric_singleprofile =
+  bd_select %>% 
+  filter(Site != "Transect" & Area == "non-acidic tundra" & Site == "Hydric" & label == "Plot-1-3") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
+  ggplot()+
+  geom_col(aes(y = Average_Depth_cm, x = Site, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
+    geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 6)+
+    scale_y_reverse()+
+  labs(title = " ",
+       fill = "", color = "",
+       y = "depth (cm)",
+       x = "Soil Profile")+
+  scale_fill_manual(values = c("#532C1E", "#2F0E07"))+
+  #facet_grid(Site~., scales="free_x") +
+  theme_er1()+
+  theme(axis.text.x = element_blank(), legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="white",size=0.25, fill = NA))
+
+ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile.png", plot = horizons_nonacidic_hydric_singleprofile, height = 4, width = 3.25)
+
+# bd_nonacidic_hydric_singleprofile =
+#   bd_select %>% 
+#   filter(Site != "Transect" & Area == "non-acidic tundra" & Site == "Hydric" & label == "Plot-1-3") %>% 
+#   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+#   mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
+#   ggplot()+
+#   geom_col(aes(y = Average_Depth_cm, x = Site, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
+#   geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 6)+
+#   scale_y_reverse()+
+#   labs(title = " ",
+#        fill = "", color = "",
+#        y = "depth (cm)",
+#        x = "Soil Profile")+
+#   scale_fill_manual(values = c("#532C1E", "#2F0E07"))+
+#   #facet_grid(Site~., scales="free_x") +
+#   theme_er1()+
+#   theme(axis.text.x = element_blank(), legend.position = "none",
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#         panel.background = element_blank(), panel.border = element_rect(color="white",size=0.25, fill = NA))
+# 
+# ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile.png", plot = horizons_nonacidic_hydric_singleprofile, height = 4, width = 3.25)
+
  
 
 horizons_dry_acidic =
@@ -240,24 +295,35 @@ bd_forfigs =
   mutate(Year = recode(Year, "21" = "2021")) %>% 
   mutate(date2 = as.Date(paste(Year,Month,Day, sep = "-"))) 
 
+bd_summarized_forfigs =
+  bd_forfigs %>% 
+  group_by(Area, Site, horizon_simplified) %>% 
+  dplyr::summarize(mean_bd = round(mean(soil_bulk_density_g_cm3), 3),
+                   se_bd = round(sd(soil_bulk_density_g_cm3), 2),
+                   mean_depth = round(mean(real_depth_cm, 3))
+  )
 
-bulkdensity_simplified =
-  bd_grouped %>% 
+
+#bulkdensity_simplified =
+  bd_summarized_forfigs %>% 
   filter(Site != "Transect") %>% 
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   mutate(horizon_simplified = factor(horizon_simplified, levels = c("Mineral Subsurface", "Organic Subsurface", "Organic Surface"))) %>% 
   ggplot()+
-  #geom_line(aes(y = mean_depth, x = soil_bulk_density_g_cm3, group = Core_ID))+
-  geom_point(aes(y = mean_depth, x = mean_bd, color = horizon_simplified, group = Core_ID), size = 3)+
+  geom_line(aes(y = mean_depth, x = mean_bd), orientation = "y")+
+  geom_point(aes(y = mean_depth, x = mean_bd, color = horizon_simplified), size = 4)+
   scale_y_reverse()+
   labs(fill = "", color = "",
-       y = "depth, cm",
-       x = "bulk density (g/cm3)")+
-  scale_color_manual(values = c("#D6AB7D", "#8A5A44", "#482919"))+
+       y = "depth (cm)")+
+    xlab(bquote("bulk density " (g/cm^3)))+
+  scale_color_manual(values = c("#D6AB7D", "#8A5A44", "#2F0E07"))+
+    facet_grid(Area~Site) +
+    guides(color = guide_legend(reverse = TRUE))+
   theme_er1()+
-  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "bottom")+
-  facet_grid(Area~Site) +
-  guides(color = guide_legend(reverse = TRUE))
+  theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 12), 
+        legend.position = "bottom",panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA)
+        )
 
 vwc_fig =
   bd_forfigs %>% 
