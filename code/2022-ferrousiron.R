@@ -28,7 +28,7 @@ Fe2_dat =
   
 Fe2_dat %>% 
   ggplot() +
-  geom_point(aes(x = FeII, y = depth_cm, color = month2), size = 2.5, alpha = 0.75)+
+  geom_point(aes(x = FeII, y = depth_cm, color = month2), size = 2.5, alpha = 0.75, shape = c(21))+
   geom_line(aes(x = FeII, y = depth_cm, color = month2, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
   labs(x = "Ferrous Iron, μg/ml",
        y = "depth, cm",
@@ -76,7 +76,7 @@ ratio_fig =
 Fe2_dat %>% 
   filter(site == "Hydric") %>% 
   ggplot() +
-  geom_point(aes(x = Fe2totalratio, y = depth_cm, color = month2), size = 3.75, alpha = 0.75)+
+  geom_point(aes(x = Fe2totalratio, y = depth_cm, fill = month2), shape = c(21), size = 3, alpha = 0.75)+
   geom_line(aes(x = Fe2totalratio, y = depth_cm, color = month2, group = grouping), orientation = "y", size = 0.75, alpha =0.3, linetype = "dashed")+
   labs(x = "Ferrous Iron to Total Iron Ratio",
        y = "Depth, cm",

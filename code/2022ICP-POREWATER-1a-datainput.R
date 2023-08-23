@@ -299,7 +299,7 @@ Fe_concentration_fig2 =
   # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
   filter(ICP == "Fe_ug_mL") %>% 
   ggplot() +
-  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
+  geom_point(aes(x = concentration, y = Depth_cm, fill = month), size = 3, alpha = 0.75, shape = c(21))+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, alpha = 0.3, linetype = "dashed")+
   labs(x = "Iron concentration, μg/ml",
        y = "Depth, cm",
@@ -308,15 +308,42 @@ Fe_concentration_fig2 =
   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
   scale_y_reverse(breaks=c(0, 20, 40))+
+  guides(fill=guide_legend(nrow=2,byrow=TRUE), color = guide_legend(nrow=2, byrow=TRUE))+
   facet_grid(Site~Area, scales = "free_x")+
   theme_er1()+
-  theme(legend.position = "none",
+  theme(legend.position = "bottom",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         strip.placement = "outside", panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
 
 ggsave("output/Fe_concentration_fig.png", plot = Fe_concentration_fig2, height = 5, width = 4)
+
+Fe_concentration_fig2LEGEND =
+  processed_ICP %>% 
+  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
+  # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
+  filter(ICP == "Fe_ug_mL") %>% 
+  ggplot() +
+  geom_point(aes(x = concentration, y = Depth_cm, fill = month), size = 3, alpha = 0.75, shape = c(21))+
+  labs(x = "Iron concentration, μg/ml",
+       y = "Depth, cm",
+       color = "month, 2022"
+  )+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_y_reverse(breaks=c(0, 20, 40))+
+  guides(fill=guide_legend(nrow=2,byrow=TRUE))+
+  facet_grid(Site~Area, scales = "free_x")+
+  theme_er1()+
+  theme(legend.position = "bottom",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside", panel.border = element_rect(color="gray",size=0.25, fill = NA))
+
+
+ggsave("output/Fe_concentration_figLEGEND.png", plot = Fe_concentration_fig2LEGEND, height = 5, width = 4)
 
 
 Mn_concentration_fig =

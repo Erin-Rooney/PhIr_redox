@@ -249,7 +249,7 @@ Caline_rhizon_fig =
   #                     "phosphorus" = "phosphorus μg/mL")) %>%   
   ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
   geom_line(aes(group = area_site, linetype = Area), size = 0.75, alpha = 0.3, orientation = "x")+
-  geom_point(aes(group = area_site, shape = Area), size = 4.5, alpha = 0.75)+
+  geom_point(aes(group = area_site, shape = Area), size = 4, alpha = 0.75)+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
@@ -282,7 +282,7 @@ Feline_rhizon_fig =
   #                     "phosphorus" = "phosphorus μg/mL")) %>%   
   ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
   geom_line(aes(group = area_site, linetype = Area), size = 0.75, alpha = 0.3,  orientation = "x")+
-  geom_point(aes(group = area_site, shape = Area), size = 4.5, alpha = 0.75)+
+  geom_point(aes(group = area_site, shape = Area), size = 4, alpha = 0.75)+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
   scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
@@ -311,7 +311,7 @@ Alline_rhizon_fig =
   #                     "phosphorus" = "phosphorus μg/mL")) %>%   
   ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
   geom_line(aes(group = area_site, linetype = Area), size = 0.75, alpha = 0.3, orientation = "x")+
-  geom_point(aes(group = area_site, shape = Area), size = 4.5, alpha = 0.75)+
+  geom_point(aes(group = area_site, shape = Area), size = 4, alpha = 0.75)+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
   scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
@@ -340,7 +340,7 @@ Pline_rhizon_fig =
   #                     "phosphorus" = "phosphorus μg/mL")) %>%   
   ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
   geom_line(aes(group = area_site, linetype = Area), size = 0.75, alpha = 0.3, orientation = "x")+
-  geom_point(aes(group = area_site, shape = Area), size = 4.5, alpha = 0.75)+
+  geom_point(aes(group = area_site, shape = Area), size = 4, alpha = 0.75)+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
   scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
