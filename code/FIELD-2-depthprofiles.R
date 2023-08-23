@@ -117,36 +117,59 @@ ggsave("formanuscript/horizons_all.png", plot = horizons_all, height = 6, width 
 
 ####
 
+singleprofilethaw =
+  thaw_depths %>% 
+  filter(Area == "West" & Site == "Hydric" & Plot == "3" & Date == "7-Aug-2021")
+
 library(tibble)
+tocombine = tribble(
+  ~Area, ~Site, ~Horizon, ~Average_Depth_cm, ~soil_material,
+  'non-acidic tundra', 'Hydric', "O/M", 32, "active layer",
+  'non-acidic tundra', 'Hydric', "permafrost", 8, "permafrost")
+
+
+singleprofile_nonacidic_hydric =
+  bd_select %>% 
+  filter(Site != "Transect" & Area == "non-acidic tundra" & Site == "Hydric" & label == "Plot-1-3") %>% 
+  dplyr::select(c(Area, Site, Horizon, Average_Depth_cm, soil_material)) %>% 
+  rbind(tocombine)
+  
+
+
+
+
 
 gglabel = tribble(
    ~Area, ~Site, ~x, ~y, ~label,
-  'non-acidic tundra', 'Hydric', 1, 5, 'low density 
+  'non-acidic tundra', 'Hydric', 1, 3.7, 'low density 
   organic soil',        
-  'non-acidic tundra', 'Hydric', 1, 12, 'high density 
-  organic soil')  
+  'non-acidic tundra', 'Hydric', 1, 15, 'high density 
+  organic soil',
+  'non-acidic tundra', 'Hydric', 1, 30, 'active layer
+  organic + mineral soil',
+  'non-acidic tundra', 'Hydric', 1, 58, 'permafrost',
+  )  
 
 horizons_nonacidic_hydric_singleprofile =
-  bd_select %>% 
-  filter(Site != "Transect" & Area == "non-acidic tundra" & Site == "Hydric" & label == "Plot-1-3") %>% 
+  singleprofile_nonacidic_hydric %>% 
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
-  mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
+  mutate(Horizon = factor(Horizon, levels = c("permafrost", "O/M", "O2", "O1"))) %>% 
   ggplot()+
   geom_col(aes(y = Average_Depth_cm, x = Site, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
-    geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 6)+
+    geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 5)+
     scale_y_reverse()+
   labs(title = " ",
        fill = "", color = "",
        y = "depth (cm)",
        x = "Soil Profile")+
-  scale_fill_manual(values = c("#532C1E", "#2F0E07"))+
+  scale_fill_manual(values = c("#bbd0ff", "#9a8c98", "#532C1E", "#2F0E07"))+
   #facet_grid(Site~., scales="free_x") +
   theme_er1()+
   theme(axis.text.x = element_blank(), legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), panel.border = element_rect(color="white",size=0.25, fill = NA))
 
-ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile.png", plot = horizons_nonacidic_hydric_singleprofile, height = 4, width = 3.25)
+ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile.png", plot = horizons_nonacidic_hydric_singleprofile, height = 6.4, width = 5.6)
 
 # bd_nonacidic_hydric_singleprofile =
 #   bd_select %>% 
