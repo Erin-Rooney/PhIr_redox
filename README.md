@@ -3,13 +3,16 @@ has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
 ### PhIr Project
-#### Redox (data logger) and porechemistry data collected Summer 2021
+#### PIs: Elizabeth Herndon, Mike Weintraub, Lauren Kinsman-Costello
+#### Continuous soil measurements (redox, moisture, temperature, salinity), field properties, and porewater chemistry from summer 2021 and 2022. 
 
 ###### July 2022, EC Rooney
 
 Please read the Data Explainer before using data. Please make sure that you are using the correct and most up to date files and figures by checking file and figure output in scripts. 
 
 The Data Explainer lists the most up to date data products. It can be viewed here: <a>http://rpubs.com/ecrooney/1019045</a> 
+
+DO NOT EDIT REPOSITORY WITHOUT PERMISSION
 
 ##### *Repository organization*
 
@@ -26,7 +29,14 @@ The Data Explainer lists the most up to date data products. It can be viewed her
 
 *All code runs without changing working directories. Do not change or set working directory, run all code by downloading the repository and opening the R Project file. Do not open individual code files outside of the R Project file. Please contact me if you find any issues or errors.*
 
-#### Funding by NSF
+### Funding 
+#### NSF OPP-1914545 and OPP-2006194 to Herndon, Weintraub, Kinsman-Costello
+#### NSF OPP-2138937 to Rooney
+
+
+
+
+
 
 ##### **CSV files too large for github are backed up on Google Drive**
 
