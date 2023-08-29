@@ -156,7 +156,7 @@ horizons_nonacidic_hydric_singleprofile =
   mutate(Horizon = factor(Horizon, levels = c("permafrost", "O/M", "O2", "O1"))) %>% 
   ggplot()+
   geom_col(aes(y = Average_Depth_cm, x = Site, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
-    geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 5)+
+    geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 6)+
     scale_y_reverse()+
   labs(title = " ",
        fill = "", color = "",
