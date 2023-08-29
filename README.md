@@ -14,12 +14,13 @@ The Data Explainer lists the most up to date data products. It can be viewed her
 ##### *Repository organization*
 
 <p>
-&bull;1-REDOX<br>
-&bull;2-MOISTURE-TEMP-SALINITY<br>
-&bull;3-FIELD<br>
-&bull;4-ICP<br>
-&bull;4-RHIZON<br>
-&bull;4-TOC<br>
+&bull; 0-DATA EXPLAINER AND PACKAGES<br>
+&bull; 1-REDOX<br>
+&bull; 2-MOISTURE-TEMP-SALINITY<br>
+&bull; 3-FIELD<br>
+&bull; 4-ICP<br>
+&bull; 4-RHIZON<br>
+&bull; 4-TOC<br>
 </p>
 
 
