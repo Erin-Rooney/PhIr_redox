@@ -3,7 +3,8 @@ has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
 ### PhIr Project
-#### PIs: Elizabeth Herndon, Mike Weintraub, Lauren Kinsman-Costello
+#### PIs: Elizabeth Herndon, Michael Weintraub, Lauren Kinsman-Costello
+#### Co-authors: Erin VanderJeugdt, Imtiaz Miah, Sumant Avasarala, Kristen Bidas, Matthew Berens
 #### Continuous soil measurements (redox, moisture, temperature, salinity), field properties, and porewater chemistry from summer 2021 and 2022. 
 
 ###### July 2022, EC Rooney
