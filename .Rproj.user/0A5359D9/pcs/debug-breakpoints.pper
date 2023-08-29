@@ -90,6 +90,51 @@
                 "type": 1,
                 "is_package_breakpoint": false,
                 "package_name": ""
+            },
+            {
+                "id": 19,
+                "path": "~/R/R/R Datasets/PhIr_redox_porechem/code/1-REDOX-Step4-2021-2022-ggplots.R",
+                "line_number": 319,
+                "function_steps": "",
+                "function_name": "toplevel",
+                "state": 1,
+                "editor_state": 1,
+                "editor_line_number": 319,
+                "is_pending_debug_completion": false,
+                "needs_updated_steps": true,
+                "type": 1,
+                "is_package_breakpoint": false,
+                "package_name": ""
+            },
+            {
+                "id": 20,
+                "path": "~/R/R/R Datasets/PhIr_redox_porechem/code/1-REDOX-Step4-2021-2022-ggplots.R",
+                "line_number": 880,
+                "function_steps": "",
+                "function_name": "toplevel",
+                "state": 1,
+                "editor_state": 1,
+                "editor_line_number": 880,
+                "is_pending_debug_completion": false,
+                "needs_updated_steps": false,
+                "type": 1,
+                "is_package_breakpoint": false,
+                "package_name": ""
+            },
+            {
+                "id": 21,
+                "path": "~/R/R/R Datasets/PhIr_redox_porechem/code/1-REDOX-Step4-2021-2022-ggplots.R",
+                "line_number": 573,
+                "function_steps": "",
+                "function_name": "toplevel",
+                "state": 1,
+                "editor_state": 1,
+                "editor_line_number": 573,
+                "is_pending_debug_completion": false,
+                "needs_updated_steps": false,
+                "type": 1,
+                "is_package_breakpoint": false,
+                "package_name": ""
             }
         ]
     }

@@ -266,6 +266,28 @@ redoxfig_depth_sd2021 =
   theme_er1()+
   theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+
+# grouped_redox_forfigs2021 %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = position, fill = position), group = 'position')+
+  geom_point(size = 3.5, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, linetype="longdash", alpha = 0.3)+
+  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  # scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  ylim(60, 0)+
+  labs(
+       x = '2021
+       redox potential (mV)',
+       y = "depth (cm)",
+       color = "", fill = "")+
+  scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
+  facet_grid(.~site, switch = "x")+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 # 
 
 
@@ -291,7 +313,9 @@ redox potential (mV)
   scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
   facet_grid(.~site, switch = "x")+
   theme_er1()+
-  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  theme(legend.position = "none", panel.grid.major = element_blank(), 
+        axis.text.y=element_blank(),  #remove y axis labels
+        axis.ticks.y=element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 # 
 
@@ -855,7 +879,7 @@ contour_acidic_hydric =
 
 contour_nonacidic_dry =
   ungrouped_redox_forfigs_nonhydric %>% 
-  filter(position == "dry" & site == "non-acidic tundra" & probe == 1) %>% 
+  filter(position == "dry" & probe == 1 & datetime > "2021-07-10 00:00:00") %>% 
   ggplot()+
   geom_contour_filled(aes(y = depth_cm, x = datetime, z = redox_avg_mV))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
@@ -866,10 +890,55 @@ contour_nonacidic_dry =
        fill = "redox potential, mV")+
   #scale_fill_manual(values=natparks.pals("Arches", 11))+
   scale_fill_manual(values=pnw_palette("Bay", 11))+
-  #facet_grid(position~site)+
-  theme_minimal()+
-  theme(axis.text.x = element_text (size = 9),
-        legend.position = "none")
+  facet_grid(position~site)+
+  theme_er1()+
+  theme(
+        legend.position = "bottom", axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 12),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.title.x = element_text(size = 13),
+        axis.title.y = element_text(size = 13),
+        axis.ticks.x = element_blank(),
+        strip.text.y = element_text(size = 13),
+        strip.text.x = element_text(size = 13),
+        panel.border = element_rect(color="gray",size=0.5, fill = NA))
+
+library(metR)
+
+
+contour_dry =
+  ungrouped_redox_forfigs_nonhydric %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(position == "dry" & probe == 1 & datetime > "2021-07-06 00:00:00") %>% 
+  ggplot()+
+  geom_contour_filled(aes(y = depth_cm, x = datetime, z = redox_avg_mV))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "2 week", date_labels = "%b-%d")+
+  ylim(30, 5)+
+  labs(x = "", y = "depth (cm)",
+       fill = "redox potential, mV")+
+  #scale_fill_manual(values=natparks.pals("Arches", 11))+
+  #scale_fill_manual(values=pnw_palette("Bay", 11))+
+  facet_grid(.~site)+
+  scale_fill_distiller(super = metR::ScaleDiscretised, palette = "Spectral")+
+  theme_er1()+
+  theme(
+    legend.position = "right",
+    axis.text.y = element_text(size = 12),
+    panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+    panel.background = element_blank(),
+    axis.title.x = element_text(size = 13),
+    axis.title.y = element_text(size = 13),
+    axis.text.x = element_text(size = 12, vjust = 0.5, angle = 45),
+    strip.text.y = element_text(size = 13),
+    strip.text.x = element_text(size = 13),
+    panel.border = element_rect(color="gray",size=0.5, fill = NA))
+
+
+ggsave("formanuscript/contour_dry.png", plot = contour_dry, width = 7.5, height = 3)
+
 
 contour_nonacidic_dry_legend =
   ungrouped_redox_forfigs_nonhydric %>% 
@@ -891,7 +960,7 @@ contour_nonacidic_dry_legend =
 
 contour_acidic_dry =
   ungrouped_redox_forfigs_nonhydric %>% 
-  filter(position == "dry" & site == "acidic tundra" & probe == 1) %>% 
+  filter(position == "dry" & site == "acidic tundra" & probe == 1 & datetime > "2021-07-10 00:00:00") %>% 
   ggplot()+
   geom_contour_filled(aes(y = depth_cm, x = datetime, z = redox_avg_mV))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
