@@ -7,14 +7,19 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 
 ###### July 2022, EC Rooney
 
-Modeling-Data Explainer can be viewed here: <a>http://rpubs.com/ecrooney/1019045</a> 
+Please read the Data Explainer before using data. Please make sure that you are using the correct and most up to date files and figures by checking file and figure output in scripts. 
+
+The Data Explainer lists the most up to date data products. It can be viewed here: <a>http://rpubs.com/ecrooney/1019045</a> 
 
 ##### *Repository organization*
 
 <p>
-&bull;DATALOGGER (redox, temperature, moisture)<br>
-&bull;Sippers (pore chemistry)<br>
-&bull;Rhizon (redox chemistry)<br>
+&bull;1-REDOX<br>
+&bull;2-MOISTURE-TEMP-SALINITY<br>
+&bull;3-FIELD<br>
+&bull;4-ICP<br>
+&bull;4-RHIZON<br>
+&bull;4-TOC<br>
 </p>
 
 
