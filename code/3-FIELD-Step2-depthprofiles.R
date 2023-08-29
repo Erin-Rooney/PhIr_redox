@@ -156,16 +156,16 @@ horizons_nonacidic_hydric_singleprofile =
   mutate(Horizon = factor(Horizon, levels = c("permafrost", "O/M", "O2", "O1"))) %>% 
   ggplot()+
   geom_col(aes(y = Average_Depth_cm, x = Site, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
-    geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 6)+
+    geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 7)+
     scale_y_reverse()+
   labs(title = " ",
        fill = "", color = "",
        y = "depth (cm)",
        x = "Soil Profile")+
-  scale_fill_manual(values = c("#bbd0ff", "#9a8c98", "#532C1E", "#2F0E07"))+
+  scale_fill_manual(values = c("#b8c0ff", "#9a8c98", "#532C1E", "#2F0E07"))+
   #facet_grid(Site~., scales="free_x") +
   theme_er1()+
-  theme(axis.text.x = element_blank(), legend.position = "none",
+  theme(axis.text.x = element_blank(), axis.title.x = element_blank(), axis.ticks.x = element_blank(), legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), panel.border = element_rect(color="white",size=0.25, fill = NA))
 
