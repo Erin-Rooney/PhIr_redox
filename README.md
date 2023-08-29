@@ -4,10 +4,10 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 
 ### PhIr Project
 #### PIs: Elizabeth Herndon, Michael Weintraub, Lauren Kinsman-Costello
-#### Co-authors: Erin VanderJeugdt, Imtiaz Miah, Sumant Avasarala, Kristen Bidas, Matthew Berens
+#### Co-authors: Erin Rooney, Erin VanderJeugdt, Imtiaz Miah, Sumant Avasarala, Kristen Bidas, Matthew Berens
 #### Continuous soil measurements (redox, moisture, temperature, salinity), field properties, and porewater chemistry from summer 2021 and 2022. 
 
-###### July 2022, EC Rooney
+###### Repository Owner: Erin C Rooney
 
 Please read the Data Explainer before using data. Please make sure that you are using the correct and most up to date files and figures by checking file and figure output in scripts. 
 
