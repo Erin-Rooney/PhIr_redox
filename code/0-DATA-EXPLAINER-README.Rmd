@@ -60,7 +60,68 @@ I need to add in the following datasets that we do have
 
 -   pH of porewater
 
+## Data Output
+
+IMPORTANT NOTE: The below files are the most updated and are NOT located
+within the modeling-data-output-files folder. Rather, they are located
+in the processed folder.
+
+[**Redox**]{.underline}
+
+"processed/allcombine_2021_frozen.csv"
+
+"processed/allcombine_2022_frozen.csv"
+
+[**Moisture Temperature Salinity**]{.underline}
+
+"processed/final_temp_salinity_avgs.csv"
+
+"processed/2022final_temp_salinity_avgs.csv"
+
+[**Soil Properties**]{.underline}
+
+"raw/thaw_depth_2021.csv"
+
+"raw/PhIr2021_Soil_Inventory_bd.csv"
+
+"raw/uga_soil_analyses_detectionlimit.csv"
+
+"processed/PhIr2021_Soil_InventoryUTKCores_foranalysis.csv"
+
+[**Porewater data**]{.underline}
+
+"raw/PhIr_SOIL_GEOCHEM_results.csv"
+
+"processed/ICP_2022.csv"
+
+"processed/rhizon_2021.csv"
+
+"output/NPOC-TN-PhIr2022.csv"
+
+```{r,warning=FALSE,message=FALSE,error=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+## All up to date code and functions are located in the "code" folder
+
+**File nomenclature:**
+
+-   code/1-REDOX-Step-
+
+-   code/2-MOISTURE-TEMP-SALINITY-Step-
+
+-   code/3-FIELD-Step-
+
+-   code/4-ICP-Step
+
+-   code/4-RHIZON-Step
+
+-   code/4-TOC-
+
 ## Data Input and Processing
+
+## All code and scripts below are out of date. Please instead refer to scripts in "code" folder.
 
 ### Source Packages and Functions
 
@@ -333,35 +394,7 @@ porewater_ICP_2022_grouped = sipper_groupingfunction(porewater_ICP_2022)
 
 ```
 
-## Data Output
-
-IMPORTANT NOTE: The below files are the most updated and are NOT located
-within the modeling-data-output-files folder. Rather, they are located
-in the processed folder.
-
-```{r}
-#Redox
-#cleaned
-"processed/allcombine_2021_frozen.csv"
-"processed/allcombine_2022_frozen.csv"
-
-#Moisture Temperature Salinity
-"processed/final_temp_salinity_avgs.csv"
-"processed/2022final_temp_salinity_avgs.csv"
-
-#Soil Properties
-"raw/thaw_depth_2021.csv"
-"raw/PhIr2021_Soil_Inventory_bd.csv"
-"raw/uga_soil_analyses_detectionlimit.csv"
-"processed/PhIr2021_Soil_InventoryUTKCores_foranalysis.csv"
-
-#Porewater data
-"raw/PhIr_SOIL_GEOCHEM_results.csv"
-"processed/ICP_2022.csv"
-"processed/rhizon_2021.csv"
-"output/NPOC-TN-PhIr2022.csv"
-
-```
+##Out of date files
 
 BELOW FILES ARE NOT UPDATED.
 
