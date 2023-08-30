@@ -86,8 +86,8 @@ grouped_moisture_forfigs_temporal2022 =
                    moisture_sd = round(sd(moisture),2),
                    moisture_se = round(sd(moisture)/sqrt(n()),2))
 
-grouped_moisture =
-  final_temp_sal_moist_forfig %>% 
+grouped_moisture2022 =
+  final_temp_sal_moist_forfig2022 %>% 
   filter(moisture > 10) %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
@@ -125,6 +125,28 @@ grouped_moisture %>%
 # 
 
 ggsave("formanuscript/moisturefig_depth_sd2021_nonacidic.png", plot = nonacidic_moisture_fig, height = 4.5, width = 2.25)
+
+
+moist_simple_fig =
+  grouped_moisture2022 %>% 
+  ggplot()+
+  geom_line(aes(x = moisture_avg, y = depth_cm, color = site, group = site), orientation = "y", size = 1)+
+  geom_ribbon(aes(xmin = moisture_avg-moisture_sd, xmax = moisture_avg+moisture_sd, 
+                  y = depth_cm, fill = site, color = site, group = site), alpha = 0.4)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  ylim(40,0)+
+  xlim(0,60)+
+  labs(x = "soil moisture (%)",
+       y = "Depth (cm)")+
+  guides(color = guide_legend(nrow = 2))+
+  facet_grid(position ~ .)+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank())
+
+ggsave("output/moist_simple_fig.png", plot = moist_simple_fig, height = 8, width = 1.75)
 
 
 

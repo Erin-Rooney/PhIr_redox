@@ -259,6 +259,8 @@ bd_nonacidic =
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right")+
   facet_grid(Area~Site) 
 
+
+
 bd_acidic =
 bd_select %>% 
   filter(Site != "Transect" & Area == "acidic tundra") %>% 
@@ -347,6 +349,30 @@ bd_summarized_forfigs =
         legend.position = "bottom",panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA)
         )
+  
+  BD_linefig =
+  bd_summarized_forfigs %>% 
+    ggplot()+
+    geom_line(aes(x = mean_bd, y = mean_depth, color = Area, group = Area), orientation = "y", size = 1)+
+    geom_ribbon(aes(xmin = mean_bd-se_bd, xmax = mean_bd+se_bd, 
+                    y = mean_depth, fill = Area, color = Area, group = Area), alpha = 0.4, size = 0.2)+
+    scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+    scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+    ylim(40, 0)+
+    # xlim(0, 50)+
+    labs(y = "Depth (cm)",
+         color = " ",
+         fill = " ")+
+    xlab(bquote("bulk density " (g/cm^3)))+
+    facet_grid(Site ~ .)+
+    guides(color = guide_legend(nrow = 2))+
+    theme_er1()+
+    theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+          strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+  
+  ggsave("output/BD_linefig.png", plot = BD_linefig, height = 6.5, width = 1.5)
+  
 
 vwc_fig =
   bd_forfigs %>% 
