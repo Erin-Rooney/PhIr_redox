@@ -234,6 +234,44 @@ redox_nutrients_leftjoin_longer =
 
 #####MANUSCRIPT FIGURES----------------
 
+non_acidic_hydric_selectfig =
+processed_ICP %>% 
+    filter(month %in% c("August", "September") & Site == "Hydric" & Area == "non-acidic tundra" & ICP %in% c("Fe_ug_mL", "Mn_ug_mL", "Ca_ug_mL", "Al_ug_mL")) %>% 
+  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>% 
+  mutate(ICP = recode(ICP, "Fe_ug_mL" = "iron (μg/ml)", "Mn_ug_mL" = "manganese (μg/ml)", 
+                      "Ca_ug_mL" = "calcium (μg/ml)", "Al_ug_mL" = "aluminum (μg/ml)")) %>% 
+  ggplot()+
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3, alpha = 0.75)+
+  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.5, linetype = "longdash")+
+  labs(x = " ",
+       y = "Depth (cm)",
+       color = " "
+  )+
+  scale_color_manual(values = c("#9e6374", "#de9b71"))+
+  scale_y_reverse()+
+  facet_wrap(.~ICP, scales = "free_x", switch = 'x')+
+  theme_er1()+
+  theme(legend.position = "bottom",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_blank(),
+        axis.text.x = element_text(size = 13),
+        axis.text.y = element_text(size = 13), axis.title.y = element_text(size = 15),
+        panel.border = element_rect(color="gray",size=0.25, fill = NA))
+
+ggsave("output/non_acidic_hydric_selectfig.png", plot = non_acidic_hydric_selectfig, height = 5, width = 4.5)
+
+
+
+
+
+
+
+
+
+
 P_concentration_fig =
   processed_ICP %>% 
   mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
