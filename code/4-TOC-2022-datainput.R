@@ -195,7 +195,7 @@ NPOC_linefig_2 =
   ggplot()+
   geom_line(aes(x = NPOC_mgL, y = Depth_cm, color = Area, group = Area), orientation = "y", size = 1)+
   geom_ribbon(aes(xmin = NPOC_mgL-NPOC_se, xmax = NPOC_mgL+NPOC_se, 
-                  y = Depth_cm, fill = Area, color = Area, group = Area), alpha = 0.4, size = 0.2)+
+                  y = Depth_cm, fill = Area, color = Area, group = Area), alpha = 0.2, size = 0.2)+ #alpha was 0.4
   scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_y_reverse()+
@@ -211,10 +211,31 @@ NPOC_linefig_2 =
         panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
         strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
 
+NPOC_linefig_3 =
+  all_data_grouped %>% 
+  ggplot()+
+  geom_point(aes(x = NPOC_mgL, y = Depth_cm, color = Area, group = Area, shape = Area), size = 2)+
+  geom_line(aes(x = NPOC_mgL, y = Depth_cm, color = Area, group = Area), orientation = "y", size = 0.5)+
+  geom_errorbar(aes(xmin=(NPOC_mgL + NPOC_se), xmax=(NPOC_mgL - NPOC_se), y = Depth_cm, color = Area), alpha = 0.5, width = 1, show.legend = FALSE)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_y_reverse()+
+  xlim(0, 50)+
+  labs(x = "DOC (mg/L)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ")+
+  facet_grid(Site ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
 
 ggsave("output/NPOC_2022_grouped.png", plot = NPOC_grouped_fig, height = 5, width = 4.5)
 ggsave("output/NPOC_2022_line.png", plot = NPOC_linefig, height = 5.5, width = 3)
 ggsave("output/NPOC_2022_line2.png", plot = NPOC_linefig_2, height = 8, width = 1.5)
+ggsave("output/NPOC_linefig_3.png", plot = NPOC_linefig_3, height = 8, width = 1.5)
 ggsave("output/TN_2022_grouped.png", plot = TN_grouped_fig, height = 5, width = 4.5)
   
 ##date plots

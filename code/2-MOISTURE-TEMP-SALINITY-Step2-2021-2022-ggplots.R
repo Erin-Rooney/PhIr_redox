@@ -132,7 +132,7 @@ moist_simple_fig =
   ggplot()+
   geom_line(aes(x = moisture_avg, y = depth_cm, color = site, group = site), orientation = "y", size = 1)+
   geom_ribbon(aes(xmin = moisture_avg-moisture_sd, xmax = moisture_avg+moisture_sd, 
-                  y = depth_cm, fill = site, color = site, group = site), alpha = 0.4)+
+                  y = depth_cm, fill = site, color = site, group = site), alpha = 0.4)+ 
   scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
   ylim(40,0)+
@@ -147,6 +147,29 @@ moist_simple_fig =
         strip.text.y = element_blank())
 
 ggsave("output/moist_simple_fig.png", plot = moist_simple_fig, height = 8, width = 1.75)
+
+
+moist_simplepoint_fig =
+  grouped_moisture2022 %>% 
+  ggplot()+
+  geom_point(aes(x = moisture_avg, y = depth_cm, color = site, group = site, shape = site), size = 2) +
+  geom_line(aes(x = moisture_avg, y = depth_cm, color = site, group = site), orientation = "y", size = 0.5)+
+  geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd, y = depth_cm, color = site), alpha = 0.5, show.legend = FALSE, width = 1)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  ylim(40,0)+
+  xlim(0,60)+
+  labs(x = "soil moisture (%)",
+       y = "Depth (cm)")+
+  guides(color = guide_legend(nrow = 2))+
+  facet_grid(position ~ .)+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank())
+
+ggsave("output/moist_simplepoint_fig.png", plot = moist_simplepoint_fig, height = 8, width = 1.9)
+
 
 
 

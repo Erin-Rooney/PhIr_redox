@@ -314,6 +314,56 @@ redox_linefig =
 ggsave("output/redox_linefig.png", plot = redox_linefig, height = 8, width = 1.5)
 
 
+
+redox_dotfig =
+  grouped_redox_forfigs2022 %>% 
+  ggplot()+
+  geom_point(aes(x = redox_avg_mV, y = depth_cm, color = site, shape = site, group = site), size = 2)+
+  geom_line(aes(x = redox_avg_mV, y = depth_cm, color = site, group = site), orientation = "y", size = 0.5)+
+  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd, y = depth_cm, color = site), width = 1, alpha = 0.5, show.legend = FALSE)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  ylim(40,0)+
+  scale_x_continuous(position="bottom", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
+  labs(x = "redox (mV)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ")+
+  facet_grid(position ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+
+ggsave("output/redox_dotfig.png", plot = redox_dotfig, height = 8, width = 1.5)
+
+
+LEGENDFIG =
+  grouped_redox_forfigs2022 %>% 
+  ggplot()+
+  geom_point(aes(x = redox_avg_mV, y = depth_cm, color = site, shape = site, group = site), size = 2)+
+  geom_line(aes(x = redox_avg_mV, y = depth_cm, color = site, group = site), orientation = "y", size = 0.5)+
+  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd, y = depth_cm, color = site), alpha = 0.5, show.legend = FALSE)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  ylim(40,0)+
+  scale_x_continuous(position="bottom", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
+  labs(x = "redox (mV)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ",
+       shape = " ")+
+  facet_grid(position ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+
+ggsave("output/LEGENDFIG.png", plot = LEGENDFIG, height = 3, width = 3)
+
+
 redoxfig_depth_sd2021_nonacidic =
   grouped_redox_forfigs2021 %>% 
   filter(site == "non-acidic tundra") %>% 

@@ -74,8 +74,7 @@ Ferrous_Fe_line_fig =
   ggplot()+
   geom_line(aes(x = mean_FeII, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
   geom_ribbon(aes(xmin = mean_FeII-sd_FeII, xmax = mean_FeII+sd_FeII, 
-                  y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
-  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+                  y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_y_reverse()+
   # xlim(0, 50)+
@@ -92,6 +91,53 @@ Ferrous_Fe_line_fig =
 
 ggsave("output/Ferrous_Fe_line_fig.png", plot = Ferrous_Fe_line_fig, height = 8, width = 1.65)
 
+
+total_Fe_point_fig =
+  Fe2_grouped %>% 
+  ggplot()+
+  geom_point(aes(x = mean_Fe, y = depth_cm, color = area, shape = area), size = 2)+
+  geom_line(aes(x = mean_Fe, y = depth_cm, color = area, group = area), orientation = "y", size = 0.5)+
+  geom_errorbar(aes(xmin=mean_Fe-sd_Fe, xmax = mean_Fe+sd_Fe, y = depth_cm, color = area), alpha = 0.5, width = 1, show.legend = FALSE)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_y_reverse()+
+  # xlim(0, 50)+
+  labs(x = "total Fe (mg/L)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ")+
+  facet_grid(site ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+
+ggsave("output/total_Fe_point_fig.png", plot = total_Fe_point_fig, height = 8, width = 1.5)
+
+
+Ferrous_Fe_point_fig =
+  Fe2_grouped2 %>% 
+  ggplot()+
+  geom_point(aes(x = mean_FeII, y = depth_cm, color = area, group = area, shape = area), size = 2)+
+  geom_line(aes(x = mean_FeII, y = depth_cm, color = area, group = area), orientation = "y", size = 0.5)+
+  geom_errorbar(aes(xmin=mean_FeII-sd_FeII, xmax = mean_FeII+sd_FeII, y = depth_cm, color = area), alpha = 0.5, width = 1, show.legend = FALSE)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_y_reverse()+
+  # xlim(0, 50)+
+  labs(x = "Fe(II) (mg/L)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ")+
+  facet_grid(site ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+
+ggsave("output/Ferrous_Fe_point_fig.png", plot = Ferrous_Fe_point_fig, height = 8, width = 1.65)
 
 
 
