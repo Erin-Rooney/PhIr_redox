@@ -160,7 +160,7 @@ moist_simplepoint_fig =
   ylim(40,0)+
   xlim(0,60)+
   labs(x = "soil moisture (%)",
-       y = "Depth (cm)")+
+       y = "depth (cm)")+
   guides(color = guide_legend(nrow = 2))+
   facet_grid(position ~ .)+
   theme_er1()+

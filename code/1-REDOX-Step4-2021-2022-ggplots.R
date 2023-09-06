@@ -652,6 +652,74 @@ ggsave("output/allredox_lines.png", plot = allredox_lines, height = 7, width = 1
 
 
 
+redox_lines_2021_fig_nonacidichydric =                          
+  ungrouped_redox_forfigs2021_probe %>% 
+  filter(site == "non-acidic tundra" & position == "hydric") %>% 
+  ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
+  geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "#ffe5d9", alpha = 0.7)+
+  geom_point(aes(color = depth_cm, fill = depth_cm), size = 1, alpha = 0.6, shape = c(21))+
+  #annotate(xmin='2021-06-14 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
+  scale_color_gradientn(colors = rev(natparks.pals(name = "Olympic")), limits=c(0,60))+
+  scale_fill_gradientn(colors = rev(natparks.pals(name = "Olympic")), limits=c(0,60))+  
+  ylim(-250, 700)+
+  labs(title = " ", x = " ", y = "redox potential (mV)
+       ",
+       color = "depth (cm)", fill = "depth (cm)")+
+  facet_grid(position~site)+
+  theme_er1()+
+  guides(color = guide_colorbar(reverse = TRUE), 
+         fill = guide_colorbar(reverse = TRUE))+
+  theme(axis.text.x = element_text(size = 13, vjust = 0.5, angle = 45),
+        axis.text.y = element_text(size = 13),
+        legend.position = "right", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        strip.text.y = element_blank(),
+        strip.text.x = element_blank())
+
+ggsave("formanuscript/redox_lines_2021_fig_nonacidichydric.png", plot = redox_lines_2021_fig_nonacidichydric, height = 3.5, width = 6)
+
+redox_lines_2022_fig_nonacidichydric  =                          
+  ungrouped_redox_forfigs2022_probe %>% 
+  filter(site == "non-acidic tundra" & position == "hydric") %>% 
+  ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
+  #geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  geom_point(aes(color = depth_cm, fill = depth_cm), size = 1, alpha = 0.6, shape = c(21))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
+  scale_color_gradientn(colors = rev(natparks.pals(name = "Olympic")), limits=c(-5,55))+
+  scale_fill_gradientn(colors = rev(natparks.pals(name = "Olympic")), limits=c(-5,55))+
+  ylim(-250, 700)+
+  labs(x = "2022", y = " ",
+       color = "depth (cm)", fill = "depth (cm)")+
+  facet_grid(position~site)+
+  theme_er1()+
+  guides(color = guide_colorbar(reverse = TRUE), 
+         fill = guide_colorbar(reverse = TRUE))+
+  theme(axis.text.x = element_text(size = 13, vjust = 0.5, angle = 45),
+        axis.text.y = element_text(size = 13),
+        legend.position = "right", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        strip.text.y = element_blank(),
+        strip.text.x = element_blank())
+
+ggsave("formanuscript/redox_lines_2022_fig_nonacidichydric.png", plot = redox_lines_2022_fig_nonacidichydric, height = 3.5, width = 6)
+
+library(patchwork)
+
+
+allredox_lines = allredox_lines_2021_fig + plot_spacer() + allredox_lines_2022_fig + plot_layout(guides = "collect", widths = c(6, 0.25 , 6)) & theme(legend.position = 'bottom')
+
+ggsave("output/allredox_lines.png", plot = allredox_lines, height = 7, width = 13)
+
 
 
 allredox_contour_2021_fig =                          

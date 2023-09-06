@@ -236,7 +236,8 @@ redox_nutrients_leftjoin_longer =
 
 non_acidic_hydric_selectfig =
 processed_ICP %>% 
-    filter(month %in% c("August", "September") & Site == "Hydric" & Area == "non-acidic tundra" & ICP %in% c("Fe_ug_mL", "Mn_ug_mL", "Ca_ug_mL", "Al_ug_mL")) %>% 
+   # filter(month %in% c("August", "September") & Site == "Hydric" & Area == "non-acidic tundra" & ICP %in% c("Fe_ug_mL", "Mn_ug_mL", "Ca_ug_mL", "Al_ug_mL")) %>% 
+  filter(Site == "Hydric" & Area == "non-acidic tundra" & ICP %in% c("Fe_ug_mL", "Mn_ug_mL", "Ca_ug_mL", "Al_ug_mL")) %>% 
   mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
   mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>% 
   mutate(ICP = recode(ICP, "Fe_ug_mL" = "iron (μg/ml)", "Mn_ug_mL" = "manganese (μg/ml)", 
@@ -248,7 +249,9 @@ processed_ICP %>%
        y = "Depth (cm)",
        color = " "
   )+
-  scale_color_manual(values = c("#9e6374", "#de9b71"))+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
+  #scale_color_manual(values = c("#9e6374", "#de9b71"))+
   scale_y_reverse()+
   facet_wrap(.~ICP, scales = "free_x", switch = 'x')+
   theme_er1()+

@@ -86,9 +86,13 @@ ggsave("output/nitrate_line_fig2.png", plot = nitrate_fig2, height = 8, width = 
 phosphate_fig =
   phosphate_summary %>% 
   ggplot()+
-  geom_line(aes(x = mean_po4_p_ppm, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
-  geom_ribbon(aes(xmin = mean_po4_p_ppm-sd_po4_p_ppm, xmax = mean_po4_p_ppm+sd_po4_p_ppm, 
-                  y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
+  # geom_line(aes(x = mean_po4_p_ppm, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
+  # geom_ribbon(aes(xmin = mean_po4_p_ppm-sd_po4_p_ppm, xmax = mean_po4_p_ppm+sd_po4_p_ppm, 
+  #                 y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
+  # geom_point(aes(x = mean_po4_p_ppm, y = depth_cm, color = area, shape = area), size = 2)+
+  geom_line(aes(x = mean_po4_p_ppm, y = depth_cm, color = area, group = area), orientation = "y", size = 0.5)+
+  geom_errorbar(aes(xmin = mean_po4_p_ppm-sd_po4_p_ppm, xmax = mean_po4_p_ppm+sd_po4_p_ppm, 
+                    y = depth_cm, fill = area, color = area), alpha = 0.5, width = 1)+
   scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_y_reverse()+

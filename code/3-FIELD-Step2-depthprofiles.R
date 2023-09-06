@@ -286,16 +286,20 @@ bd_grouped =
   filter(Site != "Transect") %>% 
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   mutate(Horizon = factor(Horizon, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2"))) %>% 
-  dplyr::select(c(Area, Site, Horizon, soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3)) %>% 
+  dplyr::select(c(Area, Site, Horizon, soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3, real_depth_cm)) %>% 
   na.omit() %>% 
   group_by(Area, Site, Horizon) %>% 
-  dplyr::summarise(mean_bd = round(mean(soil_bulk_density_g_cm3),2),
+  dplyr::summarise(mean_depth = round(mean(real_depth_cm),2),
+                   sd_depth = round(sd(real_depth_cm),2),
+                  mean_bd = round(mean(soil_bulk_density_g_cm3),2),
                    sd_bd = round(sd(soil_bulk_density_g_cm3),2),
                    mean_vwc = round(mean(volumetric_water_content_cm3_cm3),2),
                    sd_vwc = round(sd(volumetric_water_content_cm3_cm3),2)) %>% 
-  mutate(bd_summary = paste(mean_bd, "\u00b1", sd_bd),
-         vwc_summary = paste(mean_vwc, "\u00b1", sd_vwc)) %>% 
-  dplyr::select(c(Area, Site, Horizon, bd_summary, vwc_summary, mean_bd, sd_bd, mean_vwc, sd_vwc)) 
+  mutate(depth_summary = paste(mean_depth, "\u00b1", sd_depth),
+         bd_summary = paste(mean_bd, "\u00b1", sd_bd),
+         vwc_summary = paste(mean_vwc, "\u00b1", sd_vwc)
+         ) %>% 
+  dplyr::select(c(Area, Site, Horizon, depth_summary, bd_summary, vwc_summary, mean_bd, sd_bd, mean_vwc, sd_vwc)) 
   
 
 bd_grouped %>% knitr::kable()
