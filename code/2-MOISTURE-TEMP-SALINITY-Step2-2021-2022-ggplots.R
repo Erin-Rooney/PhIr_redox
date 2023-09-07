@@ -202,16 +202,16 @@ moisturefig_temporal =
   geom_point(size = 4, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
   geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE)+
-  # scale_color_manual(values = (pnw_palette('Sunset', 4)))+
-  # scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
-  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
+  # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
   ylim(60, 0)+
   labs(x = '2021
        soil moisture (%)',
        y = "depth (cm)",
        color = "", fill = "")+
-  scale_x_continuous(position="top")+
+  scale_x_continuous(position="top", breaks = c(10, 20, 30, 40, 50), n.breaks=5, limits = c(0, 60))+
   facet_grid(position~site, switch = "x")+
   theme_er1()+
   theme(legend.position = "none",
@@ -289,26 +289,6 @@ moisturefig_temporal2022 =
 
 ggsave("formanuscript/moisture_temporal_fig_2022.png", plot = moisturefig_temporal2022, height = 7, width = 3.8)
 
-allsoilmoisture_fig =
-  final_temp_sal_moist_forfig %>% 
-  mutate(depth_2 = factor(depth_cm, levels = c("5", "15", "25")))   %>% 
-  #filter(position == "hydric" & site == "non-acidic tundra") %>% 
-  #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
-  ggplot(aes(y = moisture, x = datetime, group = 'depth_cm'))+
-  #geom_rect(aes(xmin=as_datetime('2021-06-24 17:00:00'), xmax= as_datetime('2021-09-17 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
-  geom_point(aes(color = depth_2, fill = depth_2), size = 0.5, alpha = 0.6, shape = c(21))+
-  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
-  #geom_line(orientation = "x", show.legend = FALSE)+
-  scale_x_datetime(date_breaks = "1 week", date_labels = "%b-%d")+
-  scale_color_manual(values = rev(c("#ffd60a","#EDA24E", "#9b2226")))+
-  scale_fill_manual(values = rev(c("#ffd60a","#EDA24E", "#9b2226")))+
-  ylim(0, 60)+
-  labs(x = "", y = "soil moisture (%)",
-       color = "depth (cm)", fill = "depth (cm)")+
-  facet_grid(position~site, scales = "free_x")+
-  theme_er1()+
-  theme(legend.position = "bottom", axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9))
-
 
 moisture_lines_dry =
   final_temp_sal_moist_forfig %>%
@@ -361,7 +341,8 @@ temp_lines=
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot()+
   geom_point(aes(y = temp, x = datetime, color = depth_2, group = depth_2), size = 0.25)+
-  scale_x_datetime(date_breaks = "2 week", date_labels = "%b-%d")+
+  scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
+  scale_y_continuous(breaks = c(0, 10, 20, 30), n.breaks=4, limits = c(0, 35))+
   #ylim(25, 5)+
   labs(x = "2021", y = "soil temperature, celsius",
        color = "soil depth cm")+
@@ -393,7 +374,8 @@ temp_lines_dry =
   ggplot()+
   #geom_point(aes(y = temp, x = datetime, color = depth_2, group = depth_2), size = 0.25)+
     geom_line(aes(y = temp, x = datetime, color = depth_2, group = depth_2), size = 0.5)+
-  scale_x_datetime(date_breaks = "2 week", date_labels = "%b-%d")+
+  scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
+  scale_y_continuous(breaks = c(0, 10, 20, 30), n.breaks=4, limits = c(0, 35))+
   #ylim(25, 5)+
   labs(x = " ", y = " soil temperature 
        (°C)",
@@ -429,7 +411,8 @@ temp_lines2022=
   #mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
   ggplot()+
   geom_point(aes(y = temp, x = datetime, color = depth_2, group = depth_2), size = 0.25)+
-  scale_x_datetime(date_breaks = "2 week", date_labels = "%b-%d")+
+  scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
+  scale_y_continuous(breaks = c(0, 10, 20, 30), n.breaks=4, limits = c(0, 35))+
   #ylim(25, 5)+
   labs(x = "2022", y = " ",
        color = "soil depth cm")+
@@ -459,6 +442,7 @@ ggsave("output/temp_linesAll.png", plot = temp_linesAll, height = 7, width = 13)
 
 moisture_lines=
   final_temp_sal_moist_forfig %>%
+  filter(moisture > 10) %>% 
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
   #filter(site == "acidic tundra") %>% 
@@ -468,10 +452,11 @@ moisture_lines=
   ggplot()+
   # geom_line(aes(y = moisture, x = datetime, color = depth_2, group = depth_2), size = 1)+
   geom_point(aes(y = moisture, x = datetime, color = depth_2, group = depth_2), size = 0.5)+
-  scale_x_datetime(date_breaks = "2 week", date_labels = "%b-%d")+
+  scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
   #ylim(25, 5)+
   labs(x = "2021", y = "soil moisture, %",
        color = "soil depth cm")+
+  scale_y_continuous(breaks = c(0, 10, 20, 30, 40, 50), n.breaks=6, limits = c(0, 60))+
   #scale_fill_manual(values=natparks.pals("Arches", 11))+
   scale_color_manual(values=(pnw_palette("Lake", 3)))+
   guides(colour = guide_legend(override.aes = list(size=6)))+
@@ -499,6 +484,7 @@ moisture_lines2022=
   ggplot()+
   geom_line(aes(y = moisture, x = datetime, color = depth_2, group = depth_2), size = 1)+
   scale_x_datetime(date_breaks = "2 week", date_labels = "%b-%d")+
+  scale_y_continuous(breaks = c(0, 10, 20, 30, 40, 50), n.breaks=6, limits = c(0, 60))+
   #ylim(25, 5)+
   labs(x = "2022", y = " ",
        color = "soil depth cm")+

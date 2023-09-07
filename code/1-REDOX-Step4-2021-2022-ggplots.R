@@ -538,16 +538,16 @@ redox_temporal_fig_2022 =
   geom_point(size = 3, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
-  # scale_color_manual(values = (pnw_palette('Sunset', 4)))+
-  # scale_fill_manual(values = (pnw_palette('Sunset', 4)))+
-  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
+  # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
   ylim(60, 0)+
   labs(x = '2022
        redox potential (mV)',
        y = "",
        color = "", fill = "")+
-  scale_x_continuous(position="top")+
+  scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600, 900), n.breaks=5, limits = c(-400, 900))+
   facet_grid(position~site, switch = "x")+
   theme_er1()+
   theme(legend.position = "right",

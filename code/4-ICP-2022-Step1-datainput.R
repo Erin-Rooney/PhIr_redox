@@ -469,14 +469,14 @@ Al_concentration_fig =
   mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
   filter(ICP == "Al_ug_mL") %>% 
   ggplot() +
-  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
   labs(x = "Aluminum concentration, μg/ml",
        y = "depth, cm",
        color = "month, 2022"
   )+
-  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_y_reverse()+
   facet_grid(Site~Area, scales = "free_x")+
   theme_er1()+
@@ -499,14 +499,14 @@ Mg_concentration_fig =
   # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
   filter(ICP == "Mg_ug_mL") %>% 
   ggplot() +
-  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
   labs(x = "Magnesium concentration, μg/ml",
        y = " ",
        color = "month, 2022"
   )+
-  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_y_reverse()+
   facet_grid(Site~Area, scales = "free_x")+
   theme_er1()+
@@ -529,14 +529,14 @@ Na_concentration_fig =
   # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
   filter(ICP == "Na_ug_mL") %>% 
   ggplot() +
-  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
   labs(x = "Sodium concentration, μg/ml",
        y = " ",
        color = "month, 2022"
   )+
-  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_y_reverse()+
   facet_grid(Site~Area, scales = "free_x")+
   theme_er1()+
@@ -557,14 +557,14 @@ K_concentration_fig =
   # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
   filter(ICP == "K_ug_mL") %>% 
   ggplot() +
-  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 2.5, alpha = 0.75)+
+  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
   labs(x = "Potassium concentration, μg/ml",
        y = "depth, cm",
        color = "month, 2022"
   )+
-  scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_y_reverse()+
   facet_grid(Site~Area, scales = "free_x")+
   theme_er1()+
