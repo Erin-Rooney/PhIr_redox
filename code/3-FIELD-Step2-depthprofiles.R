@@ -306,6 +306,19 @@ bd_grouped %>% knitr::kable()
 
 write.csv(bd_grouped, "output/bd_grouped.csv")
 
+
+bd_ungrouped =
+  bd_select %>% 
+  filter(Site != "Transect") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Horizon = factor(Horizon, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2"))) %>% 
+  dplyr::select(c(Date_collected, Core_ID, Area, Site, Horizon, soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3, real_depth_cm)) %>% 
+  na.omit() 
+
+bd_ungrouped %>% knitr::kable()
+
+write.csv(bd_ungrouped, "output/bd_ungrouped.csv")
+
 bd_forfigs =
   bd_select %>% 
   filter(Site != "Transect") %>% 

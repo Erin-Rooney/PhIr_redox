@@ -289,7 +289,6 @@ moisturefig_temporal2022 =
 
 ggsave("formanuscript/moisture_temporal_fig_2022.png", plot = moisturefig_temporal2022, height = 7, width = 3.8)
 
-
 moisture_lines_dry =
   final_temp_sal_moist_forfig %>%
   filter(position == "dry" & datetime > "2021-07-06 00:00:00") %>% 

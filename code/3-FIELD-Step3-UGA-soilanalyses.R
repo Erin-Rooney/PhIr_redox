@@ -20,10 +20,19 @@ soil_dat_sep =
   mutate(siterep = recode(siterep, "02" = "D2")) %>% 
   dplyr::mutate(site = case_when(grepl("D", siterep)~"dry",
                                  grepl("M", siterep)~"mesic",
-                                  grepl("H", siterep)~"hydric"))
-
-                                    
+                                  grepl("H", siterep)~"hydric")) %>% 
+  dplyr::mutate(area = case_when(grepl("E", area)~"acidic tundra",
+                                 grepl("W", area)~"non-acidic tundra")) %>% 
+  mutate(area = factor(area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  mutate(site = factor(site, levels = c("dry", "mesic", "hydric"))) 
   
+soil_dat_individual = 
+  soil_dat_sep
+                                    
+soil_dat_individual %>% knitr::kable() # prints a somewhat clean table in the console
+
+write.csv(soil_dat_individual, "output/soil_dat_individual.csv", row.names = FALSE)
+
   
 soil_dat_summary =
   soil_dat_sep %>% 
