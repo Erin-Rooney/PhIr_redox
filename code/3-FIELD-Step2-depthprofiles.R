@@ -123,15 +123,17 @@ singleprofilethaw =
 
 library(tibble)
 tocombine = tribble(
-  ~Area, ~Site, ~Horizon, ~Average_Depth_cm, ~soil_material,
-  'non-acidic tundra', 'Hydric', "O/M", 32, "active layer",
-  'non-acidic tundra', 'Hydric', "permafrost", 8, "permafrost")
+  ~Area, ~x, ~Site, ~Horizon, ~soil_bulk_density_g_cm3, ~Average_Depth_cm, ~soil_material,
+  'non-acidic tundra', 0.1, 'Hydric', "O1", 0.06, 8.23, "organic surface",
+  'non-acidic tundra', 0.1, 'Hydric', "O2", 0.17, 15.56, "organic subsurface", 
+   'non-acidic tundra', 0.1, 'Hydric', "O/M", 0.8, 20.5, "active layer",
+  'non-acidic tundra', 0.1, 'Hydric', "permafrost", NA, 15.71, "permafrost")
 
 
 singleprofile_nonacidic_hydric =
   bd_select %>% 
   filter(Site != "Transect" & Area == "non-acidic tundra" & Site == "Hydric" & label == "Plot-1-3") %>% 
-  dplyr::select(c(Area, Site, Horizon, Average_Depth_cm, soil_material)) %>% 
+  dplyr::select(c(Area, Site, Horizon, soil_bulk_density_g_cm3, Average_Depth_cm, soil_material)) %>% 
   rbind(tocombine)
   
 
@@ -141,35 +143,41 @@ singleprofile_nonacidic_hydric =
 
 gglabel = tribble(
    ~Area, ~Site, ~x, ~y, ~label,
-  'non-acidic tundra', 'Hydric', 1, 3.7, 'low density 
-  organic soil',        
-  'non-acidic tundra', 'Hydric', 1, 15, 'high density 
-  organic soil',
-  'non-acidic tundra', 'Hydric', 1, 30, 'active layer
-  organic + mineral soil',
-  'non-acidic tundra', 'Hydric', 1, 58, 'permafrost',
+  'non-acidic tundra', 'Hydric', 0.1, 3.7, 'organic 
+  surface',        
+  'non-acidic tundra', 'Hydric', 0.1, 15, 'organic 
+  subsurface',
+  'non-acidic tundra', 'Hydric', 0.1, 33, 'mineral 
+  subsurface',
+  'non-acidic tundra', 'Hydric', 0.1, 52, 'permafrost',
   )  
 
+library(ggtext)
+
 horizons_nonacidic_hydric_singleprofile =
-  singleprofile_nonacidic_hydric %>% 
+  tocombine %>% 
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   mutate(Horizon = factor(Horizon, levels = c("permafrost", "O/M", "O2", "O1"))) %>% 
   ggplot()+
-  geom_col(aes(y = Average_Depth_cm, x = Site, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
-    geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 7)+
+  geom_col(aes(y = Average_Depth_cm, x = x, fill = soil_bulk_density_g_cm3), color = "white", position = 'stack', width = 0.7)+
+    geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 6)+
     scale_y_reverse()+
   labs(title = " ",
-       fill = "", color = "",
        y = "depth (cm)",
        x = "Soil Profile")+
-  scale_fill_manual(values = c("#b8c0ff", "#9a8c98", "#532C1E", "#2F0E07"))+
+  scale_fill_gradient2(
+    low = "#2F0E07", mid = "#9c6644", high = "#9a8c98", midpoint = 0.4, na.value = "#b8c0ff", name = "bulk density, g/cm<sup>3</sup>")+
   #facet_grid(Site~., scales="free_x") +
   theme_er1()+
-  theme(axis.text.x = element_blank(), axis.title.x = element_blank(), axis.ticks.x = element_blank(), legend.position = "none",
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+  theme(axis.text.x = element_blank(), axis.title.x = element_blank(), axis.ticks.x = element_blank(), legend.position = "bottom",
+        axis.text.y = element_text(size = 16), axis.title.y = element_text(size = 17),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), legend.title = element_markdown(),
         panel.background = element_blank(), panel.border = element_rect(color="white",size=0.25, fill = NA))
 
-ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile.png", plot = horizons_nonacidic_hydric_singleprofile, height = 6.4, width = 5.6)
+ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile.png", plot = horizons_nonacidic_hydric_singleprofile, height = 5.5, width = 2.5)
+
+ggsave("formanuscript/horizons_nonacidic_hydric_singleprofileLEGEND.png", plot = horizons_nonacidic_hydric_singleprofile, height = 6.4, width = 5)
+
 
 # bd_nonacidic_hydric_singleprofile =
 #   bd_select %>% 

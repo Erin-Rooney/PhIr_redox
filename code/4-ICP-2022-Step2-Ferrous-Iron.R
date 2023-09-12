@@ -29,6 +29,14 @@ Fe2_grouped =
   group_by(area, site, depth_cm) %>% 
   dplyr::summarize(mean_Fe = round(mean(Fe), 3),
                    sd_Fe = round(sd(Fe), 2),
+                   mean_Al = round(mean(Al), 3),
+                   sd_Al = round(sd(Al), 2),
+                   mean_Ca = round(mean(Ca), 3),
+                   sd_Ca = round(sd(Ca), 2),
+                   mean_Mn = round(mean(Mn), 3),
+                   sd_Mn = round(sd(Mn), 2),
+                   mean_Mg = round(mean(Mg), 3),
+                   sd_Mg = round(sd(Mg), 2),
                    mean_FeII = round(mean(FeII), 3),
                    sd_FeII = round(sd(FeII), 2)) %>% 
   mutate(area = factor(area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
@@ -48,6 +56,7 @@ Fe2_grouped2 =
 total_Fe_line_fig =
 Fe2_grouped %>% 
   ggplot()+
+  geom_point(aes(x = mean_Fe, y = depth_cm, color = area, shape = area), size = 2.5)+
   geom_line(aes(x = mean_Fe, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
   geom_ribbon(aes(xmin = mean_Fe-sd_Fe, xmax = mean_Fe+sd_Fe, 
                   y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
@@ -68,10 +77,108 @@ Fe2_grouped %>%
 
 ggsave("output/total_Fe_line_fig.png", plot = total_Fe_line_fig, height = 8, width = 1.5)
 
+total_Mg_line_fig =
+  Fe2_grouped %>% 
+  ggplot()+
+  geom_point(aes(x = mean_Mg, y = depth_cm, color = area, shape = area), size = 2.5)+
+  geom_line(aes(x = mean_Mg, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
+  geom_ribbon(aes(xmin = mean_Mg-sd_Mg, xmax = mean_Mg+sd_Mg, 
+                  y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_y_reverse()+
+  # xlim(0, 50)+
+  labs(x = "total Mg (mg/L)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ")+
+  facet_grid(site ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+
+ggsave("output/total_Mg_line_fig.png", plot = total_Mg_line_fig, height = 8, width = 1.5)
+
+total_Ca_line_fig =
+  Fe2_grouped %>% 
+  ggplot()+
+  geom_point(aes(x = mean_Ca, y = depth_cm, color = area, shape = area), size = 2.5)+
+  geom_line(aes(x = mean_Ca, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
+  geom_ribbon(aes(xmin = mean_Ca-sd_Ca, xmax = mean_Ca+sd_Ca, 
+                  y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_y_reverse()+
+  # xlim(0, 50)+
+  labs(x = "total Ca (mg/L)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ")+
+  facet_grid(site ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+
+ggsave("output/total_Ca_line_fig.png", plot = total_Ca_line_fig, height = 8, width = 1.5)
+
+total_Mn_line_fig =
+  Fe2_grouped %>% 
+  ggplot()+
+  geom_point(aes(x = mean_Mn, y = depth_cm, color = area, shape = area), size = 2.5)+
+  geom_line(aes(x = mean_Mn, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
+  geom_ribbon(aes(xmin = mean_Mn-sd_Mn, xmax = mean_Mn+sd_Mn, 
+                  y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_y_reverse()+
+  # xlim(0, 50)+
+  labs(x = "total Mn (mg/L)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ")+
+  facet_grid(site ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+
+ggsave("output/total_Mn_line_fig.png", plot = total_Mn_line_fig, height = 8, width = 1.5)
+
+total_Al_line_fig =
+  Fe2_grouped %>% 
+  ggplot()+
+  geom_point(aes(x = mean_Al, y = depth_cm, color = area, shape = area), size = 2.5)+
+  geom_line(aes(x = mean_Al, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
+  geom_ribbon(aes(xmin = mean_Al-sd_Al, xmax = mean_Al+sd_Al, 
+                  y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_y_reverse()+
+  # xlim(0, 50)+
+  labs(x = "total Al (mg/L)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ")+
+  facet_grid(site ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+
+ggsave("output/total_Al_line_fig.png", plot = total_Al_line_fig, height = 8, width = 1.5)
+
+
 
 Ferrous_Fe_line_fig =
   Fe2_grouped2 %>% 
   ggplot()+
+  geom_point(aes(x = mean_FeII, y = depth_cm, color = area, shape = area), size = 2.5)+
   geom_line(aes(x = mean_FeII, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
   geom_ribbon(aes(xmin = mean_FeII-sd_FeII, xmax = mean_FeII+sd_FeII, 
                   y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+

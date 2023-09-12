@@ -65,7 +65,7 @@ final_temp_sal_moist_forfig2022 =
 
 grouped_moisture_forfigs_temporal = 
   final_temp_sal_moist_forfig %>% 
-  filter(moisture > 1) %>% 
+  filter(moisture > 10) %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
@@ -77,7 +77,7 @@ grouped_moisture_forfigs_temporal =
 
 grouped_moisture_forfigs_temporal2022 = 
   final_temp_sal_moist_forfig2022 %>% 
-  filter(moisture > 1) %>% 
+  filter(moisture > 10) %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
@@ -88,6 +88,18 @@ grouped_moisture_forfigs_temporal2022 =
 
 grouped_moisture2022 =
   final_temp_sal_moist_forfig2022 %>% 
+  filter(moisture > 10) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(site = recode(site, "east" = "acidic tundra",
+                       "west" = "non-acidic tundra")) %>% 
+  group_by(site, position, depth_cm) %>% 
+  dplyr::summarise(moisture_avg = round(mean(moisture),2),
+                   moisture_sd = round(sd(moisture),2),
+                   moisture_se = round(sd(moisture)/sqrt(n()),2))
+
+
+grouped_moisture =
+  final_temp_sal_moist_forfig %>% 
   filter(moisture > 10) %>% 
   mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
@@ -126,6 +138,33 @@ grouped_moisture %>%
 
 ggsave("formanuscript/moisturefig_depth_sd2021_nonacidic.png", plot = nonacidic_moisture_fig, height = 4.5, width = 2.25)
 
+acidic_moisture_fig =
+  grouped_moisture %>% 
+  filter(site == "acidic tundra") %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(y = depth_cm, x = moisture_avg, color = position, fill = position), group = 'position')+
+  geom_point(size = 3.5, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, linetype="longdash", alpha = 0.3)+
+  geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE, width = 1)+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  # scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  ylim(60, 0)+
+  labs(
+    x = ' 
+       soil moisture, %
+    ',
+    y = "depth (cm)",
+    color = "", fill = "")+
+  scale_x_continuous(position="top", breaks = c(0, 20, 40, 60), n.breaks=4, limits = c(0, 60))+
+  facet_grid(.~site, switch = "x")+
+  theme_er1()+
+  theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+# 
+
+ggsave("formanuscript/moisturefig_depth_sd2021_acidic.png", plot = acidic_moisture_fig, height = 4.5, width = 2.25)
 
 moist_simple_fig =
   grouped_moisture2022 %>% 
@@ -254,6 +293,45 @@ moisturefig_temporal_nonacidic_hydric =
 
   
 ggsave("formanuscript/moisturefig_temporal_nonacidic_hydric.png", plot = moisturefig_temporal_nonacidic_hydric, height = 4.5, width = 2.1)
+
+moisturefig_temporal_acidic_hydric =
+  grouped_moisture_forfigs_temporal %>%
+  filter(site == "acidic tundra" & position == "hydric") %>%
+  mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>%
+  ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
+  geom_point(size = 3.75, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash", alpha = 0.3)+
+  geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE,
+                width=1.5,
+                size=0.5)+
+  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
+  # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+  ylim(60, 0)+
+  labs(x = 'Hydric
+       soil moisture (%)
+       ',
+       y = "depth (cm)",
+       color = "", fill = "")+
+  scale_x_continuous(position="top", breaks = c(0, 20, 40, 60), n.breaks=4, limits = c(0, 60))+
+  facet_grid(position~site, switch = "x")+
+  theme_er1()+
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside",
+        strip.text.y = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+#axis.text.x = element_text(size = 12, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+
+
+ggsave("formanuscript/moisturefig_temporal_acidic_hydric.png", plot = moisturefig_temporal_acidic_hydric, height = 4.5, width = 2.1)
+
+
+
+
+
 
 ggsave("formanuscript/moisture_temporal_fig_2021.png", plot = moisturefig_temporal, height = 7, width = 3.8)
 

@@ -37,6 +37,7 @@ phosphate_summary =
 nitrate_fig =
 nitrate_summary %>% 
   ggplot()+
+  geom_point(aes(x = mean_no3n_ppm, y = depth_cm, color = area, shape = area), size = 2.5)+
   geom_line(aes(x = mean_no3n_ppm, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
   geom_ribbon(aes(xmin = mean_no3n_ppm-sd_no3n_ppm, xmax = mean_no3n_ppm+sd_no3n_ppm, 
                   y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
