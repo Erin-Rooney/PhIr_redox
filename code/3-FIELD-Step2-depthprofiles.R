@@ -17,13 +17,17 @@ bd_grav_cleaned = read.csv("raw/PhIr2021_Soil_Inventory_bd.csv") %>%
                        "West" = "non-acidic tundra")) %>% 
   dplyr::mutate(soil_material = case_when(grepl("O",Horizon)~"organic",
                                           grepl("M",Horizon)~"mineral")) %>% 
+  dplyr::mutate(soil_material2 = case_when(Horizon == "O"~"organic surface",
+                                           Horizon =="O1"~"organic surface",
+                                           Horizon == "O2"~"organic subsurface",
+                                           grepl("M",Horizon)~"mineral subsurface")) %>% 
   mutate(volumetric_water_content_cm3_cm3 = soil_bulk_density_g_cm3 * grav_water_gh20_per_gdrysoil) 
 
 bd_select = 
   bd_grav_cleaned %>% 
   dplyr::select(Sample_ID, Core_ID, Date_collected, Area, Site, Plot_num, Plot_ID, 
                 Horizon, Depth_1_cm, Depth_2_cm, Depth_3_cm, Depth_4_cm, Average_Depth_cm, real_depth_cm, 
-                soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3, soil_material) %>% 
+                soil_bulk_density_g_cm3, volumetric_water_content_cm3_cm3, soil_material, soil_material2) %>% 
   mutate(label = Horizon) %>% 
   mutate(label = factor(label, levels = c("O", "O1", "O2", "O3", "M", "M1", "M2"))) %>% 
   mutate(date_simple = recode(Date_collected, "6-Jul-21" = "Plot-1", "7-Jul-21" = "Plot-1",
@@ -179,29 +183,34 @@ ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile.png", plot = horiz
 ggsave("formanuscript/horizons_nonacidic_hydric_singleprofileLEGEND.png", plot = horizons_nonacidic_hydric_singleprofile, height = 6.4, width = 5)
 
 
-# bd_nonacidic_hydric_singleprofile =
-#   bd_select %>% 
-#   filter(Site != "Transect" & Area == "non-acidic tundra" & Site == "Hydric" & label == "Plot-1-3") %>% 
-#   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
-#   mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
-#   ggplot()+
-#   geom_col(aes(y = Average_Depth_cm, x = Site, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
-#   geom_text(data = gglabel, aes(x = x, y = y, label = label), color = 'white', size = 6)+
-#   scale_y_reverse()+
-#   labs(title = " ",
-#        fill = "", color = "",
-#        y = "depth (cm)",
-#        x = "Soil Profile")+
-#   scale_fill_manual(values = c("#532C1E", "#2F0E07"))+
-#   #facet_grid(Site~., scales="free_x") +
-#   theme_er1()+
-#   theme(axis.text.x = element_blank(), legend.position = "none",
-#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-#         panel.background = element_blank(), panel.border = element_rect(color="white",size=0.25, fill = NA))
-# 
-# ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile.png", plot = horizons_nonacidic_hydric_singleprofile, height = 4, width = 3.25)
+#bulk density supplemental figure
 
- 
+bd_supplemental_fig =
+bd_select %>% 
+  dplyr::select(real_depth_cm, soil_bulk_density_g_cm3, soil_material2) %>% 
+  na.omit() %>% 
+  mutate(soil_material2 = factor(soil_material2, levels = c("organic surface", "organic subsurface", "mineral subsurface"))) %>% 
+  ggplot()+
+  #geom_line(aes(y = real_depth_cm, x = soil_bulk_density_g_cm3, group = Core_ID))+
+  geom_point(aes(y = real_depth_cm, x = soil_bulk_density_g_cm3, color = soil_material2), size = 3.5, alpha = 0.8)+
+  scale_y_reverse(limits = c(24, 0))+
+  scale_x_continuous(breaks = c(0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8), n.breaks = 10, limits = c(0, 1.9))+
+  labs(y = "depth, cm",
+       x = "bulk density",
+       color = "Legend")+
+  scale_color_manual(values = c("#2F0E07", "#99582a", "#9a8c98"))+
+  theme_er1()+
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 17),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        legend.position = c(.95, .9),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right", legend.background = element_rect(color="gray90"), legend.title = element_text(face = "bold"),
+        legend.margin = margin(6, 6, 6, 6))
+
+ggsave("formanuscript/bdsupplementalfig.png", plot = bd_supplemental_fig, height = 5, width = 6)
+
+
 
 horizons_dry_acidic =
   bd_select %>% 
@@ -249,6 +258,10 @@ ggsave("formanuscript/horizons_acidic_dry.png", plot = horizons_dry_acidic, heig
 
 
 #Bulk density
+
+
+
+
 
 bd_nonacidic = 
   bd_select %>% 

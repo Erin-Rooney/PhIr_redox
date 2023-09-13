@@ -231,7 +231,6 @@ moisturefig_temporal =
   facet_grid(site~month, switch = "x")+
   theme_er1()
 
-ggsave("formanuscript/moisture_temporal_fig.tiff", plot = moisturefig_temporal, height = 7, width = 7)
 
 moisturefig_temporal =
   grouped_moisture_forfigs_temporal %>%
@@ -250,7 +249,7 @@ moisturefig_temporal =
        soil moisture (%)',
        y = "depth (cm)",
        color = "", fill = "")+
-  scale_x_continuous(position="top", breaks = c(10, 20, 30, 40, 50), n.breaks=5, limits = c(0, 60))+
+  scale_x_continuous(position="top", breaks = c(0, 10, 20, 30, 40, 50, 60), n.breaks = 7, limits = c(0, 60))+
   facet_grid(position~site, switch = "x")+
   theme_er1()+
   theme(legend.position = "none",
@@ -259,6 +258,10 @@ moisturefig_temporal =
         strip.placement = "outside",
         strip.text.y = element_blank(),
         axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+
+#ggsave("formanuscript/moisture_temporal_fig.tiff", plot = moisturefig_temporal, height = 7, width = 7)
+ggsave("formanuscript/moisture_temporal_fig_2021.png", plot = moisturefig_temporal, height = 7, width = 3.8)
+
 
 moisturefig_temporal_nonacidic_hydric =
   grouped_moisture_forfigs_temporal %>%
@@ -333,11 +336,10 @@ ggsave("formanuscript/moisturefig_temporal_acidic_hydric.png", plot = moisturefi
 
 
 
-ggsave("formanuscript/moisture_temporal_fig_2021.png", plot = moisturefig_temporal, height = 7, width = 3.8)
 
 moisturefig_temporal2022 =
   grouped_moisture_forfigs_temporal2022 %>% 
-  filter(moisture_avg > 5) %>% 
+  filter(moisture_avg > 10) %>% 
   mutate(month = factor(month, levels = c("early summer", "mid summer", "late summer", "early fall")))   %>%
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
@@ -353,7 +355,7 @@ moisturefig_temporal2022 =
        soil moisture (%)',
        y = "depth (cm)",
        color = "", fill = "")+
-  scale_x_continuous(position="top")+
+  scale_x_continuous(position="top", breaks = c(0, 10, 20, 30, 40, 50, 60), n.breaks = 7, limits = c(0, 60))+
   facet_grid(position~site, switch = "x")+
   theme_er1()+
   theme(legend.position = "none",
