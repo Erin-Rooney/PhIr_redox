@@ -233,38 +233,38 @@ redox_nutrients_leftjoin_longer =
 
 
 #####MANUSCRIPT FIGURES----------------
-
-non_acidic_hydric_selectfig =
-processed_ICP %>% 
-   # filter(month %in% c("August", "September") & Site == "Hydric" & Area == "non-acidic tundra" & ICP %in% c("Fe_ug_mL", "Mn_ug_mL", "Ca_ug_mL", "Al_ug_mL")) %>% 
-  filter(Site == "Hydric" & Area == "non-acidic tundra" & ICP %in% c("Fe_ug_mL", "Mn_ug_mL", "Ca_ug_mL", "Al_ug_mL")) %>% 
-  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
-  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>% 
-  mutate(ICP = recode(ICP, "Fe_ug_mL" = "iron (μg/ml)", "Mn_ug_mL" = "manganese (μg/ml)", 
-                      "Ca_ug_mL" = "calcium (μg/ml)", "Al_ug_mL" = "aluminum (μg/ml)")) %>% 
-  ggplot()+
-  geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3, alpha = 0.75)+
-  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.5, linetype = "longdash")+
-  labs(x = " ",
-       y = "Depth (cm)",
-       color = " "
-  )+
-  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
-  #scale_color_manual(values = c("#9e6374", "#de9b71"))+
-  scale_y_reverse()+
-  facet_wrap(.~ICP, scales = "free_x", switch = 'x')+
-  theme_er1()+
-  theme(legend.position = "bottom",
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        strip.placement = "outside",
-        strip.text.y = element_blank(),
-        axis.text.x = element_text(size = 13),
-        axis.text.y = element_text(size = 13), axis.title.y = element_text(size = 15),
-        panel.border = element_rect(color="gray",size=0.25, fill = NA))
-
-ggsave("output/non_acidic_hydric_selectfig.png", plot = non_acidic_hydric_selectfig, height = 5, width = 4.5)
+# 
+# non_acidic_hydric_selectfig =
+# processed_ICP %>% 
+#    # filter(month %in% c("August", "September") & Site == "Hydric" & Area == "non-acidic tundra" & ICP %in% c("Fe_ug_mL", "Mn_ug_mL", "Ca_ug_mL", "Al_ug_mL")) %>% 
+#   filter(Site == "Hydric" & Area == "non-acidic tundra" & ICP %in% c("Fe_ug_mL", "Mn_ug_mL", "Ca_ug_mL", "Al_ug_mL")) %>% 
+#   mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+#   mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>% 
+#   mutate(ICP = recode(ICP, "Fe_ug_mL" = "iron (μg/ml)", "Mn_ug_mL" = "manganese (μg/ml)", 
+#                       "Ca_ug_mL" = "calcium (μg/ml)", "Al_ug_mL" = "aluminum (μg/ml)")) %>% 
+#   ggplot()+
+#   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3, alpha = 0.75)+
+#   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.5, linetype = "longdash")+
+#   labs(x = " ",
+#        y = "Depth (cm)",
+#        color = " "
+#   )+
+#   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+#   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
+#   #scale_color_manual(values = c("#9e6374", "#de9b71"))+
+#   scale_y_reverse()+
+#   facet_wrap(.~ICP, scales = "free_x", switch = 'x')+
+#   theme_er1()+
+#   theme(legend.position = "bottom",
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#         panel.background = element_blank(),
+#         strip.placement = "outside",
+#         strip.text.y = element_blank(),
+#         axis.text.x = element_text(size = 13),
+#         axis.text.y = element_text(size = 13), axis.title.y = element_text(size = 15),
+#         panel.border = element_rect(color="gray",size=0.25, fill = NA))
+# 
+# ggsave("output/non_acidic_hydric_selectfig.png", plot = non_acidic_hydric_selectfig, height = 5, width = 4.5)
 
 
 
@@ -283,7 +283,7 @@ P_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Phosphorus concentration, μg/ml",
+  labs(x = "Dissolved P (μg/ml)",
        y = "depth, cm",
        color = "month, 2022"
   )+
@@ -314,7 +314,7 @@ processed_ICP %>%
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Iron concentration, μg/ml",
+  labs(x = "Dissolved Fe (μg/ml)",
        y = " ",
        color = "month, 2022"
   )+
@@ -332,59 +332,59 @@ processed_ICP %>%
 
 
 ggsave("output/Fe_concentration_fig_plotonly.png", plot = Fe_concentration_fig, height = 5, width = 4)
-
-Fe_concentration_fig2 =
-  processed_ICP %>% 
-  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
-  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
-  # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
-  filter(ICP == "Fe_ug_mL") %>% 
-  ggplot() +
-  geom_point(aes(x = concentration, y = Depth_cm, fill = month), size = 3, alpha = 0.75, shape = c(21))+
-  geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, alpha = 0.3, linetype = "dashed")+
-  labs(x = "Iron concentration, μg/ml",
-       y = "Depth, cm",
-       color = "month, 2022"
-  )+
-  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
-  scale_y_reverse(breaks=c(0, 20, 40))+
-  guides(fill=guide_legend(nrow=2,byrow=TRUE), color = guide_legend(nrow=2, byrow=TRUE))+
-  facet_grid(Site~Area, scales = "free_x")+
-  theme_er1()+
-  theme(legend.position = "bottom",
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        strip.placement = "outside", panel.border = element_rect(color="gray",size=0.25, fill = NA))
-
-
-ggsave("output/Fe_concentration_fig.png", plot = Fe_concentration_fig2, height = 5, width = 4)
-
-Fe_concentration_fig2LEGEND =
-  processed_ICP %>% 
-  mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
-  mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
-  # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
-  filter(ICP == "Fe_ug_mL") %>% 
-  ggplot() +
-  geom_point(aes(x = concentration, y = Depth_cm, fill = month), size = 3, alpha = 0.75, shape = c(21))+
-  labs(x = "Iron concentration, μg/ml",
-       y = "Depth, cm",
-       color = "month, 2022"
-  )+
-  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
-  scale_y_reverse(breaks=c(0, 20, 40))+
-  guides(fill=guide_legend(nrow=2,byrow=TRUE))+
-  facet_grid(Site~Area, scales = "free_x")+
-  theme_er1()+
-  theme(legend.position = "bottom",
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        strip.placement = "outside", panel.border = element_rect(color="gray",size=0.25, fill = NA))
-
-
-ggsave("output/Fe_concentration_figLEGEND.png", plot = Fe_concentration_fig2LEGEND, height = 5, width = 4)
+# 
+# Fe_concentration_fig2 =
+#   processed_ICP %>% 
+#   mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+#   mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
+#   # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
+#   filter(ICP == "Fe_ug_mL") %>% 
+#   ggplot() +
+#   geom_point(aes(x = concentration, y = Depth_cm, fill = month), size = 3, alpha = 0.75, shape = c(21))+
+#   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, alpha = 0.3, linetype = "dashed")+
+#   labs(x = "Iron concentration, μg/ml",
+#        y = "Depth, cm",
+#        color = "month, 2022"
+#   )+
+#   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+#   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+#   scale_y_reverse(breaks=c(0, 20, 40))+
+#   guides(fill=guide_legend(nrow=2,byrow=TRUE), color = guide_legend(nrow=2, byrow=TRUE))+
+#   facet_grid(Site~Area, scales = "free_x")+
+#   theme_er1()+
+#   theme(legend.position = "bottom",
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#         panel.background = element_blank(),
+#         strip.placement = "outside", panel.border = element_rect(color="gray",size=0.25, fill = NA))
+# 
+# 
+# ggsave("output/Fe_concentration_fig.png", plot = Fe_concentration_fig2, height = 5, width = 4)
+# 
+# Fe_concentration_fig2LEGEND =
+#   processed_ICP %>% 
+#   mutate(grouping = paste0(Area, "-", Site, "-", date, "-", Plot)) %>% 
+#   mutate(month = factor(month, levels = c("June", "July", "August", "September"))) %>%
+#   # filter(Area == "acidic tundra" & Site == "Hydric" & ICP == "P_ug_mL") %>%
+#   filter(ICP == "Fe_ug_mL") %>% 
+#   ggplot() +
+#   geom_point(aes(x = concentration, y = Depth_cm, fill = month), size = 3, alpha = 0.75, shape = c(21))+
+#   labs(x = "Iron concentration, μg/ml",
+#        y = "Depth, cm",
+#        color = "month, 2022"
+#   )+
+#   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+#   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+  # scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
+#   scale_y_reverse(breaks=c(0, 20, 40))+
+#   guides(fill=guide_legend(nrow=2,byrow=TRUE))+
+#   facet_grid(Site~Area, scales = "free_x")+
+#   theme_er1()+
+#   theme(legend.position = "bottom",
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#         panel.background = element_blank(),
+#         strip.placement = "outside", panel.border = element_rect(color="gray",size=0.25, fill = NA))
+# 
+# 
+# ggsave("output/Fe_concentration_figLEGEND.png", plot = Fe_concentration_fig2LEGEND, height = 5, width = 4)
 
 
 Mn_concentration_fig =
@@ -396,7 +396,7 @@ Mn_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Manganese concentration, μg/ml",
+  labs(x = "Dissolved Mn (μg/ml)",
        y = " ",
        color = "month, 2022"
   )+
@@ -424,7 +424,7 @@ Ca_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Calcium concentration, μg/ml",
+  labs(x = "Dissolved Ca (μg/ml)",
        y = "depth, cm",
        color = "month, 2022"
   )+
@@ -471,7 +471,7 @@ Al_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Aluminum concentration, μg/ml",
+  labs(x = "Dissolved Al (μg/ml)",
        y = "depth, cm",
        color = "month, 2022"
   )+
@@ -501,7 +501,7 @@ Mg_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Magnesium concentration, μg/ml",
+  labs(x = "Dissolved Mg (μg/ml)",
        y = " ",
        color = "month, 2022"
   )+
@@ -531,7 +531,7 @@ Na_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Sodium concentration, μg/ml",
+  labs(x = "Dissolved Na (μg/ml)",
        y = " ",
        color = "month, 2022"
   )+
@@ -559,7 +559,7 @@ K_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Potassium concentration, μg/ml",
+  labs(x = "Dissolved K (μg/ml)",
        y = "depth, cm",
        color = "month, 2022"
   )+
@@ -620,13 +620,16 @@ redox_nutrients_leftjoin %>%
   ggplot() +
   geom_point(aes(x = redox_avg_mV, y = mean_fe_ug_m_l, color = position, shape = site), size = 3, alpha = 0.75)+
   labs(x = "redox potential, mV",
-       y = "iron ug, ml"
+       y = "Dissolved Fe (μg/ml)"
        )+
   scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
   scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
-  facet_wrap(position~site, scales = "free_y")+
+  facet_grid(position~site, scales = "free_y")+
   theme_er1()+
-  theme(legend.position = "bottom")
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside", panel.border = element_rect(color="gray",size=0.5, fill = NA))
 
 mn_redox_figfacet =
 redox_nutrients_leftjoin %>% 
@@ -648,13 +651,16 @@ p_redox_figfacet =
   ggplot() +
   geom_point(aes(x = redox_avg_mV, y = mean_p_ug_m_l, color = position, shape = site), size = 3, alpha = 0.75)+
   labs(x = "redox potential, mV",
-       y = "phosphorus ug, ml"
+       y = "Dissolved P (μg/ml)"
   )+
   scale_fill_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
   scale_color_manual(values = c("#f07167", "#a7c957", "#1e96fc", "#f07167", "#a7c957", "#1e96fc"))+
-  facet_wrap(position~site, scales = "free_y")+
+  facet_grid(position~site, scales = "free_y")+
   theme_er1()+
-  theme(legend.position = "bottom")
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        strip.placement = "outside", panel.border = element_rect(color="gray",size=0.5, fill = NA))
 
 p_date_figfacet =
   redox_nutrients_leftjoin %>% 
@@ -674,6 +680,10 @@ ggsave("output/p_date_figfacet.png", plot = p_date_figfacet, height = 5.5, width
 ggsave("output/p_redox_figfacet.png", plot = p_redox_figfacet, height = 5.5, width = 8)
 ggsave("output/fe_redox_figfacet.png", plot = fe_redox_figfacet, height = 5.5, width = 8)
 ggsave("output/mn_redox_figfacet.png", plot = mn_redox_figfacet, height = 5.5, width = 8)
+
+redox_p_fe_fig = p_redox_figfacet + fe_redox_figfacet
+
+ggsave("output/redox_p_fe_fig.png", plot = redox_p_fe_fig, height = 7, width = 10)
 
 
 ggsave("output/redox_nutrients_log_fig.png", plot = redox_nutrients_log_fig, height = 7, width = 10)

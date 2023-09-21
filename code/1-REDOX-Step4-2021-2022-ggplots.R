@@ -465,7 +465,7 @@ redox_temporal_fig_2021 =
   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
   geom_point(size = 3, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
-  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE, width = 2)+
   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
   # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
@@ -599,7 +599,7 @@ redox_temporal_fig_2022 =
   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
   geom_point(size = 3, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
-  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE, width = 2)+
   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
   # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
@@ -782,18 +782,19 @@ allredox_lines = allredox_lines_2021_fig + plot_spacer() + allredox_lines_2022_f
 
 ggsave("output/allredox_lines.png", plot = allredox_lines, height = 7, width = 13)
 
+library(metR)
 
-
-allredox_contour_2021_fig =                          
+allredox_contour_2021_fig_filled =                          
   ungrouped_redox_forfigs2021_probe %>% 
-  ggplot()+
-  geom_contour_filled(aes(y = depth_cm, x = datetime, z = redox_avg_mV))+
+  ggplot(aes(y = depth_cm, x = datetime, z = redox_avg_mV))+
+  geom_contour_fill(na.fill = TRUE)+
   #geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
   # geom_point(aes(color = depth_cm, fill = depth_cm), size = 1, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
+ #scale_fill_distiller(super = metR::ScaleDiscretised, palette = "Spectral")+
   scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
-  scale_fill_manual(values=pnw_palette("Bay", 11))+
+  scale_fill_gradientn(colors=pnw_palette("Bay"))+
   labs(x = "2021", y = "depth, cm",
        fill = "redox potential (mV)")+
   facet_grid(position~site, scales = "free_y")+
@@ -803,30 +804,59 @@ allredox_contour_2021_fig =
         legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank())
 
-ggsave("formanuscript/allredox_contour_2021_fig.png", plot = allredox_contour_2021_fig, height = 6, width = 6)
-
-allredox_contour_2022_fig =                          
-  ungrouped_redox_forfigs2022_probe %>% 
+allredox_contour_2021_fig =                          
+  ungrouped_redox_forfigs2021_probe %>% 
   ggplot()+
   geom_contour_filled(aes(y = depth_cm, x = datetime, z = redox_avg_mV))+
   #geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
   # geom_point(aes(color = depth_cm, fill = depth_cm), size = 1, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_fill_distiller(super = metR::ScaleDiscretised, palette = "Spectral")+
   scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
-  scale_fill_manual(values=pnw_palette("Bay", 11))+
+  #scale_fill_manual(values=pnw_palette("Bay", 11))+
+  labs(x = "2021", y = "depth, cm",
+       fill = "redox potential (mV)")+
+  facet_grid(position~site, scales = "free_y")+
+  scale_y_reverse()+
+  theme_er1()+
+  theme(axis.text.x = element_text(size = 9, vjust = 0.5, angle = 45),
+        legend.position = "right", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank())
+
+ggsave("formanuscript/allredox_contour_2021_fig.png", plot = allredox_contour_2021_fig, height = 6, width = 6)
+
+allredox_contour_2022_fig =                          
+  ungrouped_redox_forfigs2022_probe %>% 
+  ggplot()+
+  geom_contour_filled(aes(y = depth_cm, x = datetime, z = redox_avg_mV), stat = "contour_filled")+
+  #geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
+  # geom_point(aes(color = depth_cm, fill = depth_cm), size = 1, alpha = 0.6, shape = c(21))+
+  #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
+  scale_fill_distiller(super = metR::ScaleDiscretised, palette = "Spectral")+
   labs(x = "2022", y = "depth, cm",
        fill = "redox potential (mV)")+
   facet_grid(position~site, scales = "free_y")+
   scale_y_reverse()+
   theme_er1()+
   theme(axis.text.x = element_text(size = 9, vjust = 0.5, angle = 45),
-        legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "right", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank())
 
 
 
 ggsave("formanuscript/allredox_contour_2022_fig.png", plot = allredox_contour_2022_fig, height = 6, width = 6)
+
+
+library(patchwork)
+
+redox_contour_combo = allredox_contour_2021_fig + allredox_contour_2022_fig + plot_layout(guides = "collect") 
+
+ggsave("formanuscript/redox_contour_combo.png", plot = redox_contour_combo, height = 7, width = 12)
+
+
 
 allredox_contour_2022_fig_legend =                          
   ungrouped_redox_forfigs2022_probe %>% 

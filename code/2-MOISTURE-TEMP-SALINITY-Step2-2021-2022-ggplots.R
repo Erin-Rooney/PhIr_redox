@@ -239,7 +239,7 @@ moisturefig_temporal =
   ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
   geom_point(size = 4, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
-  geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE)+
+  geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE, width = 2)+
   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
   # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
@@ -272,7 +272,7 @@ moisturefig_temporal_nonacidic_hydric =
   geom_point(size = 3.75, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash", alpha = 0.3)+
   geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE,
-                width=1.5,
+                width=2,
                 size=0.5)+
   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
@@ -345,7 +345,7 @@ moisturefig_temporal2022 =
   ggplot(aes(y = depth_cm, x = moisture_avg, color = month, fill = month), group = 'month')+
   geom_point(size = 4, alpha = 0.8, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
-  geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE)+
+  geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE, width = 2)+
   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
   # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
