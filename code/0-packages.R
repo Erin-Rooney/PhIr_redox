@@ -1,8 +1,10 @@
 # Packages
 # E C Rooney
 
-# library(devtools)
-# devtools::install_github("kevinsblake/NatParksPalettes")
+# 
+#  library(devtools)
+#  devtools::install_github("kevinsblake/NatParksPalettes")
+#  devtools::install_github("kaizadp/soilpalettes")
 
 # packages
 library(agricolae)
