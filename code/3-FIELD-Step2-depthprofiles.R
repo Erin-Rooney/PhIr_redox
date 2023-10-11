@@ -38,6 +38,45 @@ bd_select =
   mutate(label = paste0(date_simple, "-", Plot_num))  
   
 
+organic_sat = 
+  bd_select %>% 
+  filter(soil_material == "organic") %>% 
+  mutate(particle_dens = 0.8)
+
+
+mineral_sat = 
+  bd_select %>% 
+  filter(soil_material == "mineral") %>% 
+  mutate(particle_dens = 2.65)
+
+saturation_dat =
+  organic_sat %>% 
+  vctrs::vec_c(mineral_sat) %>% 
+  mutate(bulk_particledens = (soil_bulk_density_g_cm3/particle_dens)) %>% 
+  mutate(vol_voids = (1-(soil_bulk_density_g_cm3/particle_dens))) %>% 
+  mutate(degree_saturation = (volumetric_water_content_cm3_cm3/vol_voids)*100) 
+
+saturation_volumetricwater_fig =
+saturation_dat %>% 
+  ggplot()+
+  geom_point(aes(x = volumetric_water_content_cm3_cm3, y = degree_saturation, fill = soil_material), 
+             alpha = 0.8, size = 2.5, shape = c(21))+
+  labs(x = "volumetric water content, θ ",
+       y = "degree of saturation, %",
+       fill = "soil material")+
+  scale_x_continuous(position="bottom", n.breaks=5, limits = c(0,0.8))+
+  scale_y_continuous(position="left", breaks = c(0, 25, 50, 75, 100, 125), n.breaks=7, limits = c(0,125))+
+  scale_fill_manual(values = c("#d6ccc2", "#482919"))+
+  guides(fill = guide_legend(reverse = TRUE))+
+  theme_er1()+
+  theme(legend.position = c(.90, .35),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right",legend.title = element_text(face = "bold"),
+        legend.margin = margin(6, 6, 6, 6), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+
+ggsave("output/saturation_volumetricwater_fig.png", plot = saturation_volumetricwater_fig, height = 3.5, width = 3.5)
+
 ncount =
   bd_select %>% 
   replace(is.na(.),"not analyzed")  %>% 
