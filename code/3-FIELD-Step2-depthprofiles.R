@@ -133,7 +133,7 @@ horizons_acidic =
         axis.title.y = element_blank(), axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
 horizons_nonacidic =
   bd_select %>% 
@@ -152,7 +152,7 @@ horizons_nonacidic =
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank())
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
 horizons_all = horizons_nonacidic + horizons_acidic
 
@@ -224,16 +224,43 @@ ggsave("formanuscript/horizons_nonacidic_hydric_singleprofileLEGEND.png", plot =
 
 #bulk density supplemental figure
 
+# bd_supplemental_fig =
+# bd_select %>% 
+#   dplyr::select(real_depth_cm, soil_bulk_density_g_cm3, soil_material2) %>% 
+#   na.omit() %>% 
+#   mutate(soil_material2 = factor(soil_material2, levels = c("organic surface", "organic subsurface", "mineral subsurface"))) %>% 
+#   ggplot()+
+#   #geom_line(aes(y = real_depth_cm, x = soil_bulk_density_g_cm3, group = Core_ID))+
+#   geom_point(aes(y = real_depth_cm, x = soil_bulk_density_g_cm3, color = soil_material2), size = 3.5, alpha = 0.8)+
+#   scale_y_reverse(limits = c(24, 0))+
+#   scale_x_continuous(breaks = c(0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8), n.breaks = 10, limits = c(0, 1.9))+
+#   labs(y = "depth, cm",
+#        x = "bulk density",
+#        color = "Legend")+
+#   scale_color_manual(values = c("#2F0E07", "#99582a", "#9a8c98"))+
+#   theme_er1()+
+#   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 17),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+#         panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+#         legend.position = c(.95, .9),
+#         legend.justification = c("right", "top"),
+#         legend.box.just = "right", legend.background = element_rect(color="gray90"), legend.title = element_text(face = "bold"),
+#         legend.margin = margin(6, 6, 6, 6))
+# 
+# ggsave("formanuscript/bdsupplementalfig.png", plot = bd_supplemental_fig, height = 5, width = 6)
+
+
 bd_supplemental_fig =
-bd_select %>% 
-  dplyr::select(real_depth_cm, soil_bulk_density_g_cm3, soil_material2) %>% 
+  bd_select %>% 
+  dplyr::select(Site, real_depth_cm, soil_bulk_density_g_cm3, soil_material2) %>% 
   na.omit() %>% 
+  #filter(Site %in% "Hydric") %>% 
   mutate(soil_material2 = factor(soil_material2, levels = c("organic surface", "organic subsurface", "mineral subsurface"))) %>% 
   ggplot()+
   #geom_line(aes(y = real_depth_cm, x = soil_bulk_density_g_cm3, group = Core_ID))+
   geom_point(aes(y = real_depth_cm, x = soil_bulk_density_g_cm3, color = soil_material2), size = 3.5, alpha = 0.8)+
   scale_y_reverse(limits = c(24, 0))+
-  scale_x_continuous(breaks = c(0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8), n.breaks = 10, limits = c(0, 1.9))+
+  scale_x_continuous(breaks = c(0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4), n.breaks = 8, limits = c(0, 1.5))+
   labs(y = "depth, cm",
        x = "bulk density",
        color = "Legend")+

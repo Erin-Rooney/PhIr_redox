@@ -407,6 +407,132 @@ Pline_rhizon_fig =
     panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.x = element_blank(),
     panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
+Pline_rhizon_fig_non_acidic =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("phosphorus") & Area %in% c("non-acidic tundra")) %>% 
+  ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
+  geom_line(aes(group = area_site), size = 0.75, alpha = 0.3, orientation = "x")+
+  geom_point(aes(group = area_site), size = 4, alpha = 0.75)+
+  ylim(0.05, 0.1)+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  labs(color = "Moisture",
+       y = "dissolved P μg/mL",
+       x = " ")+
+  scale_x_date(date_labels = "%b-%d", date_breaks = "1 week")+
+  facet_grid(ICP ~ Area, scales = "free_y") +
+  theme_er1()+
+  theme(legend.position = c(.35, .95),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right",legend.title = element_text(face = "bold"),
+        legend.margin = margin(6, 6, 6, 6), 
+        axis.text.x = element_text(size = 14, angle = 45, hjust = 1), 
+        axis.text.y = element_text(size = 14), 
+    axis.title = element_text(size = 16),
+    panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.y = element_blank(),
+    strip.text.x = element_text(size = 16), panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+
+ggsave("output/Pline_rhizon_fig_non_acidic.png", Pline_rhizon_fig_non_acidic, height = 4, width = 5)
+
+Pline_rhizon_fig_acidic =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("phosphorus") & Area %in% c("acidic tundra")) %>% 
+  ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
+  geom_line(aes(group = area_site), size = 0.75, alpha = 0.3, orientation = "x")+
+  geom_point(aes(group = area_site), size = 4, alpha = 0.75)+
+  ylim(0.05, 0.1)+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  labs(color = "Moisture",
+       y = "dissolved P μg/mL",
+       x = " ")+
+  scale_x_date(date_labels = "%b-%d", date_breaks = "1 week")+
+  facet_grid(ICP ~ Area, scales = "free_y") +
+  theme_er1()+
+  theme(legend.position = c(.55, .95),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right",legend.title = element_text(face = "bold"),
+        legend.margin = margin(6, 6, 6, 6), 
+        axis.text.x = element_text(size = 14, angle = 45, hjust = 1), 
+        axis.text.y = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.y = element_blank(),
+        strip.text.x = element_text(size = 16), panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+
+ggsave("output/Pline_rhizon_fig_acidic.png", Pline_rhizon_fig_acidic, height = 4, width = 5)
+
+Feline_rhizon_fig_nonacidic =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("iron") & Area %in% c("non-acidic tundra")) %>% 
+  ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
+  geom_line(aes(group = area_site), size = 0.75, alpha = 0.3,  orientation = "x")+
+  geom_point(aes(group = area_site), size = 4, alpha = 0.75)+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  ylim(0, 30)+
+  labs(color = "Moisture",
+       y = "dissolved Fe μg/mL",
+       x = " ")+
+  scale_x_date(date_labels = "%b-%d", date_breaks = "1 week")+
+  facet_grid(ICP ~ Area, scales = "free_y") +
+  theme_er1()+
+    theme(legend.position = c(.95, .75),
+          legend.justification = c("right", "top"),
+          legend.box.just = "right",legend.title = element_text(face = "bold"),
+          legend.margin = margin(6, 6, 6, 6), 
+          axis.text.x = element_text(size = 14, angle = 45, hjust = 1), 
+          axis.text.y = element_text(size = 14),
+          axis.title = element_text(size = 16),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.y = element_blank(),
+          strip.text.x = element_text(size = 16), panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+
+ggsave("output/Feline_rhizon_fig_nonacidic.png", Feline_rhizon_fig_nonacidic, height = 4, width = 5)
+
+Feline_rhizon_fig_acidic =
+  rhizon_meta_combine_notransect_forelements %>%
+  mutate(Area = recode(Area, "West" = "non-acidic tundra",
+                       "East" = "acidic tundra")) %>% 
+  mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  filter(ICP %in% c("iron") & Area %in% c("acidic tundra")) %>% 
+  ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
+  geom_line(aes(group = area_site), size = 0.75, alpha = 0.3,  orientation = "x")+
+  geom_point(aes(group = area_site), size = 4, alpha = 0.75)+
+  # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
+  # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  ylim(0, 30)+
+  labs(color = "Moisture",
+       y = "dissolved Fe μg/mL",
+       x = " ")+
+  scale_x_date(date_labels = "%b-%d", date_breaks = "1 week")+
+  facet_grid(ICP ~ Area, scales = "free_y") +
+  theme_er1()+
+  theme(legend.position = c(.95, .65),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right",legend.title = element_text(face = "bold"),
+        legend.margin = margin(6, 6, 6, 6), 
+        axis.text.x = element_text(size = 14, angle = 45, hjust = 1), 
+        axis.text.y = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.y = element_blank(),
+        strip.text.x = element_text(size = 16), panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+
+ggsave("output/Feline_rhizon_fig_acidic.png", Feline_rhizon_fig_acidic, height = 4, width = 5)
+
+
+
 
 LEGEND =
   rhizon_meta_combine_notransect_forelements %>%

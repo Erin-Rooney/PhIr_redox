@@ -267,6 +267,34 @@ redoxfig_depth_sd2021 =
   theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
+
+redoxfig_depth_sd2021_simplified =
+  grouped_redox_forfigs2021 %>% 
+  filter(site == "non-acidic tundra") %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = position, fill = position), group = 'position')+
+ # geom_point(size = 3.5, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, size = 1.5)+
+  #geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  # scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  ylim(57, 0)+
+  labs(
+    x = 'redox potential (mV)',
+    y = "depth (cm)",
+    color = "", fill = "")+
+  scale_x_continuous(position="top", breaks = c(-200, 800), n.breaks=2, limits = c(-250, 850))+
+  #facet_grid(.~site, switch = "x")+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        axis.title = element_text(size = 16), axis.text = element_text(size = 16))
+
+ggsave("output/redoxfig_depth_sd2021_simplified.png", redoxfig_depth_sd2021_simplified, height = 4.5, width = 3)
+
+
 redoxfig_depth_sd2021HYDRIC =
  grouped_redox_forfigs2021 %>% 
   filter(position %in% "hydric") %>% 
@@ -749,6 +777,39 @@ redox_lines_2021_fig_nonacidichydric =
         strip.text.x = element_blank())
 
 ggsave("formanuscript/redox_lines_2021_fig_nonacidichydric.png", plot = redox_lines_2021_fig_nonacidichydric, height = 3.5, width = 6)
+
+
+redox_lines_2021_fig_acidichydric =                          
+  ungrouped_redox_forfigs2021_probe %>% 
+  filter(site == "acidic tundra" & position == "hydric") %>% 
+  ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
+  geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "#ffe5d9", alpha = 0.7)+
+  geom_point(aes(color = depth_cm, fill = depth_cm), size = 1, alpha = 0.6, shape = c(21))+
+  #annotate(xmin='2021-06-14 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
+  #geom_line(orientation = "x", show.legend = FALSE)+
+  scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
+  scale_color_gradientn(colors = rev(natparks.pals(name = "Olympic")), limits=c(0,60))+
+  scale_fill_gradientn(colors = rev(natparks.pals(name = "Olympic")), limits=c(0,60))+  
+  ylim(-250, 700)+
+  labs(title = " ", x = " ", y = "redox potential (mV)
+       ",
+       color = "depth (cm)", fill = "depth (cm)")+
+  facet_grid(position~site)+
+  theme_er1()+
+  guides(color = guide_colorbar(reverse = TRUE), 
+         fill = guide_colorbar(reverse = TRUE))+
+  theme(axis.text.x = element_text(size = 13, vjust = 0.5, angle = 45),
+        axis.text.y = element_text(size = 13),
+        legend.position = "right", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        strip.text.y = element_blank(),
+        strip.text.x = element_blank())
+
+ggsave("formanuscript/redox_lines_2021_fig_acidichydric.png", plot = redox_lines_2021_fig_acidichydric, height = 3.5, width = 6)
+
 
 redox_lines_2022_fig_nonacidichydric  =                          
   ungrouped_redox_forfigs2022_probe %>% 
