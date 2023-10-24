@@ -295,6 +295,29 @@ redoxfig_depth_sd2021_simplified =
 ggsave("output/redoxfig_depth_sd2021_simplified.png", redoxfig_depth_sd2021_simplified, height = 4.5, width = 3)
 
 
+redoxfig_depth_sd2021_simplified_hydric =
+  grouped_redox_forfigs2021 %>% 
+  filter(position == "hydric" & depth_cm < 41) %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = site, fill = site), group = 'site')+
+  geom_line(orientation = "y", size = 1.5)+
+  scale_color_manual(values = c( "#669bbc", "#003049"))+
+  scale_fill_manual(values = c("#669bbc", "#003049"))+
+  guides(color=guide_legend(nrow=2))+
+  ylim(40, 0)+
+  labs(
+    x = 'redox potential (mV)',
+    y = "depth (cm)",
+    color = "", fill = "")+
+  scale_x_continuous(position="top", breaks = c(-200, 800), n.breaks=2, limits = c(-250, 850))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        axis.title = element_text(size = 16), axis.text = element_text(size = 16))
+
+ggsave("output/redoxfig_depth_sd2021_simplified_hydric.png", redoxfig_depth_sd2021_simplified_hydric, height = 4.25, width = 2.75)
+
+
 redoxfig_depth_sd2021HYDRIC =
  grouped_redox_forfigs2021 %>% 
   filter(position %in% "hydric") %>% 
@@ -320,6 +343,40 @@ redoxfig_depth_sd2021HYDRIC =
         panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
 ggsave("formanuscript/redoxfig_depth_sd2021HYDRIC.png", plot = redoxfig_depth_sd2021HYDRIC, height = 5.25, width = 4)
+
+redoxfig_depth_sd2021HYDRIC_40 =
+  grouped_redox_forfigs2021 %>% 
+  filter(position %in% "hydric" & depth_cm < 41) %>% 
+  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = site, fill = site), group = 'position')+
+  geom_point(size = 3.5, alpha = 0.8, shape = c(21))+
+  geom_line(orientation = "y", show.legend = FALSE, linetype="longdash", alpha = 0.3)+
+  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+  scale_color_manual(values = c( "#669bbc", "#003049"))+
+  scale_fill_manual(values = c("#669bbc", "#003049"))+
+  # scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  # scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  # scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
+  ylim(40, 0)+
+  labs(
+    x = 'redox potential (mV)',
+    y = "depth (cm)",
+    color = "", fill = "")+
+  scale_x_continuous(position="top", breaks = c(-300, 600), n.breaks=2, limits = c(-400, 850))+
+ facet_grid(.~., switch = "x")+
+  theme_er1()+
+  theme(legend.position = c(.97, .25),
+        legend.justification = c("right", "top"),
+        legend.box.just = "left",legend.title = element_text(face = "bold"),
+        legend.margin = margin(20, 20, 20, 20), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        axis.title = element_text(size = 16), axis.text = element_text(size = 16),
+        strip.text.x = element_text(size = 16), strip.text.y = element_text(size = 16))
+
+ggsave("formanuscript/redoxfig_depth_sd2021HYDRIC_40.png", plot = redoxfig_depth_sd2021HYDRIC_40, height = 3.5, width = 3)
+
+
 
 #
 
