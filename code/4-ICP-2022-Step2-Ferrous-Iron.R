@@ -38,7 +38,11 @@ Fe2_grouped =
                    mean_Mg = round(mean(Mg), 3),
                    sd_Mg = round(sd(Mg), 2),
                    mean_FeII = round(mean(FeII), 3),
-                   sd_FeII = round(sd(FeII), 2)) %>% 
+                   sd_FeII = round(sd(FeII), 2),
+                   mean_K = round(mean(K), 3),
+                   sd_K = round(sd(K), 2),
+                   mean_Na = round(mean(Na), 3),
+                   sd_Na = round(sd(Na), 2)) %>% 
   mutate(area = factor(area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   mutate(site = factor(site, levels = c("Dry", "Mesic", "Hydric"))) 
 
@@ -63,7 +67,7 @@ Fe2_grouped %>%
   scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_y_reverse()+
- # xlim(0, 50)+
+  scale_x_continuous(limits = c(-11, 45), breaks = c(0, 10, 20 , 30, 40))+
   labs(x = "total Fe (mg/L)",
        y = "Depth (cm)",
        color = " ",
@@ -75,7 +79,7 @@ Fe2_grouped %>%
         panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
         strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
 
-ggsave("output/total_Fe_line_fig.png", plot = total_Fe_line_fig, height = 8, width = 1.5)
+ggsave("output/total_Fe_line_fig.png", plot = total_Fe_line_fig, height = 8, width = 1.65)
 
 total_Mg_line_fig =
   Fe2_grouped %>% 
@@ -87,7 +91,7 @@ total_Mg_line_fig =
   scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_y_reverse()+
-  # xlim(0, 50)+
+  scale_x_continuous(limits = c(-2.5, 10), breaks = c(0, 5, 10))+
   labs(x = "total Mg (mg/L)",
        y = "Depth (cm)",
        color = " ",
@@ -100,6 +104,55 @@ total_Mg_line_fig =
         strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
 
 ggsave("output/total_Mg_line_fig.png", plot = total_Mg_line_fig, height = 8, width = 1.5)
+
+total_K_line_fig =
+  Fe2_grouped %>% 
+  ggplot()+
+  geom_point(aes(x = mean_K, y = depth_cm, color = area, shape = area), size = 2.5)+
+  geom_line(aes(x = mean_K, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
+  geom_ribbon(aes(xmin = mean_K-sd_K, xmax = mean_K+sd_K, 
+                  y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_y_reverse()+
+  scale_x_continuous(limits = c(-0.5, 6), breaks = c(0, 2.5, 5))+
+  labs(x = "total K (mg/L)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ")+
+  facet_grid(site ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+
+ggsave("output/total_K_line_fig.png", plot = total_K_line_fig, height = 8, width = 1.5)
+
+total_Na_line_fig =
+  Fe2_grouped %>% 
+  ggplot()+
+  geom_point(aes(x = mean_Na, y = depth_cm, color = area, shape = area), size = 2.5)+
+  geom_line(aes(x = mean_Na, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
+  geom_ribbon(aes(xmin = mean_Na-sd_Na, xmax = mean_Na+sd_Na, 
+                  y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_y_reverse()+
+  scale_x_continuous(limits = c(-1.5, 5), breaks = c(0, 2.5, 5))+
+  labs(x = "total Na (mg/L)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ")+
+  facet_grid(site ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+
+ggsave("output/total_Na_line_fig.png", plot = total_Na_line_fig, height = 8, width = 1.5)
+
 
 total_Ca_line_fig =
   Fe2_grouped %>% 
@@ -135,7 +188,7 @@ total_Mn_line_fig =
   scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_y_reverse()+
-  # xlim(0, 50)+
+  scale_x_continuous(limits = c(-10, 30), breaks = c(0, 10, 20 , 30))+
   labs(x = "total Mn (mg/L)",
        y = "Depth (cm)",
        color = " ",
@@ -147,7 +200,7 @@ total_Mn_line_fig =
         panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
         strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
 
-ggsave("output/total_Mn_line_fig.png", plot = total_Mn_line_fig, height = 8, width = 1.5)
+ggsave("output/total_Mn_line_fig.png", plot = total_Mn_line_fig, height = 8, width = 1.65)
 
 total_Al_line_fig =
   Fe2_grouped %>% 

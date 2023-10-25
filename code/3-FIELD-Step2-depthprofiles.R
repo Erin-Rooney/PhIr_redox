@@ -195,6 +195,17 @@ gglabel = tribble(
   'non-acidic tundra', 'Hydric', 0.1, 52, 'permafrost',
   )  
 
+
+gglabel2 = tribble(
+  ~Area, ~Site, ~x, ~y, ~label,
+  'non-acidic tundra', 'Hydric', 0.1, 3.7, 'organic 
+  surface',        
+  'non-acidic tundra', 'Hydric', 0.1, 15, 'organic 
+  subsurface',
+  'non-acidic tundra', 'Hydric', 0.1, 33, 'mineral 
+  subsurface',
+) 
+
 library(ggtext)
 
 horizons_nonacidic_hydric_singleprofile =
@@ -213,13 +224,39 @@ horizons_nonacidic_hydric_singleprofile =
   #facet_grid(Site~., scales="free_x") +
   theme_er1()+
   theme(axis.text.x = element_blank(), axis.title.x = element_blank(), axis.ticks.x = element_blank(), legend.position = "bottom",
-        axis.text.y = element_text(size = 16), axis.title.y = element_text(size = 17),
+        axis.text.y = element_text(size = 16), axis.title.y = element_text(size = 17, face="plain"),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(), legend.title = element_markdown(),
         panel.background = element_blank(), panel.border = element_rect(color="white",size=0.25, fill = NA))
 
 ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile.png", plot = horizons_nonacidic_hydric_singleprofile, height = 5.5, width = 2.5)
 
 ggsave("formanuscript/horizons_nonacidic_hydric_singleprofileLEGEND.png", plot = horizons_nonacidic_hydric_singleprofile, height = 6.4, width = 5)
+
+
+
+horizons_nonacidic_hydric_singleprofile_40 =
+  tocombine %>% 
+  filter(Horizon != "permafrost") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Horizon = factor(Horizon, levels = c("O/M", "O2", "O1"))) %>% 
+  ggplot()+
+  geom_col(aes(y = Average_Depth_cm, x = x, fill = soil_bulk_density_g_cm3), color = "white", position = 'stack', width = 0.7)+
+  geom_text(data = gglabel2, aes(x = x, y = y, label = label), color = 'white', size = 6)+
+  #scale_y_continuous(breaks = c(0, 10, 20, 30), n.breaks=4, limits = c(40, 0))+
+  scale_y_reverse(breaks = c(0, 10, 20, 30), n.breaks=4, limits = c(45, 0))+
+  labs(title = " ",
+       y = "Depth (cm)",
+       x = "Soil Profile")+
+  scale_fill_gradient2(
+    low = "#2F0E07", mid = "#9c6644", high = "#9a8c98", midpoint = 0.4, name = "bulk density, g/cm<sup>3</sup>")+
+  #facet_grid(Site~., scales="free_x") +
+  theme_er1()+
+  theme(axis.text.x = element_blank(), axis.title.x = element_blank(), axis.ticks.x = element_blank(), legend.position = "none",
+        axis.text.y = element_text(size = 16), axis.title.y = element_text(size = 17, face = "plain"),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), legend.title = element_markdown(),
+        panel.background = element_blank(), panel.border = element_rect(color="white",size=0.25, fill = NA))
+
+ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile_40.png", plot = horizons_nonacidic_hydric_singleprofile_40, height = 5, width = 2.5)
 
 
 #bulk density supplemental figure
