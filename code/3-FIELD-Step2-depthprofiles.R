@@ -259,6 +259,38 @@ horizons_nonacidic_hydric_singleprofile_40 =
 ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile_40.png", plot = horizons_nonacidic_hydric_singleprofile_40, height = 5, width = 2.5)
 
 
+
+horizons_nonacidic_hydric_singleprofile_point =
+  bd_select %>% 
+  filter(Horizon != "permafrost" & soil_material2 != "NA" & 
+           Area %in% "non-acidic tundra" & Site != "Dry") %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Horizon = factor(Horizon, levels = c("O/M", "O2", "O1"))) %>% 
+  ggplot()+
+  geom_point(aes(y = real_depth_cm, x = soil_bulk_density_g_cm3), size = 2.5)+
+  #geom_text(data = gglabel2, aes(x = x, y = y, label = label), color = 'white', size = 6)+
+  #scale_y_continuous(breaks = c(0, 10, 20, 30), n.breaks=4, limits = c(40, 0))+
+  scale_y_reverse(breaks = c(0, 10, 20, 30), n.breaks=4, limits = c(40, 0))+
+  scale_x_continuous(breaks = c(0, 0.25, 0.5, 0.75, 1), n.breaks=5, limits = c(0, 1.05))+
+  labs(title = " ",
+       y = "Depth (cm)",
+       x = "Bulk Density (g/cm3)",
+       color = " ")+
+  #scale_color_manual(values = c("#9a8c98", "#9c6644", "#2F0E07"))+
+  #facet_grid(Site~., scales="free_x") +
+  guides(color = guide_legend(reverse = TRUE))+
+  theme_er1()+
+  theme(legend.position = c(.90, .35),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right",legend.title = element_text(face = "bold"),
+        legend.margin = margin(6, 6, 6, 6), axis.text.x = element_text(size = 16), axis.title.x = element_text(size = 17, face = "plain"), axis.ticks.x = element_blank(), 
+        axis.text.y = element_text(size = 16), axis.title.y = element_text(size = 17, face = "plain"),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+
+ggsave("formanuscript/horizons_nonacidic_hydric_singleprofile_point.png", plot = horizons_nonacidic_hydric_singleprofile_point, height = 5, width = 3.5)
+
+
 #bulk density supplemental figure
 
 # bd_supplemental_fig =

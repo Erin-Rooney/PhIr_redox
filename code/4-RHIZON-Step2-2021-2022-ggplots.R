@@ -110,9 +110,9 @@ write.csv(rhizon_meta_combine_notransect, "processed/rhizon_long_notransect.csv"
 #   theme_er1()+
 #   theme(axis.text.x = element_text (size = 10 , vjust = 0.5, hjust=1, angle = 90))
 
-ggsave("output/east_2021_rhizonsmonth.tiff", plot = east_rhizon_month, height = 5.75, width = 10)
-ggsave("output/west_2021_rhizonsmonth.tiff", plot = west_rhizon_month, height = 5.75, width = 10)
-
+# ggsave("output/east_2021_rhizonsmonth.tiff", plot = east_rhizon_month, height = 5.75, width = 10)
+# ggsave("output/west_2021_rhizonsmonth.tiff", plot = west_rhizon_month, height = 5.75, width = 10)
+# 
 
 
 rhizon_meta_combine_notransect_forelements =
@@ -412,13 +412,13 @@ Pline_rhizon_fig_non_acidic =
   mutate(Area = recode(Area, "West" = "non-acidic tundra",
                        "East" = "acidic tundra")) %>% 
   mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  filter(ICP %in% c("phosphorus") & Area %in% c("non-acidic tundra")) %>% 
+  filter(ICP %in% c("phosphorus") & Area %in% c("non-acidic tundra") & Site %in% c("Hydric")) %>% 
   ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
   geom_line(aes(group = area_site), size = 0.75, alpha = 0.3, orientation = "x")+
   geom_point(aes(group = area_site), size = 4, alpha = 0.75)+
   ylim(0.05, 0.1)+
-  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
-  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_color_manual(values = c("#0582ca"))+
+  scale_fill_manual(values = c("#0582ca"))+
   labs(color = "Moisture",
        y = "dissolved P μg/mL",
        x = " ")+
@@ -442,13 +442,13 @@ Pline_rhizon_fig_acidic =
   mutate(Area = recode(Area, "West" = "non-acidic tundra",
                        "East" = "acidic tundra")) %>% 
   mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  filter(ICP %in% c("phosphorus") & Area %in% c("acidic tundra")) %>% 
+  filter(ICP %in% c("phosphorus") & Area %in% c("acidic tundra") & Site %in% c("Hydric")) %>% 
   ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
   geom_line(aes(group = area_site), size = 0.75, alpha = 0.3, orientation = "x")+
   geom_point(aes(group = area_site), size = 4, alpha = 0.75)+
   ylim(0.05, 0.1)+
-  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
-  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_color_manual(values = c("#0582ca"))+
+  scale_fill_manual(values = c("#0582ca"))+
   labs(color = "Moisture",
        y = "dissolved P μg/mL",
        x = " ")+
@@ -472,14 +472,14 @@ Feline_rhizon_fig_nonacidic =
   mutate(Area = recode(Area, "West" = "non-acidic tundra",
                        "East" = "acidic tundra")) %>% 
   mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  filter(ICP %in% c("iron") & Area %in% c("non-acidic tundra")) %>% 
+  filter(ICP %in% c("iron") & Area %in% c("non-acidic tundra") & Site %in% c("Hydric")) %>%  
   ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
   geom_line(aes(group = area_site), size = 0.75, alpha = 0.3,  orientation = "x")+
   geom_point(aes(group = area_site), size = 4, alpha = 0.75)+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
-  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
-  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_color_manual(values = c("#0582ca"))+
+  scale_fill_manual(values = c("#0582ca"))+
   ylim(0, 30)+
   labs(color = "Moisture",
        y = "dissolved Fe μg/mL",
@@ -504,14 +504,14 @@ Feline_rhizon_fig_acidic =
   mutate(Area = recode(Area, "West" = "non-acidic tundra",
                        "East" = "acidic tundra")) %>% 
   mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  filter(ICP %in% c("iron") & Area %in% c("acidic tundra")) %>% 
+  filter(ICP %in% c("iron") & Area %in% c("acidic tundra") & Site %in% c("Hydric")) %>% 
   ggplot(aes(x = as.Date(Betterdate), y = mean, color = Site)) +
   geom_line(aes(group = area_site), size = 0.75, alpha = 0.3,  orientation = "x")+
   geom_point(aes(group = area_site), size = 4, alpha = 0.75)+
   # scale_fill_gradientn(colors = (pnw_palette("Shuksan2")))+
   # scale_color_gradientn(colors = (pnw_palette("Shuksan2")))+
-  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
-  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca", "#bc4749", "#35a55f", "#0582ca"))+
+  scale_color_manual(values = c("#0582ca"))+
+  scale_fill_manual(values = c("#0582ca"))+
   ylim(0, 30)+
   labs(color = "Moisture",
        y = "dissolved Fe μg/mL",

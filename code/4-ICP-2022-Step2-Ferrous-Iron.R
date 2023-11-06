@@ -42,7 +42,9 @@ Fe2_grouped =
                    mean_K = round(mean(K), 3),
                    sd_K = round(sd(K), 2),
                    mean_Na = round(mean(Na), 3),
-                   sd_Na = round(sd(Na), 2)) %>% 
+                   sd_Na = round(sd(Na), 2),
+                   mean_P = round(mean(P), 3),
+                   sd_P = round(sd(P), 2)) %>% 
   mutate(area = factor(area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   mutate(site = factor(site, levels = c("Dry", "Mesic", "Hydric"))) 
 
@@ -104,6 +106,36 @@ total_Mg_line_fig =
         strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
 
 ggsave("output/total_Mg_line_fig.png", plot = total_Mg_line_fig, height = 8, width = 1.5)
+
+
+
+total_P_line_fig =
+  Fe2_grouped %>% 
+  ggplot()+
+  geom_point(aes(x = mean_P, y = depth_cm, color = area, shape = area), size = 2.5)+
+  geom_line(aes(x = mean_P, y = depth_cm, color = area, group = area), orientation = "y", size = 1)+
+  geom_ribbon(aes(xmin = mean_P-sd_P, xmax = mean_P+sd_P, 
+                  y = depth_cm, fill = area, color = area, group = area), alpha = 0.4, size = 0.2)+
+  scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
+  scale_y_reverse()+
+  scale_x_continuous(limits = c(0, 0.11), breaks = c(0, 0.05, 0.1))+
+  labs(x = "total P (mg/L)",
+       y = "Depth (cm)",
+       color = " ",
+       fill = " ")+
+  facet_grid(site ~ .)+
+  guides(color = guide_legend(nrow = 2))+
+  theme_er1()+
+  theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), panel.border = element_rect(color="#f28482",size=1, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), 
+        #axis.ticks.y = element_blank(), axis.text.y = element_blank()
+        )
+
+ggsave("output/total_P_line_fig.png", plot = total_P_line_fig, height = 8, width = 1.7)
+
+
 
 total_K_line_fig =
   Fe2_grouped %>% 
