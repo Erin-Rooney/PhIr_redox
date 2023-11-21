@@ -45,7 +45,7 @@ nitrate_summary %>%
   scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_y_reverse()+
   scale_x_continuous(position="bottom", breaks = c(0, 0.5, 1.0, 1.5), n.breaks=4, limits = c(-0.2, 1.7))+
-  labs(x = "Nitrate (ppm)",
+  labs(x = "Nitrate-N (ppm)",
        y = "Depth (cm)",
        color = " ",
        fill = " ")+
@@ -70,7 +70,7 @@ nitrate_fig2 =
   scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_y_reverse()+
   scale_x_continuous(position="bottom", breaks = c(0, 0.5, 1.0, 1.5), n.breaks=4, limits = c(-0.2, 1.7))+
-  labs(x = "Nitrate (ppm)",
+  labs(x = "Nitrate-N (ppm)",
        y = "Depth (cm)",
        color = " ",
        fill = " ")+

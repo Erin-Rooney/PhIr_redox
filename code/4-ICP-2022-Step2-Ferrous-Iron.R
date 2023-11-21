@@ -128,12 +128,12 @@ total_P_line_fig =
   guides(color = guide_legend(nrow = 2))+
   theme_er1()+
   theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), panel.border = element_rect(color="#f28482",size=1, fill = NA),
-        strip.text.y = element_blank(), axis.title.y = element_blank(), 
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
+        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
         #axis.ticks.y = element_blank(), axis.text.y = element_blank()
-        )
+        
 
-ggsave("output/total_P_line_fig.png", plot = total_P_line_fig, height = 8, width = 1.7)
+ggsave("output/total_P_line_fig.png", plot = total_P_line_fig, height = 8, width = 1.5)
 
 
 
