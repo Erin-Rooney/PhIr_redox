@@ -97,7 +97,7 @@ phosphate_fig =
   scale_color_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_fill_manual(values = c("#5aaa95", "#bb9f06"))+
   scale_y_reverse()+
-  #scale_x_continuous(position="bottom", breaks = c(0, 0.5, 1.0, 1.5), n.breaks=4, limits = c(-0.2, 1.7))+
+  scale_x_continuous(position="bottom", breaks = c(0, 0.001), n.breaks=2, limits = c(0, 0.0011))+
   labs(x = "Phosphate (ppm)",
        y = "Depth (cm)",
        color = " ",
@@ -106,7 +106,6 @@ phosphate_fig =
   guides(color = guide_legend(nrow = 2))+
   theme_er1()+
   theme(legend.position = "bottom", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA),
-        strip.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank())
+        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
-ggsave("output/phosphate_line_fig.png", plot = phosphate_fig, height = 8, width = 1.5)
+ggsave("output/phosphate_line_fig.png", plot = phosphate_fig, height = 8, width = 2.5)
