@@ -115,11 +115,13 @@ grouped_moisture %>%
   filter(site == "non-acidic tundra") %>% 
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = moisture_avg, color = position, fill = position), group = 'position')+
-  geom_point(size = 3.5, alpha = 0.8, shape = c(21))+
+  geom_point(size = 3.75, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype="longdash", alpha = 0.3)+
   geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE, width = 1)+
-  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
-  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  # scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  # scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  scale_color_manual(values = rev(soil_palette("redox2",3)))+
+  scale_fill_manual(values = rev(soil_palette("redox2",3)))+
   # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   # scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   ylim(60, 0)+
@@ -133,7 +135,7 @@ grouped_moisture %>%
   facet_grid(.~site, switch = "x")+
   theme_er1()+
   theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+        panel.background = element_blank(), panel.border = element_rect(color="gray50",size=0.25, fill = NA))
 # 
 
 ggsave("formanuscript/moisturefig_depth_sd2021_nonacidic.png", plot = nonacidic_moisture_fig, height = 4.5, width = 2.25)
@@ -143,11 +145,13 @@ acidic_moisture_fig =
   filter(site == "acidic tundra") %>% 
   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
   ggplot(aes(y = depth_cm, x = moisture_avg, color = position, fill = position), group = 'position')+
-  geom_point(size = 3.5, alpha = 0.8, shape = c(21))+
+  geom_point(size = 3.75, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype="longdash", alpha = 0.3)+
   geom_errorbar(aes(xmin=moisture_avg-moisture_sd, xmax=moisture_avg+moisture_sd), show.legend = FALSE, width = 1)+
-  scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
-  scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  # scale_color_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  # scale_fill_manual(values = c("#bc4749", "#35a55f", "#0582ca"))+
+  scale_color_manual(values = rev(soil_palette("redox2",3)))+
+  scale_fill_manual(values = rev(soil_palette("redox2",3)))+
   # scale_color_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   # scale_fill_manual(values = c("#9a031e", "#a7c957", "#1e96fc"))+
   ylim(60, 0)+
@@ -161,7 +165,7 @@ acidic_moisture_fig =
   facet_grid(.~site, switch = "x")+
   theme_er1()+
   theme(legend.position = "none", panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+        panel.background = element_blank(), panel.border = element_rect(color="gray50",size=0.25, fill = NA))
 # 
 
 ggsave("formanuscript/moisturefig_depth_sd2021_acidic.png", plot = acidic_moisture_fig, height = 4.5, width = 2.25)
