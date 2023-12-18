@@ -1033,7 +1033,7 @@ allredox_contour_2021_fig =
   # geom_point(aes(color = depth_cm, fill = depth_cm), size = 1, alpha = 0.6, shape = c(21))+
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
-  scale_fill_distiller(super = metR::ScaleDiscretised, palette = "Spectral")+
+  scale_fill_distiller(super = metR::ScaleDiscretised, palette = "PuOr")+
   scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
   #scale_fill_manual(values=pnw_palette("Bay", 11))+
   labs(x = "2021", y = "depth, cm",
@@ -1056,7 +1056,8 @@ allredox_contour_2022_fig =
   #annotate(xmin='2021-06-21 00:15:00', xmax='2021-09-20 00:15:00', ymin=100, ymax=300, geom='rect', color='grey', alpha=0.5)+
   #geom_line(orientation = "x", show.legend = FALSE)+
   scale_x_datetime(date_breaks = "2 weeks", date_labels = "%b-%d")+
-  scale_fill_distiller(super = metR::ScaleDiscretised, palette = "Spectral")+
+  # scale_fill_distiller(super = metR::ScaleDiscretised, palette = "Spectral")+
+  scale_fill_distiller(super = metR::ScaleDiscretised, palette = "PuOr")+
   labs(x = "2022", y = "depth, cm",
        fill = "redox potential (mV)")+
   facet_grid(position~site, scales = "free_y")+
@@ -1376,7 +1377,7 @@ contour_dry =
   #scale_fill_manual(values=natparks.pals("Arches", 11))+
   #scale_fill_manual(values=pnw_palette("Bay", 11))+
   facet_grid(.~site)+
-  scale_fill_distiller(super = metR::ScaleDiscretised, palette = "Spectral")+
+  scale_fill_distiller(super = metR::ScaleDiscretised, palette = "PuOr")+
   theme_er1()+
   theme(
     legend.position = "right",
