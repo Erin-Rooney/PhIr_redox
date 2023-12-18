@@ -37,7 +37,7 @@ final_temp_sal_moist_forfig =
                        "west" = "non-acidic tundra")) %>% 
   dplyr::rename(depth_cm = depth) %>% 
   na.omit() %>% 
-  mutate(frozen = case_when(temp < -1 ~ "frozen", TRUE ~ "unfrozen")) 
+  mutate(frozen = case_when(temp < 1 ~ "frozen", TRUE ~ "unfrozen")) 
   
 
 final_temp_sal_moist_forfig2022 =
@@ -59,7 +59,7 @@ final_temp_sal_moist_forfig2022 =
                        "west" = "non-acidic tundra")) %>% 
   dplyr::rename(depth_cm = depth) %>% 
   na.omit() %>% 
-  mutate(frozen = case_when(temp < -1 ~ "frozen", TRUE ~ "unfrozen")) 
+  mutate(frozen = case_when(temp < 1 ~ "frozen", TRUE ~ "unfrozen")) 
 
 
 
