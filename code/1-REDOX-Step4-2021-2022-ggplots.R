@@ -17,7 +17,18 @@ combo_redox_withdepths2021 = read.csv("processed/allcombine_2021_frozen.csv")
 
 ###
 
+#data output
 
+all_redox_data_fordatabase =
+  combo_redox_withdepths2021 %>% 
+  dplyr::select(TIMESTAMP, site, position, avg_values_fixed, Plot, depth_cm, frozen) %>% 
+  rbind(combo_redox_withdepths2022 %>% dplyr::select(TIMESTAMP, site, position, avg_values_fixed, Plot, depth_cm, frozen)) %>% 
+  rename(redox_mV = avg_values_fixed,
+         area = site,
+         site = position,
+         condition = frozen)
+
+write.csv(all_redox_data_fordatabase, "processed/PhIr_redox_2021_2022.csv")
 
 frozen_group2021=
   combo_redox_withdepths2021 %>% 

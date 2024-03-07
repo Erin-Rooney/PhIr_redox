@@ -15,6 +15,19 @@ source("code/0-packages.R")
 final_temp_sal_moist = read.csv("processed/final_temp_salinity_avgs.csv")
 final_temp_sal_moist2022 = read.csv("processed/2022final_temp_salinity_avgs.csv")
 
+#data output
+
+all_moisturetemp_data_fordatabase =
+  final_temp_sal_moist %>% 
+  dplyr::select(TIMESTAMP, site, position, moisture, temp, salinity, depth) %>% 
+  rbind(final_temp_sal_moist2022 %>% dplyr::select(TIMESTAMP, site, position, moisture, temp, salinity, depth)) %>% 
+  rename(area = site,
+         site = position,
+         depth_cm = depth)
+
+
+write.csv(all_moisturetemp_data_fordatabase, "processed/PhIr_moisture_temp_salinity_2021_2022.csv")
+
 
 library(lubridate)
 
