@@ -37,7 +37,8 @@ write.csv(soil_dat_individual, "output/soil_dat_individual.csv", row.names = FAL
 soil_dat_summary =
   soil_dat_sep %>% 
   group_by(area, site, soilhorizon) %>% 
-  dplyr::summarise(pH2 = round(mean(p_h_2),2),
+  dplyr::summarise(pH2_mean = round(mean(p_h_2),2),
+                   pH2_se = round(sd(p_h_2)/sqrt(n()),2),
                    ca_mgkg_mean = round(mean(ca_mgkg),2),
                    ca_mgkg_se = round(sd(ca_mgkg)/sqrt(n()),2),
                    k_mgkg_mean = round(mean(k_mgkg),2),
@@ -60,7 +61,8 @@ soil_dat_summary =
                    npercse = round(sd(nperc)/sqrt(n()),2),
                    tocpercmean = round(mean(to_cperc),2),
                    tocpercse = round(sd(to_cperc)/sqrt(n()),2)) %>% 
-  mutate(ca_mgkg = paste(ca_mgkg_mean, "\u00b1", ca_mgkg_se),
+  mutate(pH = paste(pH2_mean, "\u00b1", pH2_se),
+        ca_mgkg = paste(ca_mgkg_mean, "\u00b1", ca_mgkg_se),
          k_mgkg = paste(k_mgkg_mean, "\u00b1", k_mgkg_se),
          mg_mgkg = paste(mg_mgkg_mean, "\u00b1", mg_mgkg_se),
          mn_mgkg = paste(mn_mgkg_mean, "\u00b1", mn_mgkg_se),
@@ -72,7 +74,7 @@ soil_dat_summary =
          nperc = paste(npercmean, "\u00b1", npercse),
          to_cperc = paste(tocpercmean, "\u00b1", tocpercse)
          ) %>% 
-  dplyr::select(-c(ca_mgkg_mean, ca_mgkg_se, k_mgkg_mean, k_mgkg_se, mg_mgkg_mean,
+  dplyr::select(-c(pH2_mean, pH2_se, ca_mgkg_mean, ca_mgkg_se, k_mgkg_mean, k_mgkg_se, mg_mgkg_mean,
                    mg_mgkg_se, mn_mgkg_mean, mn_mgkg_se, p_mgkg_mean, p_mgkg_se,
                    zn_mgkg_mean, zn_mgkg_se, nh4_mgkg_mean, nh4_mgkg_se, 
                    no3_mgkg_mean, no3_mgkg_se,

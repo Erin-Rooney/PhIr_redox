@@ -274,7 +274,7 @@ moisturefig_temporal =
         panel.background = element_blank(),
         strip.placement = "outside",
         strip.text.y = element_blank(),
-        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+        axis.text.x = element_text(size = 10, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
 
 #ggsave("formanuscript/moisture_temporal_fig.tiff", plot = moisturefig_temporal, height = 7, width = 7)
 ggsave("formanuscript/moisture_temporal_fig_2021.png", plot = moisturefig_temporal, height = 7, width = 3.8)
@@ -380,7 +380,7 @@ moisturefig_temporal2022 =
         panel.background = element_blank(),
         strip.placement = "outside",
         strip.text.y = element_blank(),
-        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+        axis.text.x = element_text(size = 10, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
 
 
 

@@ -536,7 +536,7 @@ redoxfig_depth_sd2021_nonacidic =
   geom_point(size = 3.75, shape = c(21))+
   geom_line(orientation = "y", show.legend = FALSE, linetype="longdash", alpha = 0.3)+
   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
-  # scale_color_manual(values = c("#bc4749", "#87c38f", "#457b9d"))+
+   # scale_color_manual(values = c("#bc4749", "#87c38f", "#457b9d"))+
   # scale_fill_manual(values = c("#bc4749", "#87c38f", "#457b9d"))+
     scale_color_manual(values = rev(soil_palette("redox2",3)))+
     scale_fill_manual(values = rev(soil_palette("redox2",3)))+
@@ -683,7 +683,7 @@ redox_temporal_fig_2021 =
         strip.placement = "outside",
         axis.text.y=element_blank(),  #remove y axis labels
         axis.ticks.y=element_blank(),
-        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+        axis.text.x = element_text(size = 10, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
 #remove y axis ticks
 
 
@@ -817,7 +817,7 @@ redox_temporal_fig_2022 =
         strip.placement = "outside",
         axis.text.y=element_blank(),  #remove y axis labels
         axis.ticks.y=element_blank(),
-        axis.text.x = element_text(size = 7.5, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
+        axis.text.x = element_text(size = 10, hjust=0.8,vjust=0.2,angle = 90))  #remove y axis ticks
 #remove y axis ticks
 
 ggsave("formanuscript/redox_temporal_fig_2022.png", plot = redox_temporal_fig_2022, height = 7, width = 5.5)
