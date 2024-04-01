@@ -116,7 +116,8 @@ ggsave("output/ncount_bd_vol.png", plot = ncount_bd_vol, height = 7, width = 4.5
 horizons_acidic =
   bd_select %>% 
   filter(Site != "Transect" & Area == "acidic tundra") %>% 
-  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Site = recode(Site, "Hydric" = "Wet")) %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Wet"))) %>%  
   mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
   ggplot()+
   geom_col(aes(y = Average_Depth_cm, x = label, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
@@ -125,7 +126,8 @@ horizons_acidic =
        fill = "", color = "",
        y = "depth, cm",
        x = " ")+
-  scale_fill_manual(values = c("#BFAFA6", "#AA968A", "#AA968A", "#734F38", "#553725", "#482919", "#482919"))+
+  #scale_fill_manual(values = c("#BFAFA6", "#a78a7f", "#735751", "#b07d62", "#7f5539", "#432818", "#132a13"))+
+  scale_fill_manual(values = c("#D3C8BB", "#B2A496", "#AA968A", "#81583A", "#734F38", "#553725", "#482919"))+
   facet_grid(Site~., scales="free_x") +
   guides(fill = guide_legend(reverse = TRUE))+
   theme_er1()+
@@ -138,7 +140,8 @@ horizons_acidic =
 horizons_nonacidic =
   bd_select %>% 
   filter(Site != "Transect" & Area == "non-acidic tundra") %>% 
-  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Site = recode(Site, "Hydric" = "Wet")) %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Wet"))) %>%  
   mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
   ggplot()+
   geom_col(aes(y = Average_Depth_cm, x = label, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
@@ -147,6 +150,7 @@ horizons_nonacidic =
          fill = "", color = "",
        y = "depth, cm",
        x = " ")+
+  #scale_fill_manual(values = c("#AA968A", "#553725", "#482919", "#482919"))+
   scale_fill_manual(values = c("#AA968A", "#553725", "#482919", "#482919"))+
   facet_grid(Site~., scales="free_x") +
   theme_er1()+

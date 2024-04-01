@@ -51,7 +51,8 @@ frozen_group2022 =
 all_grouped =
   frozen_group2022 %>% 
   vctrs::vec_c(frozen_group2021) %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = recode(position, "hydric" = "wet")) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   group_by(position, depth_cm) %>% 
@@ -64,7 +65,8 @@ all_grouped =
 grouped_redox_forfigs2022 = 
   frozen_group2022 %>% 
  # filter(Betterdate >= '2022-07-01 00:00' & Betterdate <= "2022-09-01 00:00") %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = recode(position, "hydric" = "wet")) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   group_by(site, position, depth_cm) %>% 
@@ -77,7 +79,8 @@ grouped_redox_forfigs2022 =
 grouped_redox_forfigs2021 = 
   frozen_group2021 %>% 
 #  filter(Betterdate >= '2021-07-01 00:00' & Betterdate <= "2021-09-01 00:00") %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = recode(position, "hydric" = "wet")) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   group_by(site, position, depth_cm) %>% 
@@ -91,7 +94,8 @@ grouped_redox_forfigs2021 =
 grouped_redox_forfigs_temporal2022 = 
   combo_redox_withdepths2022 %>% 
   #filter(Betterdate >= '2021-07-01 00:00') %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = recode(position, "hydric" = "wet")) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   mutate(forsep = TIMESTAMP) %>% 
@@ -106,13 +110,15 @@ grouped_redox_forfigs_temporal2022 =
                    redox_sd = round(sd(avg_values_fixed),2),
                    redox_se = round(sd(avg_values_fixed)/sqrt(n()),2),
                    redox_sd2 = (redox_sd)/2) %>% 
-  mutate(year = 2022)
+  mutate(year = 2022) 
+
 
 
 grouped_redox_forfigs_temporal2021 = 
   frozen_group2021 %>% 
  # filter(Betterdate >= '2021-07-01 00:00') %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = recode(position, "hydric" = "wet")) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   mutate(forsep = TIMESTAMP) %>% 
@@ -126,7 +132,8 @@ grouped_redox_forfigs_temporal2021 =
   dplyr::summarise(redox_avg_mV = round(mean(avg_values_fixed),2),
                    redox_sd = round(sd(avg_values_fixed),2),
                    redox_se = round(sd(avg_values_fixed)/sqrt(n()),2),
-                   redox_sd2 = (redox_sd)/2)
+                   redox_sd2 = (redox_sd)/2)  
+  
 
 
 # 
@@ -170,10 +177,12 @@ grouped_redox_forfigs_temporal2021 =
 
 ungrouped_redox_forfigs_nonhydric = 
   combo_redox_withdepths2021 %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  
+  mutate(position = recode(position, "hydric" = "wet")) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
-  filter(position != "hydric") %>% 
+  filter(position != "wet") %>% 
   separate(TIMESTAMP, sep = " ", into = c("date2", "time")) %>% 
   separate(date2, sep = "/", into =c('month', 'day', 'year')) %>% 
   mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
@@ -188,7 +197,8 @@ ungrouped_redox_forfigs_nonhydric =
 
 ungrouped_redox_forfigs2021 = 
   combo_redox_withdepths2021 %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = recode(position, "hydric" = "wet")) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   separate(TIMESTAMP, sep = " ", into = c("date2", "time")) %>% 
@@ -201,7 +211,8 @@ ungrouped_redox_forfigs2021 =
 
 ungrouped_redox_forfigs2022 = 
   combo_redox_withdepths2022 %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = recode(position, "hydric" = "wet")) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   separate(TIMESTAMP, sep = " ", into = c("date2", "time")) %>% 
@@ -689,106 +700,106 @@ redox_temporal_fig_2021 =
 
 ggsave("formanuscript/redox_temporal_fig_2021.png", plot = redox_temporal_fig_2021, height = 7, width = 5.5)
 
-redox_temporal_fig_2021_non_hydric =
-  grouped_redox_forfigs_temporal2021 %>% 
-  filter(site == "non-acidic tundra" & position == "hydric") %>% 
-  mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
-  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
-  geom_point(size = 4, shape = c(21))+
-  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash", alpha = 0.3)+
-  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
-  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
-  # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  ylim(60, 0)+
-  labs(x = 'Hydric
-redox potential (mV)
-       ',
-       y = "",
-       color = "", fill = "")+
-  scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
-  facet_grid(position~site, switch = "x")+
-  theme_er1()+
-  theme(legend.position = "none",
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        strip.placement = "outside",
-        axis.text.y=element_blank(),  #remove y axis labels
-        axis.ticks.y=element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
-       # axis.text.x = element_text(hjust=0,angle = 90))  #remove y axis ticks
-#remove y axis ticks
+# redox_temporal_fig_2021_non_hydric =
+#   grouped_redox_forfigs_temporal2021 %>% 
+#   filter(site == "non-acidic tundra" & position == "wet") %>% 
+#   mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
+#   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+#   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
+#   geom_point(size = 4, shape = c(21))+
+#   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash", alpha = 0.3)+
+#   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+#   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+#   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
+#   # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+#   # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+#   ylim(60, 0)+
+#   labs(x = 'Hydric
+# redox potential (mV)
+#        ',
+#        y = "",
+#        color = "", fill = "")+
+#   scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
+#   facet_grid(position~site, switch = "x")+
+#   theme_er1()+
+#   theme(legend.position = "none",
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#         panel.background = element_blank(),
+#         strip.placement = "outside",
+#         axis.text.y=element_blank(),  #remove y axis labels
+#         axis.ticks.y=element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+#        # axis.text.x = element_text(hjust=0,angle = 90))  #remove y axis ticks
+# #remove y axis ticks
+# 
+# ggsave("formanuscript/redox_temporal_fig_2021_non_hydric.png", plot = redox_temporal_fig_2021_non_hydric, height = 4.5, width = 2.25)
 
-ggsave("formanuscript/redox_temporal_fig_2021_non_hydric.png", plot = redox_temporal_fig_2021_non_hydric, height = 4.5, width = 2.25)
+# redox_temporal_fig_2021_acidic_hydric =
+#   grouped_redox_forfigs_temporal2021 %>% 
+#   filter(site == "acidic tundra" & position == "wet") %>% 
+#   mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
+#   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+#   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
+#   geom_point(size = 4, alpha = 0.8, shape = c(21))+
+#   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash", alpha = 0.3)+
+#   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+#   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+#   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
+#   # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+#   # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+#   ylim(60, 0)+
+#   labs(x = 'Hydric
+# redox potential (mV)
+#        ',
+#        y = "",
+#        color = "", fill = "")+
+#   scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
+#   facet_grid(position~site, switch = "x")+
+#   theme_er1()+
+#   theme(legend.position = "none",
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#         panel.background = element_blank(),
+#         strip.placement = "outside",
+#         axis.text.y=element_blank(),  #remove y axis labels
+#         axis.ticks.y=element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
+# # axis.text.x = element_text(hjust=0,angle = 90))  #remove y axis ticks
+# #remove y axis ticks
+# 
+# ggsave("formanuscript/redox_temporal_fig_2021_acidic_hydric.png", plot = redox_temporal_fig_2021_acidic_hydric, height = 4.5, width = 2.25)
 
-redox_temporal_fig_2021_acidic_hydric =
-  grouped_redox_forfigs_temporal2021 %>% 
-  filter(site == "acidic tundra" & position == "hydric") %>% 
-  mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
-  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
-  geom_point(size = 4, alpha = 0.8, shape = c(21))+
-  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash", alpha = 0.3)+
-  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
-  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
-  # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  ylim(60, 0)+
-  labs(x = 'Hydric
-redox potential (mV)
-       ',
-       y = "",
-       color = "", fill = "")+
-  scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
-  facet_grid(position~site, switch = "x")+
-  theme_er1()+
-  theme(legend.position = "none",
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        strip.placement = "outside",
-        axis.text.y=element_blank(),  #remove y axis labels
-        axis.ticks.y=element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
-# axis.text.x = element_text(hjust=0,angle = 90))  #remove y axis ticks
-#remove y axis ticks
-
-ggsave("formanuscript/redox_temporal_fig_2021_acidic_hydric.png", plot = redox_temporal_fig_2021_acidic_hydric, height = 4.5, width = 2.25)
-
-redox_temporal_legend =
-  grouped_redox_forfigs_temporal2021 %>% 
-  filter(site == "non-acidic tundra" & position == "hydric") %>% 
-  mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
-  mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
-  geom_point(size = 4, alpha = 0.8, shape = c(21))+
-  geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
-  geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
-  scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
-  scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
-  # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
-  ylim(60, 0)+
-  labs(x = ' 
-redox potential (mV)',
-       y = "",
-       color = "", fill = "")+
-  scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
-  facet_grid(position~site, switch = "x")+
-  theme_er1()+
-  guides(fill=guide_legend(nrow=2,byrow=TRUE), color = guide_legend(nrow=2, byrow=TRUE))+
-  theme(legend.position = "bottom",
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        strip.placement = "outside",
-        axis.text.y=element_blank(),  #remove y axis labels
-        axis.ticks.y=element_blank(), panel.border = element_rect(color="white",size=0.5, fill = NA))
-# axis.text.x = element_text(hjust=0,angle = 90))  #remove y axis ticks
-#remove y axis ticks
-
-
-
-ggsave("formanuscript/redox_temporal_legend.png", plot = redox_temporal_legend, height = 4.5, width = 2.25)
+# redox_temporal_legend =
+#   grouped_redox_forfigs_temporal2021 %>% 
+#   filter(site == "non-acidic tundra" & position == "wet") %>% 
+#   mutate(month = factor(month, levels = c("June", "July", "August", "September")))   %>%
+#   mutate(site = factor(site, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
+#   ggplot(aes(y = depth_cm, x = redox_avg_mV, color = month, fill = month), group = 'position')+
+#   geom_point(size = 4, alpha = 0.8, shape = c(21))+
+#   geom_line(orientation = "y", show.legend = FALSE, linetype = "longdash")+
+#   geom_errorbar(aes(xmin=redox_avg_mV-redox_sd, xmax=redox_avg_mV+redox_sd), show.legend = FALSE)+
+#   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
+#   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
+#   # scale_color_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+#   # scale_fill_manual(values = rev(c("#f94144", "#f8961e", "#57cc99", "#4361ee")))+
+#   ylim(60, 0)+
+#   labs(x = ' 
+# redox potential (mV)',
+#        y = "",
+#        color = "", fill = "")+
+#   scale_x_continuous(position="top", breaks = c(-300, 0, 300, 600), n.breaks=4, limits = c(-400, 850))+
+#   facet_grid(position~site, switch = "x")+
+#   theme_er1()+
+#   guides(fill=guide_legend(nrow=2,byrow=TRUE), color = guide_legend(nrow=2, byrow=TRUE))+
+#   theme(legend.position = "bottom",
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#         panel.background = element_blank(),
+#         strip.placement = "outside",
+#         axis.text.y=element_blank(),  #remove y axis labels
+#         axis.ticks.y=element_blank(), panel.border = element_rect(color="white",size=0.5, fill = NA))
+# # axis.text.x = element_text(hjust=0,angle = 90))  #remove y axis ticks
+# #remove y axis ticks
+# 
+# 
+# 
+# ggsave("formanuscript/redox_temporal_legend.png", plot = redox_temporal_legend, height = 4.5, width = 2.25)
 
 
 redox_temporal_fig_2022 =
@@ -827,8 +838,8 @@ ggsave("formanuscript/2022redox_fig.png", plot = redoxfig_depth_sd, height = 7, 
 
 ungrouped_redox_forfigs2021_probe =
   ungrouped_redox_forfigs2021 %>% 
-  mutate(keep = case_when(site == "non-acidic tundra" & position == "hydric" & probe == 1 ~ "keep",
-                          site == "acidic tundra" & position == "hydric" & probe == 3 ~ "keep",
+  mutate(keep = case_when(site == "non-acidic tundra" & position == "wet" & probe == 1 ~ "keep",
+                          site == "acidic tundra" & position == "wet" & probe == 3 ~ "keep",
                           site == "non-acidic tundra" & position == "dry" & probe == 1 ~ "keep",
                           site == "acidic tundra" & position == "dry" & probe == 1 ~ "keep",
                           site == "acidic tundra" & position == "mesic" & probe == 1 ~ "keep",
@@ -838,8 +849,8 @@ ungrouped_redox_forfigs2021_probe =
   
 ungrouped_redox_forfigs2022_probe =
   ungrouped_redox_forfigs2022 %>% 
-  mutate(keep = case_when(site == "non-acidic tundra" & position == "hydric" & probe == 3 ~ "keep",
-                          site == "acidic tundra" & position == "hydric" & probe == 3 ~ "keep",
+  mutate(keep = case_when(site == "non-acidic tundra" & position == "wet" & probe == 3 ~ "keep",
+                          site == "acidic tundra" & position == "wet" & probe == 3 ~ "keep",
                           site == "non-acidic tundra" & position == "dry" & probe == 2 ~ "keep",
                           site == "acidic tundra" & position == "dry" & probe == 1 ~ "keep",
                           site == "acidic tundra" & position == "mesic" & probe == 1 ~ "keep",
@@ -915,7 +926,7 @@ ggsave("output/allredox_lines.png", plot = allredox_lines, height = 7, width = 1
 
 redox_lines_2021_fig_nonacidichydric =                          
   ungrouped_redox_forfigs2021_probe %>% 
-  filter(site == "non-acidic tundra" & position == "hydric") %>% 
+  filter(site == "non-acidic tundra" & position == "wet") %>% 
   ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
   geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "#ffe5d9", alpha = 0.7)+
   geom_point(aes(color = depth_cm, fill = depth_cm), size = 1, alpha = 0.6, shape = c(21))+
@@ -947,7 +958,7 @@ ggsave("formanuscript/redox_lines_2021_fig_nonacidichydric.png", plot = redox_li
 
 redox_lines_2021_fig_acidichydric =                          
   ungrouped_redox_forfigs2021_probe %>% 
-  filter(site == "acidic tundra" & position == "hydric") %>% 
+  filter(site == "acidic tundra" & position == "wet") %>% 
   ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
   geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "#ffe5d9", alpha = 0.7)+
   geom_point(aes(color = depth_cm, fill = depth_cm), size = 1, alpha = 0.6, shape = c(21))+
@@ -979,7 +990,7 @@ ggsave("formanuscript/redox_lines_2021_fig_acidichydric.png", plot = redox_lines
 
 redox_lines_2022_fig_nonacidichydric  =                          
   ungrouped_redox_forfigs2022_probe %>% 
-  filter(site == "non-acidic tundra" & position == "hydric") %>% 
+  filter(site == "non-acidic tundra" & position == "wet") %>% 
   ggplot(aes(y = redox_avg_mV, x = datetime), group = 'depth_cm')+
   #geom_rect(aes(xmin=as_datetime('2021-06-14 17:00:00'), xmax= as_datetime('2021-09-20 10:15:00'), ymin=100, ymax=300), fill = "grey", alpha = 0.5)+
   geom_point(aes(color = depth_cm, fill = depth_cm), size = 1, alpha = 0.6, shape = c(21))+

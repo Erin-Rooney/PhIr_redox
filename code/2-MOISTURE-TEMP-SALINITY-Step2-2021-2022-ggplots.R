@@ -45,7 +45,10 @@ final_temp_sal_moist_forfig =
                         "7" = "July", 
                         "8" = "August",
                         "9" = "September")) %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = recode(position, "hydric" = "wet")) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
+  
+ # mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   dplyr::rename(depth_cm = depth) %>% 
@@ -67,7 +70,10 @@ final_temp_sal_moist_forfig2022 =
                         "7" = "mid summer", 
                         "8" = "late summer",
                         "9" = "early fall")) %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = recode(position, "hydric" = "wet")) %>% 
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
+  
+  # mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   dplyr::rename(depth_cm = depth) %>% 
@@ -79,7 +85,7 @@ final_temp_sal_moist_forfig2022 =
 grouped_moisture_forfigs_temporal = 
   final_temp_sal_moist_forfig %>% 
   filter(moisture > 10) %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   group_by(site, position, depth_cm, month) %>% 
@@ -91,7 +97,7 @@ grouped_moisture_forfigs_temporal =
 grouped_moisture_forfigs_temporal2022 = 
   final_temp_sal_moist_forfig2022 %>% 
   filter(moisture > 10) %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   group_by(site, position, depth_cm, month) %>% 
@@ -102,7 +108,7 @@ grouped_moisture_forfigs_temporal2022 =
 grouped_moisture2022 =
   final_temp_sal_moist_forfig2022 %>% 
   filter(moisture > 10) %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   group_by(site, position, depth_cm) %>% 
@@ -114,7 +120,7 @@ grouped_moisture2022 =
 grouped_moisture =
   final_temp_sal_moist_forfig %>% 
   filter(moisture > 10) %>% 
-  mutate(position = factor(position, levels = c("dry", "mesic", "hydric"))) %>%
+  mutate(position = factor(position, levels = c("dry", "mesic", "wet"))) %>%
   mutate(site = recode(site, "east" = "acidic tundra",
                        "west" = "non-acidic tundra")) %>% 
   group_by(site, position, depth_cm) %>% 
