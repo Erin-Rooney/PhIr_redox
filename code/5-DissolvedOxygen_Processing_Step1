@@ -1,0 +1,189 @@
+---
+title: "PhIrDO_MicroelectrodProfiles"
+output: html_document
+date: "2023-08-09"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(stringr)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(tidyr) 
+library(hms)
+```
+
+#Data
+##Microelectrode Profiles
+```{r}
+#Each Raw data file corresponds to one sequence programmed and run
+rawDO1<-read.table("Data/Microelectrode profile data/28072023002440_TFS_PhIr_5cmdepth_2mm_365/28072023002440_data.txt", sep="\t", header = TRUE)
+rawDO2<-read.table("Data/Microelectrode profile data/28072023003700_TFS_PhIr_5cm_1hr_diurnal_368/28072023003700_data.txt", sep="\t", header = TRUE)
+rawDO3<-read.table("Data/Microelectrode profile data/28072023142101_TFS_PhIr_5cm_1hr_diurnal_370/28072023142101_data.txt", sep="\t", header = TRUE)
+rawDO4<-read.table("Data/Microelectrode profile data/29072023131024_TFS_PhIr_5cm_1hr_diurnal_371/29072023131024_data.txt", sep="\t", header = TRUE)
+rawDO5<-read.table("Data/Microelectrode profile data/29072023213519_TFS_PhIr_5cm_30min_2d_374/29072023213519_data.txt", sep="\t", header = TRUE)
+
+#Adding the file name for each set of raw data in the "file" column
+rawDO1$file<-"28072023002440_data.txt"
+rawDO2$file<-"28072023003700_data.txt"
+rawDO3$file<-"28072023142101_data.txt"
+rawDO4$file<-"29072023131024_data.txt"
+rawDO5$file<-"29072023213519_data.txt"
+
+#Adding the program name corresponding to each sequence run in the "program" column
+rawDO1$program<-"28072023002440_TFS_PhIr_5cmdepth_2mm_365"
+rawDO2$program<-"28072023003700_TFS_PhIr_5cm_1hr_diurnal_368"
+rawDO3$program<-"28072023142101_TFS_PhIr_5cm_1hr_diurnal_370"
+rawDO4$program<-"29072023131024_TFS_PhIr_5cm_1hr_diurnal_371"
+rawDO5$program<-"29072023213519_TFS_PhIr_5cm_30min_2d_374"
+
+#merging the five raw data files together using rbind into a new data frame called microDOraw
+microDOraw<-rbind(rawDO1, rawDO2)
+microDOraw<-rbind(microDOraw, rawDO3)
+microDOraw<-rbind(microDOraw, rawDO4)
+microDOraw<-rbind(microDOraw, rawDO5)
+
+#Keeping only relevant columns
+microDOraw<-microDOraw %>%
+  select(Time, Channel.1..mV., Channel.2..mV., Channel.1_cal..µmol.L., Channel.2_cal..µmol.L., Motor.1..mm., Motor.2..mm., GroupId, file, program)
+
+#renaming columns to get rid of annoying extra punctuations
+names(microDOraw)[names(microDOraw)=="Channel.1..mV."]<-"Channel1_mV"
+names(microDOraw)[names(microDOraw)=="Channel.2..mV."]<-"Channel2_mV"
+names(microDOraw)[names(microDOraw)=="Channel.1_cal..µmol.L."]<-"Channel1_DO_mgL"
+names(microDOraw)[names(microDOraw)=="Channel.2_cal..µmol.L."]<-"Channel2_DO_mgL"
+names(microDOraw)[names(microDOraw)=="Motor.1..mm."]<-"Motor1.mm"
+names(microDOraw)[names(microDOraw)=="Motor.2..mm."]<-"Motor2.mm"
+
+#the Time column contains date and time. Code below splits into a Date and Time column. new column with only time is named Time2
+microDOraw[c("Date", "Time2")]<-str_split_fixed(microDOraw$Time, " ", 2)
+
+#telling R to format the date as a date in a new column called RDate
+microDOraw$RDate<-as.POSIXct(microDOraw$Date, format="%d%m%Y")
+
+#telling R to format original Time column as a date time in eastern daylight time in new column called RDateTimeEDT
+microDOraw$RDateTimeEDT<-as.POSIXct(microDOraw$Time, format="%d%m%Y %H%M%S")
+
+#Converting time to AlaskaTime in new column called RDateTimeAST
+microDOraw$RDateTimeAST<-as.POSIXct(microDOraw$RDateTimeEDT-hours(4))
+
+#gathering data from the 2 DO sensors into a a single column, creating a new data frame called micro DO to use for most data processing and analysis from here on out.
+microDO<-microDOraw %>%
+  #selecting only the relevant columns
+  select(Time, Channel1_DO_mgL, Channel2_DO_mgL, Motor1.mm, Motor2.mm, program, RDateTimeEDT, RDateTimeAST) %>%
+  #gathering the 2 DO sensors into a single column
+  gather(key="DOsensor", value="DO.mgL", Channel1_DO_mgL:Channel2_DO_mgL)
+
+###Omitting data from first program from data being used
+microDO<-microDO%>%
+  filter(program!="28072023002440_TFS_PhIr_5cmdepth_2mm_365")
+
+###Giving each profile a unique name
+#Each profile in all four of the programs has 26 points, which makes things easier
+#https://stackoverflow.com/questions/32078578/how-to-group-by-every-7-rows-and-aggregate-those-7-values-by-median
+#theData$seven_day_index <- c(0, rep(1:(nrow(theData)-1)%/%7))
+
+microDO$ProfIndex <- c(0, rep(1:(nrow(microDO)-1)%/%26) )
+#I don't know how this works but it does!
+
+##Name each profile with the date and time stamp of the first data point
+#https://stackoverflow.com/questions/69375473/r-how-to-replace-all-rows-in-a-group-with-a-value-from-first-row-in-a-df
+#First() function in dplyr gets the first value in each, then adding in the sensor name
+microDO<-microDO %>%
+  group_by(ProfIndex) %>%
+  mutate(ProfileID = paste(first(Time), DOsensor))
+
+#also make one with just time time for co-graphing profiles taken at the same time
+microDO<-microDO %>%
+  group_by(ProfIndex) %>%
+  mutate(ProfileIDTime = first(Time) )
+
+#and make a new column that is the start Date Time
+microDO<-microDO %>%
+  group_by(ProfIndex) %>%
+  mutate(ProfileStart = first(as.POSIXct(RDateTimeAST)) )
+
+#making a new column with just the Time of start Date Time
+microDO$RProfileStartTime<-as_hms(microDO$ProfileStart)
+
+#making a column of just times using the as_hms() function in the hms package
+microDO$RTime<-as_hms(microDO$RDateTimeAST)
+#making a column of just date for faceting by date in graphs
+microDO$RDate<-as_date(microDO$RDateTimeAST)
+
+#Make a column that's the hour w/o minutes and seconds that a profile was taken, which will help with graphing later
+#Found example here: https://stackoverflow.com/questions/16444242/rounding-times-to-the-nearest-hour-in-r
+#floor_date() from lubridate package takes a date-time object and rounds it down to the nearest boundary of the specified time unit.
+microDO$RHour<-as.numeric(format(floor_date(microDO$RDateTimeAST, unit="hours"), format="%H"))
+
+##Making a column that's date as a factor for graphing later
+
+microDO$Date<-as.factor(microDO$RDate)
+```
+
+###Notes on data
+28072023002440_TFS_PhIr_5cmdepth_2mm_365 is a trial run, do not use
+28072023003700_TFS_PhIr_5cm_1hr_diurnal_368, 28072023003700_data_txt contains data for profiles that got from Motor 1=0 to 49.969 and elapse for 895 seconds and occur every 9,123 seconds (~2.5 hours)
+Laptop was set to Eastern Time Zone. To convert to local alaska time, subtract 4 hours
+Programs:
+[1] "28072023002440_TFS_PhIr_5cmdepth_2mm_365"    "28072023003700_TFS_PhIr_5cm_1hr_diurnal_368"
+[3] "28072023142101_TFS_PhIr_5cm_1hr_diurnal_370" "29072023131024_TFS_PhIr_5cm_1hr_diurnal_371"
+[5] "29072023213519_TFS_PhIr_5cm_30min_2d_374"  
+
+"28072023002440_TFS_PhIr_5cmdepth_2mm_365" is a 
+Single profile, depth recorded on Motor2.mm
+
+##Presens FibOx DO Data
+```{r}
+#Reading in Dissolved oxygen concentrations measured with hand-held Presens FibOx cable
+FiboxDOraw<-read.csv("Data/PhIr2023_DissolvedOxygenMeasurements.csv")
+
+#Removing ghost rows by omitting anything with DO is na becuase every row should have a DO value
+FiboxDOraw<-FiboxDOraw %>%
+  filter(!is.na(DO.mgL))
+
+#where were these data collected? location coordinates are in FiboxDOLoc.csv
+##Added coordinates manually to FiboxDOLoc.csv.  Coordinates in FiboxDOLoc.csv are approximate. For more specific locations, see hand-drawn maps in field notes, which are also annotated in 2023July_DOCampaign_Notes.pptx . More accurate coordinates could be determined using the 2021 RTK coordinates, high-resolution georeferenced aerial imagery than what’s available on Google Earth, and field notes maps.
+
+##Getting Dates & Times in order
+#Making a DateTime field 
+FiboxDOraw$RDate<-as.POSIXct(FiboxDOraw$Date, format="%d-%b-%y")
+#Pasting Date and Time together to make a DateTime column
+FiboxDOraw$DateTime<-paste(FiboxDOraw$RDate, FiboxDOraw$Time)
+#telling R that it's a Date Tiem using as.POSIXct
+FiboxDOraw$RDateTime<- as.POSIXct (FiboxDOraw$DateTime, format="%Y-%m-%d %H:%M")
+
+#omitting data point from July 31 with unclear depth note in field notes (under depth says "multiplex..." for some reason)
+
+FiboxDO<-FiboxDOraw %>%
+  filter(!is.na(as.numeric(Depth.cm)))
+
+##Telling R which ones should be numeric that aren't
+FiboxDO$Depth.cm<-as.numeric(FiboxDO$Depth.cm)
+FiboxDO$Temp.degC<-as.numeric(FiboxDO$Temp.degC)
+
+##Making an Area Site column
+FiboxDO$AreaSite<-paste(FiboxDO$Area,FiboxDO$Site)
+
+##make a column with only time of day
+# starting with this as a resource 
+##https://r4ds.hadley.nz/datetimes.html
+##the above website says: "In this chapter we are going to focus on dates and date-times as R doesn’t have a native class for storing times. If you need one, you can use the hms package."
+##So, using the hms package: https://hms.tidyverse.org/
+
+FiboxDO$Time<-as_hms(FiboxDO$RDateTime)
+#Testing to see if it worked and how it graphs
+ggplot(FiboxDO, aes(x=Time, y=DO.mgL))+
+  geom_point()
+#Looks like it worked! yay.
+``` 
+#Summary Stats
+##FiboxDO data
+```{r}
+##Summarizing DO in top 10 cm of surface water
+FiboxDO.surf<-FiboxDO %>%
+  filter(Depth.cm < 10) 
+summary(FiboxDO.surf)
+```

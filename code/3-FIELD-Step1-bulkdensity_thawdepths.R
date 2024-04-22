@@ -676,6 +676,22 @@ spfig =
                            "Hydric" = "3")) %>% 
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
   mutate(site_num = as.numeric(site_num))
+
+
+bd_avg =
+  bd_grav_cleaned %>% 
+  mutate(Horizon, H2 = recode(Horizon, "O" = "O1",
+                              "M1" = "M",
+                              "M2" = "M")) %>% 
+
+   group_by(H2) %>% 
+  na.omit() %>% 
+  dplyr::summarise(depth_avg = round(mean(real_depth_cm),2),
+                   depth_se = round(sd(real_depth_cm)/sqrt(n()),2),
+                   depth_sd = round(sd(real_depth_cm),2),
+                   bd_avg = round(mean(soil_bulk_density_g_cm3),2),
+                   bd_se = round(sd(soil_bulk_density_g_cm3)/sqrt(n()),2),
+                  )
   
   
 # 

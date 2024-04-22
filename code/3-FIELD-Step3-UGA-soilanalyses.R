@@ -84,3 +84,36 @@ soil_dat_summary %>% knitr::kable() # prints a somewhat clean table in the conso
 
 write.csv(soil_dat_summary, "output/soil_dat_summary.csv", row.names = FALSE)
 
+library(ggpmisc)
+
+nonacidic_P_Ca =
+  soil_dat_sep %>% 
+  filter(area %in% "non-acidic tundra") %>% 
+  ggplot(aes(x = ca_mgkg, y = p_mgkg))+
+  geom_point()+
+  labs(title = "Non-Acidic")+
+ # geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ x)+
+  stat_poly_line() +
+  stat_poly_eq() 
+
+acidic_P_Ca =
+soil_dat_sep %>% 
+  filter(area %in% "acidic tundra") %>% 
+  ggplot(aes(x = ca_mgkg, y = p_mgkg))+
+  geom_point()+
+  labs(title = "Acidic")+
+  # geom_smooth(method = "lm", se=FALSE, color="black", formula = y ~ x)+
+  stat_poly_line() +
+  stat_poly_eq() 
+
+ggsave("nonacidic_P_Ca.png", nonacidic_P_Ca, height = 5, width = 5)
+ggsave("acidic_P_Ca.png", acidic_P_Ca, height = 5, width = 5)
+
+
+P_summary =
+  soil_dat_sep %>% 
+  group_by(area, site) %>% 
+  dplyr::summarise(p_mgkg_mean = round(mean(p_mgkg),2),
+                   p_mgkg_sd = round(sd(p_mgkg)))
+
+                   

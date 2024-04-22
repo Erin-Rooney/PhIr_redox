@@ -120,7 +120,7 @@ horizons_acidic =
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Wet"))) %>%  
   mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
   ggplot()+
-  geom_col(aes(y = Average_Depth_cm, x = label, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
+  geom_col(aes(y = Average_Depth_cm, x = Core_ID, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
   scale_y_reverse()+
   labs(title = "acidic tundra",
        fill = "", color = "",
@@ -128,7 +128,7 @@ horizons_acidic =
        x = " ")+
   #scale_fill_manual(values = c("#BFAFA6", "#a78a7f", "#735751", "#b07d62", "#7f5539", "#432818", "#132a13"))+
   scale_fill_manual(values = c("#D3C8BB", "#B2A496", "#AA968A", "#81583A", "#734F38", "#553725", "#482919"))+
-  facet_grid(Site~., scales="free_x") +
+  facet_grid(.~Site, scales="free") +
   guides(fill = guide_legend(reverse = TRUE))+
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "right",
@@ -144,7 +144,7 @@ horizons_nonacidic =
   mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Wet"))) %>%  
   mutate(Horizon = factor(Horizon, levels = c("M2", "M1", "M", "O3", "O2", "O1", "O"))) %>% 
   ggplot()+
-  geom_col(aes(y = Average_Depth_cm, x = label, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
+  geom_col(aes(y = Average_Depth_cm, x = Core_ID, fill = Horizon), color = "white", position = 'stack', width = 0.7)+
   scale_y_reverse()+
   labs(title = "non-acidic tundra",
          fill = "", color = "",
@@ -152,13 +152,13 @@ horizons_nonacidic =
        x = " ")+
   #scale_fill_manual(values = c("#AA968A", "#553725", "#482919", "#482919"))+
   scale_fill_manual(values = c("#AA968A", "#553725", "#482919", "#482919"))+
-  facet_grid(Site~., scales="free_x") +
+  facet_grid(.~Site, scales="free_x") +
   theme_er1()+
   theme(axis.text.x = element_text (vjust = 0.5, hjust=1, angle = 90, size = 9), legend.position = "none",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
-horizons_all = horizons_nonacidic + horizons_acidic
+horizons_all = horizons_nonacidic / horizons_acidic
 
 ggsave("formanuscript/horizons_all.png", plot = horizons_all, height = 6, width = 10)
 

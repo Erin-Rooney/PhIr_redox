@@ -283,7 +283,7 @@ P_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Dissolved P (μg/ml)",
+  labs(x = "Dissolved P (mg/L)",
        y = "depth, cm",
        color = "month, 2022"
   )+
@@ -314,7 +314,7 @@ processed_ICP %>%
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Dissolved Fe (μg/ml)",
+  labs(x = "Dissolved Fe (mg/L)",
        y = " ",
        color = "month, 2022"
   )+
@@ -396,7 +396,7 @@ Mn_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Dissolved Mn (μg/ml)",
+  labs(x = "Dissolved Mn (mg/L)",
        y = " ",
        color = "month, 2022"
   )+
@@ -424,7 +424,7 @@ Ca_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Dissolved Ca (μg/ml)",
+  labs(x = "Dissolved Ca (mg/L)",
        y = "depth, cm",
        color = "month, 2022"
   )+
@@ -471,7 +471,7 @@ Al_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Dissolved Al (μg/ml)",
+  labs(x = "Dissolved Al (mg/L)",
        y = "depth, cm",
        color = "month, 2022"
   )+
@@ -501,7 +501,7 @@ Mg_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Dissolved Mg (μg/ml)",
+  labs(x = "Dissolved Mg (mg/L)",
        y = " ",
        color = "month, 2022"
   )+
@@ -531,7 +531,7 @@ Na_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Dissolved Na (μg/ml)",
+  labs(x = "Dissolved Na (mg/L)",
        y = " ",
        color = "month, 2022"
   )+
@@ -559,7 +559,7 @@ K_concentration_fig =
   ggplot() +
   geom_point(aes(x = concentration, y = Depth_cm, color = month), size = 3.5, alpha = 0.75)+
   geom_line(aes(x = concentration, y = Depth_cm, color = month, group = grouping), orientation = "y", size = 0.75, linetype = "dotted")+
-  labs(x = "Dissolved K (μg/ml)",
+  labs(x = "Dissolved K (mg/L)",
        y = "depth, cm",
        color = "month, 2022"
   )+
