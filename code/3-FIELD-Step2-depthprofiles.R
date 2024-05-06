@@ -75,7 +75,7 @@ saturation_dat %>%
         legend.margin = margin(6, 6, 6, 6), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), panel.border = element_rect(color="gray",size=0.25, fill = NA))
 
-ggsave("output/saturation_volumetricwater_fig.png", plot = saturation_volumetricwater_fig, height = 3.5, width = 3.5)
+ggsave("output/saturation_volumetricwater_fig.png", plot = saturation_volumetricwater_fig, height = 5, width = 5)
 
 ncount =
   bd_select %>% 
