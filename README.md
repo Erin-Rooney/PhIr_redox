@@ -1,6 +1,6 @@
-[![Project Status: WIP – Initial development is in progress, but there
-has not yet been a stable, usable release suitable for the
-public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+<a href="https://zenodo.org/badge/latestdoi/285718576"><img src="https://zenodo.org/badge/285718576.svg" alt="DOI"></a>
+
+<a href = https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2022JG006889>Link to Publication</a> 
 
 ### PhIr Project
 #### PIs: Elizabeth Herndon, Michael Weintraub, Lauren Kinsman-Costello
