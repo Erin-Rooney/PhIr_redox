@@ -1,6 +1,4 @@
-<a href="https://zenodo.org/badge/latestdoi/285718576"><img src="https://zenodo.org/badge/285718576.svg" alt="DOI"></a>
-
-<a href = https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2022JG006889>Link to Publication</a> 
+<a href="https://doi.org/10.5281/zenodo.14037039"><img src="https://zenodo.org/badge/498472530.svg" alt="DOI"></a>
 
 ### PhIr Project
 #### PIs: Elizabeth Herndon, Michael Weintraub, Lauren Kinsman-Costello
