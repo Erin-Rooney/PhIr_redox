@@ -18,10 +18,11 @@ Fe2_dat =
   mutate(year = recode(year, "22" = "2022")) %>% 
   mutate(date = as.Date(paste(year, month, day, sep = "-"))) %>% 
   mutate(month2 = recode(month, "6" = "June", "7" = "July", "8" = "August", "9" = "September")) %>%
-  mutate(grouping = paste0(area, "-", site, "-", date, "-", plot)) %>% 
   mutate(month2 = factor(month2, levels = c("June", "July", "August", "September"))) %>% 
   mutate(area = factor(area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  mutate(site = factor(site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(site = recode(site, "Hydric" = "Wet")) %>% 
+  mutate(site = factor(site, levels = c("Dry", "Mesic", "Wet"))) %>% 
+  mutate(grouping = paste0(area, "-", site, "-", date, "-", plot)) %>% 
   mutate(Fe2totalratio = (FeII/Fe))
 
 Fe2_grouped =
@@ -46,7 +47,7 @@ Fe2_grouped =
                    mean_P = round(mean(P), 3),
                    sd_P = round(sd(P), 2)) %>% 
   mutate(area = factor(area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  mutate(site = factor(site, levels = c("Dry", "Mesic", "Hydric"))) 
+  mutate(site = factor(site, levels = c("Dry", "Mesic", "Wet"))) 
 
 Fe2_grouped2 =
   Fe2_dat %>% 
@@ -57,7 +58,7 @@ Fe2_grouped2 =
                    mean_FeII = round(mean(FeII), 3),
                    sd_FeII = round(sd(FeII), 2)) %>% 
   mutate(area = factor(area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  mutate(site = factor(site, levels = c("Dry", "Mesic", "Hydric"))) 
+  mutate(site = factor(site, levels = c("Dry", "Mesic", "Wet"))) 
   
 total_Fe_line_fig =
 Fe2_grouped %>% 
@@ -382,13 +383,14 @@ Fe2_dat %>%
 
 ratio_fig =
 Fe2_dat %>% 
-  filter(site == "Hydric") %>% 
+  filter(site == "Wet") %>% 
   ggplot() +
   geom_point(aes(x = Fe2totalratio, y = depth_cm, fill = month2), shape = c(21), size = 3, alpha = 0.75)+
-  geom_line(aes(x = Fe2totalratio, y = depth_cm, color = month2, group = grouping), orientation = "y", size = 0.75, alpha =0.3, linetype = "dashed")+
+  geom_line(aes(x = Fe2totalratio, y = depth_cm, color = month2, group = grouping), 
+            orientation = "y", size = 0.75, alpha =0.3, linetype = "dashed", show_guide = FALSE)+
   labs(x = "Ferrous Iron to Total Iron Ratio",
        y = "Depth, cm",
-       color = "month, 2022"
+       fill = "month, 2022"
   )+
   scale_color_manual(values = (pnw_palette('Sunset2', 4)))+
   scale_fill_manual(values = (pnw_palette('Sunset2', 4)))+
@@ -396,7 +398,7 @@ Fe2_dat %>%
   scale_y_reverse(breaks = c(0, 20, 40))+
   facet_grid(site~area)+
   theme_er1()+
-  theme(legend.position = "none",
+  theme(legend.position = "bottom",
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(),
         strip.placement = "outside", panel.border = element_rect(color="gray",size=0.25, fill = NA))

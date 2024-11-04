@@ -20,7 +20,9 @@ processed_ICP_diluted =
   mutate(Area = recode(Area, "West" = "non-acidic tundra",
                        "East" = "acidic tundra")) %>% 
   mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Site = recode(Site, "Hydric" = "Wet")) %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Wet"))) %>% 
+ # mutate(grouping = paste0(area, "-", site, "-", date, "-", plot)) %>% 
   # dplyr::select(c(SampleID, Date, Time, Area, Site, Plot, Depth_cm, Al_ug_mL, Ca_ug_mL, Fe_ug_mL, 
   #                 K_ug_mL, Mg_ug_mL, Mn_ug_mL, Na_ug_mL, P_ug_mL)) %>% 
   mutate(P_ug_mL = recode(P_ug_mL, "<0.01" = "0.005",
@@ -46,7 +48,8 @@ processed_ICP =
   mutate(Area = recode(Area, "West" = "non-acidic tundra",
                        "East" = "acidic tundra")) %>% 
   mutate(Area = factor(Area, levels = c("non-acidic tundra", "acidic tundra"))) %>% 
-  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Hydric"))) %>% 
+  mutate(Site = recode(Site, "Hydric" = "Wet")) %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Wet"))) %>% 
   na.omit() %>% 
   dplyr::select(c(SampleID, Date, Time, Area, Site, Plot, Depth_cm, Al_ug_mL, Ca_ug_mL, Fe_ug_mL, 
                   K_ug_mL, Mg_ug_mL, Mn_ug_mL, Na_ug_mL, P_ug_mL)) %>% 
@@ -209,7 +212,7 @@ processed_ICP_forredoxcombo =
   mutate(depth_cm = as.numeric(depth_cm)) %>% 
   mutate(position = recode(position, "Dry" = "dry",
                            "Mesic" = 'mesic',
-                           "Hydric" = 'hydric')) 
+                           "Wet" = 'wet')) 
 
 
 redox_nutrients_leftjoin = 

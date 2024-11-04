@@ -427,6 +427,7 @@ moisture_lines_dry =
         panel.border = element_rect(color="gray",size=0.5, fill = NA))
 
 
+
 ggsave("formanuscript/moisture_lines_dry.png", plot = moisture_lines_dry, width = 7.5, height = 2.5)
 
 

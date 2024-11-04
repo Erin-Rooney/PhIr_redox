@@ -323,14 +323,16 @@ ggplot(FiboxDO, aes(x=DO.mgL, y=Depth.cm, color=as.POSIXct(Time), shape=AreaSite
 microDO_forfig =
 microDO %>% 
   filter(Depth.cm != "multi (?)" & Site %in% c("Hydric", "Mesic")) %>% 
-  mutate(depth = as.numeric(Depth.cm)) 
+  mutate(depth = as.numeric(Depth.cm)) %>% 
+  mutate(Site = recode(Site, "Hydric" = "Wet")) %>% 
+  mutate(Site = factor(Site, levels = c("Dry", "Mesic", "Wet"))) 
 
 manuscript_figure =
   microDO_forfig %>% 
   ggplot()+
   geom_point(aes(x=DO.mgL, y = depth, fill = Site, shape = Site), size = 3.5, alpha = 0.8)+
-    scale_fill_manual(values = c("#2D5895", "#FFB206"))+
-    scale_shape_manual(values = c(21, 22))+
+    scale_fill_manual(values = c("#FFB206", "#2D5895"))+
+    scale_shape_manual(values = c(22, 21))+
     scale_y_reverse()+
   labs(y = "depth, cm",
        x = "dissolved oxygen, mg/L")+
