@@ -13,5 +13,5 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 *All code runs without changing working directories. Do not change or set working directory, run all code by downloading the repository and opening the R Project file. Do not open individual code files outside of the R Project file. Please contact me if you find any issues or errors.*
 
 ### Funding 
-#### NSF OPP-1914545 and OPP-2006194 to Herndon, Weintraub, Kinsman-Costello
+#### NSF OPP-1914545 and OPP-2006194 to Herndon, Kinsman-Costello, and Weintraub
 #### NSF OPP-2138937 to Rooney
